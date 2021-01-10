@@ -42,7 +42,7 @@ function gui.build_gui(player)
 		direction = "horizontal"
 	}
 
-	local location = global["screen_location"][player.index] or {200, 100}
+	local location = global["screen_location"][player.index] or {85, 65}
 	gui_master.location = location
 
 	gui.build_main_frame (player)
@@ -193,7 +193,8 @@ function gui.build_preset_menu(player, gui_frame)
 		type = "sprite-button",
 		name = lrm.gui.save_button,
 		--style = lrm.gui.sidebar_button,
-		style = "shortcut_bar_button_green",
+		-- style = "shortcut_bar_button_green",
+		style = "shortcut_bar_button",
 		sprite = "utility/clone",
 		-- caption = {"gui.save"},
 		tooltip = {"tooltip.save-preset"}
@@ -204,23 +205,14 @@ function gui.build_preset_menu(player, gui_frame)
 		type = "sprite-button",
 		name = lrm.gui.load_button,
 		--style = lrm.gui.sidebar_button,
-		style = "shortcut_bar_button_blue",
+		-- style = "shortcut_bar_button_blue",
+		style = "shortcut_bar_button",
 		sprite = "utility/refresh",
 		-- caption = {"gui.load"},
 		tooltip = {"tooltip.load-preset"}
 	}
 	load_button.enabled = inventory_open
 	
-	local delete_button = sidebar_menu.add {
-		type = "sprite-button",
-		name = lrm.gui.delete_button,
-		--style = lrm.gui.sidebar_button,
-		style = "shortcut_bar_button_red",
-		sprite = "utility/trash",
-		-- caption = {"gui.delete"},
-		tooltip = {"tooltip.delete-preset"}
-	}
-
 	local export_button = sidebar_menu.add {
 		type = "sprite-button",
 		name = lrm.gui.export_button,
@@ -231,7 +223,7 @@ function gui.build_preset_menu(player, gui_frame)
 		tooltip = {"tooltip.export-preset"}
 	}
 
-	sidebar_menu.add {
+	local import_button = sidebar_menu.add {
 		type = "sprite-button",
 		name = lrm.gui.import_button,
 		--style = lrm.gui.sidebar_button,
@@ -240,6 +232,17 @@ function gui.build_preset_menu(player, gui_frame)
 		-- caption = {"gui.import"},
 		tooltip = {"tooltip.import-preset"}
 	}
+
+	local delete_button = sidebar_menu.add {
+		type = "sprite-button",
+		name = lrm.gui.delete_button,
+		--style = lrm.gui.sidebar_button,
+		style = "shortcut_bar_button_red",
+		sprite = "utility/trash",
+		-- caption = {"gui.delete"},
+		tooltip = {"tooltip.delete-preset"}
+	}
+
 end
 function gui.build_preset_list(player, gui_body_flow)
 	if not player then 
@@ -333,31 +336,21 @@ function gui.set_gui_elements_enabled(player)
 	local save_as_textfield = toolbar and toolbar[lrm.gui.save_as_textfield] or nil
 	local save_as_button 	= toolbar and toolbar[lrm.gui.save_as_button] or nil
 	local blueprint_button 	= toolbar and toolbar[lrm.gui.blueprint_button] or nil
-	-- if save_as_textfield	then save_as_textfield.enabled	= inventory_open end
-	-- if save_as_button		then save_as_button.enabled		= inventory_open end
-	-- if blueprint_button		then blueprint_button.enabled	= inventory_open end
 	gui.set_gui_element_enabled ( save_as_textfield, inventory_open, nil, {"tooltip.save-as-textfield"} )
 	gui.set_gui_element_enabled ( save_as_button, 	 inventory_open, nil, {"tooltip.save-as"} )
 	gui.set_gui_element_enabled ( blueprint_button,  inventory_open, nil, {"tooltip.blueprint-request"} )
 
 	-- side-bar elements
-	-- local body		 		= frame and frame[lrm.gui.body] or nil
-	-- local sidebar			= body and body[lrm.gui.sidebar] or nil
 	local sidebar_menu		= frame and frame[lrm.gui.sidebar_menu] or nil
 
 	local save_button 		= sidebar_menu and sidebar_menu[lrm.gui.save_button] or nil
 	local load_button 		= sidebar_menu and sidebar_menu[lrm.gui.load_button] or nil
 	local delete_button 	= sidebar_menu	and sidebar_menu[lrm.gui.delete_button] or nil
 	local export_button 	= sidebar_menu	and sidebar_menu[lrm.gui.export_button] or nil
-	-- if save_button			then save_button.enabled		= enable_state and inventory_open end
-	-- if load_button			then load_button.enabled		= enable_state and inventory_open end
-	-- if delete_button 		then delete_button.enabled 		= enable_state	end
-	-- if export_button 		then export_button.enabled 		= enable_state end
 	gui.set_gui_element_enabled ( save_button, inventory_open, preset_selected, {"tooltip.save-preset"} )
 	gui.set_gui_element_enabled ( load_button, inventory_open, preset_selected, {"tooltip.load-preset"} )
 	gui.set_gui_element_enabled ( delete_button,		  nil, preset_selected, {"tooltip.delete-preset"} )
 	gui.set_gui_element_enabled ( export_button,		  nil, preset_selected, {"tooltip.export-preset"} )
-	gui.set_gui_element_enabled ( nil, nil, nil, nil )
 
 end
 
@@ -368,27 +361,23 @@ function gui.set_gui_element_enabled(gui_element, inventory_open, preset_selecte
 
 	local tooltip = {"messages.no-request-entity-selected", {"messages.source-entity"}, {"messages.save"}, {"messages.preset"}}
 	
-	local flag = inventory_open
+	local flag = ((inventory_open == nil) or inventory_open==true) and ((preset_selected == nil) or preset_selected==true)
 
 	if gui_element.name == lrm.gui.blueprint_button then
 		tooltip = {"messages.no-request-entity-selected", {"messages.target-entity"}, {"messages.append"}, {"messages.blueprint"}}
 	elseif gui_element.name == lrm.gui.save_button then
-		flag = inventory_open and preset_selected
 		if not preset_selected then
 			tooltip = {"messages.select-preset", {"messages.save"}}
 		end
 	elseif gui_element.name == lrm.gui.load_button then
-		flag = inventory_open and preset_selected
 		if not preset_selected then
 			tooltip = {"messages.select-preset", {"messages.load"}}
 		else
 			tooltip = {"messages.no-request-entity-selected", {"messages.target-entity"}, {"messages.load"}, {"messages.preset"}}
 		end
 	elseif gui_element.name == lrm.gui.delete_button then
-		flag = preset_selected
 		tooltip = {"messages.select-preset", {"messages.delete"}}
 	elseif gui_element.name == lrm.gui.export_button then
-		flag = preset_selected
 		tooltip = {"messages.select-preset", {"messages.export"}}
 	end
 
