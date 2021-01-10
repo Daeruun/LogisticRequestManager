@@ -10,8 +10,8 @@ function get_inventory_entity(player, ent_text, action_txt, subject_txt)
 		end
 	end
 	
-	local logistic_point = entity and entity.get_logistic_point(defines.logistic_member_index.character_requester) 
-	if not (logistic_point) then
+	local logistic_requester_point = entity and entity.get_logistic_point(defines.logistic_member_index.character_requester) 
+	if not (logistic_requester_point) then
 		if settings.get_player_settings(player)["LRM-default-to-user"].value then
 			return player.character
 		else
@@ -87,12 +87,17 @@ script.on_event(defines.events.on_gui_opened, function(event)
 	
 	if not (player and inventory) then return end
 	global["inventories-open"][player.index] = inventory
+	gui.set_gui_elements_enabled(player)
 	
 	register_on_tick()
 end)
 
 script.on_event(defines.events.on_gui_closed, function(event)
-	global["inventories-open"][event.player_index] = nil
+	local player = get_event_entities(event)
+	if not player then return end
+	global["inventories-open"][player.index] = nil
+	gui.set_gui_elements_enabled(player)
+	
 	check_on_tick()
 end)
 
