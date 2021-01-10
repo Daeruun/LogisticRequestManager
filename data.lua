@@ -2,10 +2,11 @@ require 'defines'
 
 require 'prototypes/style'
 
-local button={
+
+local button_toggle={
     type = "custom-input",
     name = "LRM-input-toggle-gui",
     key_sequence = "SHIFT + L",
     consuming = "none"
 }
-data:extend{button}
+data:extend{button_toggle}
