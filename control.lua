@@ -205,6 +205,14 @@ script.on_configuration_changed(function(event)
 	end
 end)
 
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+	local player = game.players[event.player_index]
+	if not (player and player.valid) then return end
+	if not (player.force.technologies["logistic-robotics"]["researched"]) then close_or_toggle(event) end
+
+	gui.set_gui_elements_enabled(player)
+end)
+
 script.on_event("LRM-input-toggle-gui", function(event)
 	local player = game.players[event.player_index]
 	if not (player and player.valid) then return end
@@ -223,7 +231,9 @@ function close_or_toggle (event, toggle)
 	end
 
 	if (event.shift) then
-		global["screen_location"][player.index] = {200, 100}
+		global["screen_location"][player.index] = {85, 65}
+		master_frame.location = {85, 65}
+		-- if (master_frame) then master_frame.destroy
 	end
 
 	if master_frame and master_frame.visible then
