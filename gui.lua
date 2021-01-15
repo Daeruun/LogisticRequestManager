@@ -401,13 +401,29 @@ end
 
 function gui.force_rebuild(player, open)
 	local frame_flow = player.gui.screen
-	if frame_flow[lrm.gui.master] then
-		if open == nil then open = frame_flow[lrm.gui.master].visible end
-		frame_flow[lrm.gui.master].destroy()
-	end
-	
+	local master        = frame_flow and frame_flow[lrm.gui.master] or nil
+	local frame         = gui.get_gui_frame(player, lrm.gui.frame)
+	local export_frame	= gui.get_gui_frame(player, lrm.gui.export_frame)
+	local import_frame	= gui.get_gui_frame(player, lrm.gui.import_frame)
+
+	local visible_master        = master       and master.visible 	    or false
+	local visible_frame         = frame        and frame.visible 	    or false
+	local visible_export_frame	= export_frame and export_frame.visible or false
+	local visible_import_frame	= import_frame and import_frame.visible or false
+
+	if master then master.destroy() end
+
 	gui.build(player)
-	if open then frame_flow[lrm.gui.master].visible = true end
+
+	master       = frame_flow and frame_flow[lrm.gui.master] or nil
+	frame        = gui.get_gui_frame(player, lrm.gui.frame)
+	export_frame = gui.get_gui_frame(player, lrm.gui.export_frame)
+	import_frame = gui.get_gui_frame(player, lrm.gui.import_frame)
+
+	if master       then master       .visible = visible_master       end
+	if frame        then frame        .visible = visible_frame        end
+	if export_frame then export_frame .visible = visible_export_frame end
+	if import_frame then import_frame .visible = visible_import_frame end
 end
 
 function gui.get_save_as_name(player, parent_frame)

@@ -16,5 +16,5 @@ function globals.init_player(player)
 	global["preset-data"][index] 		= global["preset-data"][index] or {}
 	global["preset-names"][index] 		= global["preset-names"][index] or {}
 	global["presets-selected"][index] 	= global["presets-selected"][index] or 0
-	global["screen_location"][index] 	= global["screen_location"][index] or {}
+	global["screen_location"][index] 	= global["screen_location"][index] or nil
 end

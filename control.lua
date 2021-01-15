@@ -197,18 +197,16 @@ script.on_configuration_changed(function(event)
 			end
 		end
 
-		local frame_flow = player.gui.screen
-		if (frame_flow[lrm.gui.master] and frame_flow[lrm.gui.master].visible) then
-		 	gui.force_rebuild(player)
-		 	select_preset(player, global["presets-selected"][player.index])
-		end
+	 	gui.force_rebuild(player)
+		select_preset(player, global["presets-selected"][player.index])
+
 	end
 end)
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
 	local player = game.players[event.player_index]
 	if not (player and player.valid) then return end
-	if not (player.force.technologies["logistic-robotics"]["researched"]) then close_or_toggle(event) end
+	if not (player.force.technologies["logistic-robotics"]["researched"]) then return end
 
 	gui.set_gui_elements_enabled(player)
 end)
@@ -216,7 +214,7 @@ end)
 script.on_event("LRM-input-toggle-gui", function(event)
 	local player = game.players[event.player_index]
 	if not (player and player.valid) then return end
-	if not (player.force.technologies["logistic-robotics"]["researched"]) then close_or_toggle(event) end
+	if not (player.force.technologies["logistic-robotics"]["researched"]) then return end
 
 	close_or_toggle(event, true)
 end)
@@ -249,5 +247,6 @@ function close_or_toggle (event, toggle)
 	elseif toggle then
 		gui.build(player, true)
 		select_preset(player, global["presets-selected"][player.index])
+		if master_frame[lrm.gui.frame] then master_frame[lrm.gui.frame].visible = true end
 	end
 end
