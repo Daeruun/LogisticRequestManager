@@ -1,10 +1,15 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.1.5
+Version: 1.1.6
 Date: 10.01.2021
   Features:
     - gui reworked
       => buttons use sprites now (I'd love to get some feedback on the icons and colors)
     - presets can be exported and imported
+---------------------------------------------------------------------------------------------------
+Version: 1.1.5
+Date: 30.01.2020
+  Bugfixes:
+    - fixed crash if trying to paste a blueprint into an entity without requester-functionality
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.4
 Date: 27.12.2020

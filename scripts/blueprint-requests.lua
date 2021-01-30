@@ -10,12 +10,14 @@ function get_inventory_entity(player, ent_text, action_txt, subject_txt)
 		end
 	end
 	
-	local logistic_requester_point = entity and entity.get_logistic_point(defines.logistic_member_index.character_requester) 
-	if not (logistic_requester_point) then
+	local logistic_point = entity and entity.get_logistic_point(defines.logistic_member_index.character_requester) 
+	if ( not (logistic_point) 
+		or (	not (logistic_point.mode == defines.logistic_mode.requester ) 			-- no requester
+			and not (logistic_point.mode == defines.logistic_mode.buffer ) 	) ) then	-- no buffer
 		if settings.get_player_settings(player)["LRM-default-to-user"].value then
 			return player.character
 		else
-			player.print ({"open-entity-does-not-support-requests", {entity.name} })
+			player.print ({"messages.open-entity-does-not-support-requests", entity.localised_name })
 			return nil
 		end
 	end
@@ -56,13 +58,13 @@ function on_tick()
 			return
 		end
 		
-		for slot = 1, inventory.request_slot_count do
-			local request = inventory.get_request_slot(slot)
-			if request and (request.name == "blueprint" or request.name == "blueprint-book") then
-				inventory.clear_request_slot(slot)
-				request_manager.request_blueprint(player, inventory)
-			end
-		end
+		-- for slot = 1, inventory.request_slot_count do
+		-- 	local request = inventory.get_request_slot(slot)
+		-- 	if request and (request.name == "blueprint" or request.name == "blueprint-book") then
+		-- 		inventory.clear_request_slot(slot)
+		-- 		request_manager.request_blueprint(player, inventory)
+		-- 	end
+		-- end
 	end
 end
 

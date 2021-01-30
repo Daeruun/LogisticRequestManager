@@ -1,7 +1,11 @@
 if not request_manager then request_manager = {} end
 
-function request_manager.request_blueprint(player, entity)
-	local entity = get_inventory_entity(player, {"messages.source-entity"}, {"messages.append"}, {"messages.blueprint"})
+function request_manager.request_blueprint(player)
+	if not (player.is_cursor_blueprint()) then 
+		return nil 
+	end
+
+	local entity = get_inventory_entity(player, {"messages.target-entity"}, {"messages.append"}, {"messages.blueprint"})
 	if not (entity and entity.valid) then
 		return nil
 	end
@@ -65,8 +69,14 @@ function request_manager.request_blueprint(player, entity)
 end
 
 function request_manager.apply_preset(preset_data, entity)
-	local logistic_provider_point = entity.get_logistic_point(defines.logistic_member_index.character_provider) 
-	if not (logistic_provider_point) then 						-- no auto-trash
+	local logistic_point = entity.get_logistic_point(defines.logistic_member_index.character_requester)
+	if (	not (logistic_point.mode == defines.logistic_mode.requester ) 			-- no requester
+		and not (logistic_point.mode == defines.logistic_mode.buffer ) 	) then		-- no buffer
+		return nil
+	end
+
+	logistic_point = entity.get_logistic_point(defines.logistic_member_index.character_provider)
+	if not (logistic_point) then 						-- no auto-trash
 		set_slot = entity.set_request_slot
 	else
 		if entity.type == "character" then		-- easy & quite certain
