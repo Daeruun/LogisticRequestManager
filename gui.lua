@@ -18,6 +18,16 @@ if not gui then gui = {} end
 -- -          - # # # # # # # # # # | -                  [OK] -                  [OK] -                       -
 -- ------------------------------------------------------------------------------------------------------------
 
+function gui.destroy(player)
+	if frame_flow[lrm.gui.frame] then 
+		frame_flow[lrm.gui.frame].destroy()
+	end
+	local button_flow = mod_gui.get_button_flow(player)
+	if button_flow[lrm.gui.toggle_button] then
+		button_flow[lrm.gui.toggle_button].destroy()
+	end
+end
+
 function gui.build_toggle_button(player)
 	local button_flow = mod_gui.get_button_flow(player)
 	if not button_flow[lrm.gui.toggle_button] then

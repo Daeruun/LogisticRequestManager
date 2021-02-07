@@ -74,7 +74,7 @@ function request_manager.apply_preset(preset_data, entity)
 		and not (logistic_point.mode == defines.logistic_mode.buffer ) 	) then		-- no buffer
 		return nil
 	end
-
+	
 	logistic_point = entity.get_logistic_point(defines.logistic_member_index.character_provider)
 	if not (logistic_point) then 						-- no auto-trash
 		set_slot = entity.set_request_slot
@@ -85,18 +85,18 @@ function request_manager.apply_preset(preset_data, entity)
 			set_slot = entity.set_vehicle_logistic_slot
 		end
 	end
-
+	
 	if not set_slot then 
 		return nil 
 	end
-
+	
 	-- clear current logistic slots
 	local slots = entity.request_slot_count
-
+	
 	for i = 1, slots do
 		entity.clear_request_slot(i)
 	end
-
+	
 	-- get required number of personal logistic slots
 	slots = table_size(preset_data)
 	
@@ -182,7 +182,7 @@ function request_manager.load_preset(player, preset_number)
 	local preset = player_presets[preset_number]
 	if not preset then return end
 	
-	local entity = get_inventory_entity(player, {"messages.target-entity"}, {"messages.load"}, {"messages.blueprint"})
+	local entity = get_inventory_entity(player, {"messages.target-entity"}, {"messages.load"}, {"messages.preset"})
 	if entity and entity.valid then
 		request_manager.apply_preset(preset, entity)
 	else

@@ -35,11 +35,11 @@ function get_event_entities(event)
 	if event.gui_type == defines.gui_type.controller then
 		entity = player and player.character or nil
 	end
-
-	if not entity then 
-		return nil 
+	
+	if not entity then
+		return nil
 	end
-
+	
 	return player, entity
 end
 
@@ -88,6 +88,7 @@ script.on_event(defines.events.on_gui_opened, function(event)
 	local player, inventory = get_event_entities(event)
 	
 	if not (player and inventory) then return end
+	
 	global["inventories-open"][player.index] = inventory
 	gui.set_gui_elements_enabled(player)
 	

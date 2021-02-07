@@ -1,10 +1,15 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.1.6
-Date: 10.01.2021
+Version: 1.1.7
+Date: 10.02.2021
   Features:
     - gui reworked
       => buttons use sprites now (I'd love to get some feedback on the icons and colors)
     - presets can be exported and imported
+---------------------------------------------------------------------------------------------------
+Version: 1.1.6
+Date: 07.02.2020
+  Bugfixes:
+    - fixed crash that could occure if anything in the gui was clicked if the required research was undone
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.5
 Date: 30.01.2020
@@ -56,6 +61,19 @@ Date: 28.11.2020
     - updated GUI:
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
+---------------------------------------------------------------------------------------------------
+Version: 0.18.3
+Date: 07.02.2021
+  Features:
+    - chests can be used as source for a preset
+      => change of behaviour:
+      if no requester-entity is open, the save/load buttons will not work
+      a player-specific setting is available to use the character as default then (as it was until now)
+    - added 'Shift + L' as a hotkey to toggle the GUI
+  Bugfixes:
+    - presets can be loaded into chests again
+    - blueprints can be applied to chests
+    - fixed crash that could occure if anything in the gui was clicked if the required research was undone
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.2
 Date: 24.12.2020
