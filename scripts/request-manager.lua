@@ -101,7 +101,7 @@ function request_manager.apply_preset(preset_data, entity)
 	slots = table_size(preset_data)
 	
 	-- as only players personal logistic slots support min & max requests, we need to destinguish between player-character and entities like requester-box or similar
-	if not (logistic_provider_point) then 						-- no auto-trash
+	if not (logistic_point) then 						-- no auto-trash
 		for i = 1, slots do
 			local item = preset_data[i]
 			if item and item.name and not (game.item_prototypes[item.name] == nil) then
