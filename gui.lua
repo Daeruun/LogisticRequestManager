@@ -54,6 +54,7 @@ function gui.build_gui(player)
 	}
 
 	local location = global["screen_location"][player.index] or {85, 65}
+	if not next(location) then location = {85 ,65} end
 	gui_master.location = location
 
 	gui.build_main_frame (player)
