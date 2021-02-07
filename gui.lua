@@ -19,6 +19,7 @@ if not gui then gui = {} end
 -- ------------------------------------------------------------------------------------------------------------
 
 function gui.destroy(player)
+	local frame_flow = player.gui.screen
 	if frame_flow[lrm.gui.frame] then 
 		frame_flow[lrm.gui.frame].destroy()
 	end
