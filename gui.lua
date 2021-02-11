@@ -82,7 +82,7 @@ function gui.build_main_frame (player)
 
     gui.build_title_bar(player, gui_frame, {"gui.title"})
 	gui.build_tool_bar(player, gui_frame)
-	gui.build_preset_menu(player, gui_frame)
+	--gui.build_preset_menu(player, gui_frame)
 	gui.build_body(player, gui_frame)
 end
 
@@ -142,24 +142,81 @@ function gui.build_tool_bar(player, gui_frame)
 	local save_as_button = gui_toolbar.add {
 		type = "sprite-button",
 		name = lrm.gui.save_as_button,
-		--style = "tool_button_green",
 		style = "shortcut_bar_button_green",
 		sprite = "utility/copy",
 		tooltip = {"tooltip.save-as"}
 	}
 	save_as_button.enabled = inventory_open
 
-	blueprint_button = gui_toolbar.add {
+	local save_button = gui_toolbar.add {
+		type = "sprite-button",
+		name = lrm.gui.save_button,
+		style = "shortcut_bar_button",
+		sprite = "LRM-copy",
+		tooltip = {"tooltip.save-preset"},
+	}
+	save_button.enabled = inventory_open
+	
+	local load_button = gui_toolbar.add {
+		type = "sprite-button",
+		name = lrm.gui.load_button,
+		style = "shortcut_bar_button",
+		sprite = "LRM-paste",
+		tooltip = {"tooltip.load-preset"}
+	}
+	load_button.enabled = inventory_open
+	load_button.style.right_margin = 5
+	
+	-- local empty = gui_toolbar.add {
+	-- 	type = "empty-widget",
+	-- 	name = lrm.gui.empty,
+	-- 	width = 20
+	-- }
+
+	local export_button = gui_toolbar.add {
+		type = "sprite-button",
+		name = lrm.gui.export_button,
+		style = "shortcut_bar_button",
+		sprite = "utility/export",
+		tooltip = {"tooltip.export-preset"}
+	}
+
+	local import_button = gui_toolbar.add {
+		type = "sprite-button",
+		name = lrm.gui.import_button,
+		style = "shortcut_bar_button",
+		sprite = "utility/import",
+		tooltip = {"tooltip.import-preset"}
+	}
+	import_button.style.right_margin = 5
+
+
+	local delete_button = gui_toolbar.add {
+		type = "sprite-button",
+		name = lrm.gui.delete_button,
+		style = "shortcut_bar_button_red",
+		sprite = "utility/trash",
+		tooltip = {"tooltip.delete-preset"}
+	}
+	delete_button.style.right_margin = 5
+
+	-- local empty = gui_toolbar.add {
+	-- 	type = "empty-widget",
+	-- 	name = lrm.gui.empty,
+	-- 	width = 20
+	-- }
+
+	local blueprint_button = gui_toolbar.add {
 		type = "sprite-button",
 		name = lrm.gui.blueprint_button,
 		style = lrm.gui.blueprint_button,
-		--style = "tool_button",
 		sprite = "item.blueprint",
-		--width = 28,
-		--heigth = 28,
-		--margin = 0, spacing = 0, padding = 0,
 		tooltip = {"tooltip.blueprint-request"}
 	}
+	-- blueprint_button.style.top_padding = 1
+	-- blueprint_button.style.bottom_padding = 1
+	-- blueprint_button.style.left_padding = 1
+	-- blueprint_button.style.right_padding = 1
 	blueprint_button.enabled = inventory_open
 end
 
@@ -175,86 +232,59 @@ function gui.build_body(player, gui_frame)
 	}
 	gui.build_preset_list(player, gui_body_flow)
 
-	local request_window = gui_body_flow.add {
+	local gui_body_flow_right = gui_body_flow.add {
+		type = "flow",
+		name = lrm.gui.body_right,
+		direction = "vertical"
+	}
+
+	local request_window = gui_body_flow_right.add {
 		type = "scroll-pane",
 		name = lrm.gui.request_window,
 		style = lrm.gui.request_window
 	}
 	request_window.vertical_scroll_policy = "auto-and-reserve-space"
 	request_window.style.vertical_align = "bottom"
-	--request_window.style.horizontal_align = "bottom"
 	
 	gui.build_slots(player, nil, request_window)
+
+	gui.build_target_menu(player, gui_body_flow_right)
 end
-function gui.build_preset_menu(player, gui_frame)
-	if not gui_frame then 
+function gui.build_target_menu(player, parent)
+	if not parent then 
 		return 
 	end
 	if not player then 
 		return 
 	end
-	local inventory_open = (global["inventories-open"][player.index] and global["inventories-open"][player.index].valid) or false
 	
-	local sidebar_menu = gui_frame.add {
+	local target_menu = parent.add {
 		type = "flow",
-		name = lrm.gui.sidebar_menu,
+		name = lrm.gui.target_menu,
 		direction = "horizontal"
 	}
-	
-	local save_button = sidebar_menu.add {
-		type = "sprite-button",
-		name = lrm.gui.save_button,
-		--style = lrm.gui.sidebar_button,
-		-- style = "shortcut_bar_button_green",
-		style = "shortcut_bar_button",
-		sprite = "utility/clone",
-		-- caption = {"gui.save"},
-		tooltip = {"tooltip.save-preset"}
-	}
-	save_button.enabled = inventory_open
-	
-	local load_button = sidebar_menu.add {
-		type = "sprite-button",
-		name = lrm.gui.load_button,
-		--style = lrm.gui.sidebar_button,
-		-- style = "shortcut_bar_button_blue",
-		style = "shortcut_bar_button",
-		sprite = "utility/refresh",
-		-- caption = {"gui.load"},
-		tooltip = {"tooltip.load-preset"}
-	}
-	load_button.enabled = inventory_open
-	
-	local export_button = sidebar_menu.add {
-		type = "sprite-button",
-		name = lrm.gui.export_button,
-		--style = lrm.gui.sidebar_button,
-		style = "shortcut_bar_button",
-		sprite = "utility/export",
-		-- caption = {"gui.export"},
-		tooltip = {"tooltip.export-preset"}
+	target_menu.style.top_margin = 1
+	target_menu.style.left_margin = 5
+	-- target_menu.style.right_margin = 100
+	--parent.style.horizontal_align = "right"
+
+
+
+	local label = target_menu.add {
+		type = "label",
+		name = lrm.gui.target_label,
+		caption = {"gui.target_label"}
 	}
 
-	local import_button = sidebar_menu.add {
+	local target_slot = target_menu.add {
 		type = "sprite-button",
-		name = lrm.gui.import_button,
-		--style = lrm.gui.sidebar_button,
-		style = "shortcut_bar_button",
-		sprite = "utility/import",
-		-- caption = {"gui.import"},
-		tooltip = {"tooltip.import-preset"}
+		name = lrm.gui.target_slot,
+		style = "inventory_slot",
+
+		locked = true	-- read only flag
 	}
 
-	local delete_button = sidebar_menu.add {
-		type = "sprite-button",
-		name = lrm.gui.delete_button,
-		--style = lrm.gui.sidebar_button,
-		style = "shortcut_bar_button_red",
-		sprite = "utility/trash",
-		-- caption = {"gui.delete"},
-		tooltip = {"tooltip.delete-preset"}
-	}
-
+	gui.set_target(player, target_slot)
 end
 function gui.build_preset_list(player, gui_body_flow)
 	if not player then 
@@ -281,7 +311,7 @@ function gui.build_preset_list(player, gui_body_flow)
 		delete_button.enabled = false
 	end
 	for i,preset in pairs(presets) do
-		button = preset_list.add {
+		local button = preset_list.add {
 			type = "button",
 			name = lrm.gui.preset_button .. i,
 			style = lrm.gui.preset_button,
@@ -337,9 +367,9 @@ function gui.set_gui_elements_enabled(player)
 	-- get states
 	local preset_selected 	= global["presets-selected"][player.index] or nil
 	preset_selected  		= (preset_selected and preset_selected > 0) or false
-	local inventory_open 	= not(global["inventories-open"][player.index] == nil) or false
+	local open_entity		= get_inventory_entity(player)
+	local inventory_open 	= open_entity and open_entity.valid or false
 	local override_inventory= settings.get_player_settings(player)["LRM-default-to-user"].value or false
-	inventory_open = inventory_open or override_inventory
 
 	-- tool-bar elements
 	local frame				= gui.get_gui_frame(player, lrm.gui.frame)
@@ -347,23 +377,30 @@ function gui.set_gui_elements_enabled(player)
 
 	local save_as_textfield = toolbar and toolbar[lrm.gui.save_as_textfield] or nil
 	local save_as_button 	= toolbar and toolbar[lrm.gui.save_as_button] or nil
+
+	local save_button 		= toolbar and toolbar[lrm.gui.save_button] or nil
+	local load_button 		= toolbar and toolbar[lrm.gui.load_button] or nil
+
+	local delete_button 	= toolbar and toolbar[lrm.gui.delete_button] or nil
+	local export_button 	= toolbar and toolbar[lrm.gui.export_button] or nil
+
 	local blueprint_button 	= toolbar and toolbar[lrm.gui.blueprint_button] or nil
-	gui.set_gui_element_enabled ( save_as_textfield, inventory_open, nil, {"tooltip.save-as-textfield"} )
-	gui.set_gui_element_enabled ( save_as_button, 	 inventory_open, nil, {"tooltip.save-as"} )
-	gui.set_gui_element_enabled ( blueprint_button,  inventory_open, nil, {"tooltip.blueprint-request"} )
+	gui.set_gui_element_enabled ( save_as_textfield, inventory_open,			 nil, {"tooltip.save-as-textfield"} )
+	gui.set_gui_element_enabled ( save_as_button, 	 inventory_open,			 nil, {"tooltip.save-as"} )
 
-	-- side-bar elements
-	local sidebar_menu		= frame and frame[lrm.gui.sidebar_menu] or nil
+	gui.set_gui_element_enabled ( save_button, 		 inventory_open, preset_selected, {"tooltip.save-preset"} )
+	gui.set_gui_element_enabled ( load_button, 		 inventory_open, preset_selected, {"tooltip.load-preset"} )
 
-	local save_button 		= sidebar_menu and sidebar_menu[lrm.gui.save_button] or nil
-	local load_button 		= sidebar_menu and sidebar_menu[lrm.gui.load_button] or nil
-	local delete_button 	= sidebar_menu	and sidebar_menu[lrm.gui.delete_button] or nil
-	local export_button 	= sidebar_menu	and sidebar_menu[lrm.gui.export_button] or nil
-	gui.set_gui_element_enabled ( save_button, inventory_open, preset_selected, {"tooltip.save-preset"} )
-	gui.set_gui_element_enabled ( load_button, inventory_open, preset_selected, {"tooltip.load-preset"} )
-	gui.set_gui_element_enabled ( delete_button,		  nil, preset_selected, {"tooltip.delete-preset"} )
-	gui.set_gui_element_enabled ( export_button,		  nil, preset_selected, {"tooltip.export-preset"} )
+	gui.set_gui_element_enabled ( delete_button,				nil, preset_selected, {"tooltip.delete-preset"} )
+	gui.set_gui_element_enabled ( export_button,		  		nil, preset_selected, {"tooltip.export-preset"} )
 
+	gui.set_gui_element_enabled ( blueprint_button,  inventory_open,			 nil, {"tooltip.blueprint-request"} )
+
+	local body	      = frame and frame[lrm.gui.body]
+	local body_right  = body and body[lrm.gui.body_right]
+	local target_menu = body_right and body_right[lrm.gui.target_menu]
+	local target_slot = target_menu and target_menu[lrm.gui.target_slot]
+	gui.set_target(player, target_slot)
 end
 
 function gui.set_gui_element_enabled(gui_element, inventory_open, preset_selected, localized_tooltip)
@@ -400,6 +437,15 @@ function gui.set_gui_element_enabled(gui_element, inventory_open, preset_selecte
 	else
 		gui_element.tooltip = tooltip
 	end
+end
+
+function gui.set_target(player, target_slot)
+	if not (player and target_slot) then return end
+
+	local inventory_open = get_inventory_entity(player)
+	
+	target_slot.sprite = inventory_open and ("entity." .. inventory_open.name)
+	target_slot.tooltip = inventory_open and inventory_open.name or ""
 end
 
 function gui.build(player)
@@ -475,8 +521,9 @@ function gui.display_preset(player, preset_data, request_window)
 	if not request_window then
 		local frame 	= gui.get_gui_frame(player, lrm.gui.frame)
 		local body		= frame and frame[lrm.gui.body]
+		local body_right= body and body[lrm.gui.body_right]
 		
-		request_window = body and body[lrm.gui.request_window]
+		request_window = body_right and body_right[lrm.gui.request_window]
 		if not request_window then return end
 	end
 
@@ -521,9 +568,10 @@ function gui.delete_preset(player, preset)
 	preset_list[lrm.gui.preset_button .. preset].destroy()
 
 	-- clear the request-table to make it clear that no template is selected
-	local request_window = body and body[lrm.gui.request_window]
+	local body_right = body and body[lrm.gui.body_right]
+	local request_window = bodbody_righty and body_right[lrm.gui.request_window]
 
-	if ( request_window[lrm.gui.request_table] ) then
+	if ( request_window and request_window[lrm.gui.request_table] ) then
 		request_window[lrm.gui.request_table].destroy()
 	end
 end
