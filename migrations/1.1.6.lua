@@ -12,6 +12,5 @@ for _, player in pairs(game.players) do
     if location and not next(location) then 
         global["screen_location"][player.index] = nil 
     end
-    commands.init()
     player.print("1.1.6 done")
 end

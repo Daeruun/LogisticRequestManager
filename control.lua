@@ -6,7 +6,6 @@ require 'gui'
 require 'scripts/globals'
 require 'scripts/request-manager'
 require 'scripts/blueprint-requests'
-require 'scripts/commands'
 
 
 function select_preset(player, preset)
@@ -30,19 +29,21 @@ script.on_event(defines.events.on_gui_click, function(event)
 		return
 	 end
 
-	-- if frame_flow[lrm.gui.frame] then 
-	-- 	global["screen_location"][player.index] = frame_flow[lrm.gui.frame].location
-	-- end
-	
 	if gui_clicked == lrm.gui.toggle_button then
-		close_or_toggle(event, true, parent)
+		if (event.control and event.alt and event.shift) then 
+			gui.force_rebuild(player)
+			select_preset(player, global["presets-selected"][player.index])
+			return
+		end
+		close_or_toggle(event, true, nil)
 
 	elseif gui_clicked == lrm.gui.close_button then
 		close_or_toggle(event, false)
 		
 
 	elseif gui_clicked == lrm.gui.save_as_button then
-		local parent_frame = event.element.parent.parent
+		local parent_frame = event.element.parent and event.element.parent.parent
+		if not parent_frame then return end
 		preset_name = gui.get_save_as_name(player, parent_frame)
 		if not preset_name or preset_name == "" then
 			player.print({"messages.name-needed"})
@@ -52,9 +53,12 @@ script.on_event(defines.events.on_gui_click, function(event)
 				new_preset = request_manager.save_preset(player, 0, preset_name)
 			elseif parent_frame.name == lrm.gui.import_preview_frame then
 				new_preset = request_manager.save_imported_preset(player, preset_name)
+				if (new_preset) then
+					gui.hide_frame(player, lrm.gui.import_frame)
+					gui.hide_frame(player, lrm.gui.import_preview_frame)	
+				end
 			end
 			if not (new_preset) then return end
-			-- gui.force_rebuild(player, true)
 			gui.build_preset_list(player)
 			select_preset(player, new_preset)
 		end
@@ -116,28 +120,18 @@ script.on_event(defines.events.on_gui_click, function(event)
 			end
 		end
 
-	-- elseif gui_clicked == lrm.gui.copy_button then
-	-- 	local parent_frame = event.element.parent.parent
-
-	-- 	if parent_frame and parent_frame.name == lrm.gui.export_frame then
-	-- 		gui.get_export_string(player)
-			
-	-- 	end
-
 	elseif gui_clicked == lrm.gui.OK_button then
-		local parent_frame = event.element.parent.parent
+		local parent_frame = event.element.parent and event.element.parent.parent
 
 		if parent_frame and parent_frame.name == lrm.gui.export_frame then
 			gui.hide_frame(player, lrm.gui.export_frame)
-
 		elseif parent_frame and parent_frame.name == lrm.gui.import_frame then
 			local preset_data = request_manager.import_preset(player)
 			gui.show_imported_preset(player, preset_data)
+			gui.hide_frame(player, lrm.gui.import_frame)
 		end
 
 		
-		
-
 	else
 		local preset_clicked = string.match(gui_clicked, string.gsub(lrm.gui.preset_button, "-", "%%-") .. "(%d+)")
 		if preset_clicked then
@@ -177,17 +171,16 @@ end)
 
 script.on_init(function()
 	globals.init()
-	commands.init()
 
 	for _, player in pairs(game.players) do
 		player.print(on_init)
 		globals.init_player(player)
-		-- gui.build(player)
+		if (player.force.technologies["logistic-robotics"]["researched"])
+		gui.build(player)
 	end
 end)
 
 script.on_configuration_changed(function(event)
-	commands.init()
 	globals.init()
 	for _, player in pairs(game.players) do
 		globals.init_player(player)
@@ -244,11 +237,14 @@ function close_or_toggle (event, toggle)
 		parent_frame = nil
 	end
 
-	if (event.shift) then
+	if (event.element.name == "logistic-request-manager-gui-button" and event.shift) then
 		global["screen_location"][player.index] = {85, 65}
-		master_frame.location = {85, 65}
-		-- if (master_frame) then master_frame.destroy
+		if master_frame then
+			master_frame.location = {85, 65}
+			master_frame.visible = false
+		end
 	end
+
 
 	if master_frame and master_frame.visible then
 		global["screen_location"][player.index] = master_frame.location
