@@ -8,5 +8,10 @@ for _, player in pairs(game.players) do
     end
 
     -- make sure an empty location is nil
-    if not next(global["screen_location"][player.index]) then global["screen_location"][player.index] = nil end
+    local location = global["screen_location"][player.index]
+    if location and not next(location) then 
+        global["screen_location"][player.index] = nil 
+    end
+    commands.init()
+    player.print("1.1.6 done")
 end
