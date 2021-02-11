@@ -3,32 +3,23 @@ default_gui = data.raw["gui-style"].default
 default_gui[lrm.gui.frame] = {
 	type = "frame_style",
 	parent = "inner_frame_in_outer_frame",
-	-- parent = "invisible_frame",
-	-- vertical_spacing = 0,
 	maximal_width = 800,
 	maximal_height = 700
 }
 
 default_gui[lrm.gui.title_flow] = {
 	type = "horizontal_flow_style",
-	-- parent = "invisible_frame",
 	horizontally_stretchable = "on",
-	-- padding = 0,
 	horizontal_spacing = 8,
 	right_margin = 4		
 }
 default_gui[lrm.gui.title_frame] = {
 	type = "frame_style",
 	parent = "invisible_frame",
-	-- margin = 0,
-	-- padding = 0,
-	-- vertical_spacing = 0
-	-- horizontal_spacing = 0
 }
 default_gui[lrm.gui.close_button] = {
 	type = "button_style",
 	parent = "frame_action_button",
---	horizontal_spacing = 0,
 	font = "lrm.infinit",
 	default_font_color = {255,255,255}
 }
@@ -48,21 +39,12 @@ default_gui[lrm.gui.save_as_button] = {
 default_gui[lrm.gui.blueprint_button] = {
 	type = "button_style",
 	parent = "slot_button",
-	--margin = 0, spacing = 0, padding = 0,
+	padding = 1,
 }
-
--- default_gui[lrm.gui.sidebar] = { -- unused
--- 	type = "vertical_flow_style",
--- 	vertical_spacing = 5,
--- 	minimal_height = 32,
--- 	horizontally_stretchable = "on"
--- }
 
 default_gui[lrm.gui.sidebar_button] = {
 	type = "button_style",
 	parent = "button",
-	--minimal_width = 55,
-	--maximal_width = 114,
 	width = 114,
 	horizontally_stretchable = "on"
 }
@@ -88,8 +70,6 @@ default_gui[lrm.gui.preset_button_selected] = {
 	default_graphical_set = {base = {position = {34, 17}, corner_size = 8}},
 	hovered_graphical_set = {base = {position = {34, 17}, corner_size = 8}},
 	clicked_graphical_set = {base = {position = {34, 17}, corner_size = 8}},
-	-- horizontally_squashable = "on"
-	-- horizontally_stretchable = "on"
 }
 
 default_gui[lrm.gui.request_window] = {
@@ -101,9 +81,6 @@ default_gui[lrm.gui.request_window] = {
 	maximal_height = 208,
 	margin = 0,
 	padding = 0,
-	-- top_margin = 46,
-	-- extra_padding_when_activated = 0
-	-- vertically_stretchable = "off",
 	vertical_align = "bottom",
 	vertically_squashable = "off"
 }
@@ -175,10 +152,7 @@ default_gui[lrm.gui.export_frame] = {
 	direction = "vertical",
 	width = 424,
 	heigth = 338,
-	-- maximal_width = 424,
-	-- maximal_height = 338,
 	vertically_stretchable = "on",
-	-- margin = 0,
 }
 
 default_gui[lrm.gui.code_textbox] = {
@@ -195,10 +169,7 @@ default_gui[lrm.gui.import_frame] = {
 	direction = "vertical",
 	width = 424,
 	heigth = 338,
-	-- maximal_width = 424,
-	-- maximal_height = 338,
 	vertically_stretchable = "on",
-	-- margin = 0,
 }
 default_gui[lrm.gui.import_preview_frame] = { 
 	type = "frame_style",
@@ -206,8 +177,5 @@ default_gui[lrm.gui.import_preview_frame] = {
 	direction = "vertical",
 	minimal_width = 424,
 	minimal_heigth = 30,
-	-- maximal_width = 424,
-	-- maximal_height = 338,
 	vertically_stretchable = "on",
-	-- margin = 0,
 }
