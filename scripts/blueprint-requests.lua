@@ -5,7 +5,9 @@ function get_inventory_entity(player, ent_text, action_txt, subject_txt)
 		if settings.get_player_settings(player)["LRM-default-to-user"].value then
 			return player.character
 		else
-			player.print ({"messages.no-request-entity-selected", ent_text, action_txt, subject_txt})
+			if (ent_text and action_txt and subject_txt) then
+				player.print ({"messages.no-request-entity-selected", ent_text, action_txt, subject_txt})
+			end
 			return nil
 		end
 	end
@@ -17,7 +19,9 @@ function get_inventory_entity(player, ent_text, action_txt, subject_txt)
 		if settings.get_player_settings(player)["LRM-default-to-user"].value then
 			return player.character
 		else
-			player.print ({"messages.open-entity-does-not-support-requests", entity.localised_name })
+			if (ent_text and action_txt and subject_txt) then
+				player.print ({"messages.open-entity-does-not-support-requests", entity.localised_name })
+			end
 			return nil
 		end
 	end
