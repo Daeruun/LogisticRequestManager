@@ -8,6 +8,14 @@ end
 function commands.run(event)
     local player = game.players[event.player_index]
     player.print("command is run")
+    if (event.parameter) then
+        local param = event.parameter
+        if (param == "flush") then
+            player.print("flush gui")
+            gui.force_rebuild(player)
+            select_preset(player, global["presets-selected"][player.index])
+        end
+    end
 end
 
 function commands.parse(event)
