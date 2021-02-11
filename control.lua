@@ -175,8 +175,9 @@ script.on_init(function()
 	for _, player in pairs(game.players) do
 		player.print(on_init)
 		globals.init_player(player)
-		if (player.force.technologies["logistic-robotics"]["researched"])
-		gui.build(player)
+		if (player.force.technologies["logistic-robotics"]["researched"]) then
+			gui.build(player)
+		end
 	end
 end)
 
