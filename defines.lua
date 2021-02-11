@@ -13,6 +13,7 @@ lrm.gui = {
 	title_flow =        lrm.guiprefix .. "title_flow",
 	title_frame =		lrm.guiprefix .. "title_frame",
 	close_button =  	lrm.guiprefix .. "close_button",
+	test_button =  	lrm.guiprefix .. "test_button",
 
 	toolbar =           lrm.guiprefix .. "toolbar",
 	save_as_textfield = lrm.guiprefix .. "save-as-input",
@@ -20,16 +21,19 @@ lrm.gui = {
 	blueprint_button =  lrm.guiprefix .. "blueprint-request",
 	
 	body =              lrm.guiprefix .. "body",
+	body_right =        lrm.guiprefix .. "body_right",
 	
 	sidebar =           lrm.guiprefix .. "sidebar",
-	sidebar_menu =      lrm.guiprefix .. "sidebar-menu",
 	sidebar_button =    lrm.guiprefix .. "sidebar-button",
 	save_button =       lrm.guiprefix .. "save-button",
 	load_button =       lrm.guiprefix .. "load-button",
 	delete_button =     lrm.guiprefix .. "delete-button",
-	sidebar_menu2 =     lrm.guiprefix .. "sidebar-menu-import-export",
 	export_button =     lrm.guiprefix .. "export-button",
 	import_button =     lrm.guiprefix .. "import-button",
+	
+	target_menu =       lrm.guiprefix .. "target-menu",
+	target_label =      lrm.guiprefix .. "target-label",
+	target_slot =       lrm.guiprefix .. "target-slot",
 	
 	preset_list =       lrm.guiprefix .. "preset-list",
 	preset_button =     lrm.guiprefix .. "preset-button",
@@ -50,9 +54,11 @@ lrm.gui = {
 
 	OK_button 	=		lrm.guiprefix .. "OK-button",
 	copy_button =		lrm.guiprefix .. "copy-button",
+	empty		=		lrm.guiprefix .. "empty",
 
 	import_preview_frame    	= lrm.guiprefix .. "import-preview-frame",
 	import_preview_toolbar		= lrm.guiprefix .. "import-preview-toolbar",
 	save_import_as_textfield	= lrm.guiprefix .. "save-import-as-textfield",
 	save_import_as_button		= lrm.guiprefix .. "save-import-as-button",
+	
 }
