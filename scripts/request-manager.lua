@@ -98,7 +98,7 @@ function request_manager.apply_preset(preset_data, entity)
 	end
 	
 	-- get required number of personal logistic slots
-	slots = table_size(preset_data)
+	slots = table_size(preset_data or {})
 	
 	-- as only players personal logistic slots support min & max requests, we need to destinguish between player-character and entities like requester-box or similar
 	if not (logistic_point) then 						-- no auto-trash
@@ -152,7 +152,7 @@ function request_manager.save_preset(player, preset_number, preset_name)
 		get_slot = entity.get_request_slot
 	else
 		if entity.type == "character" then				-- easy & quite certain
-			get_slot = entity.get_personal_logistic_slot 
+			get_slot = entity.get_personal_logistic_slot
 		else											-- spidertron OK & quite sure that this will work for modded vehicles as well...
 			get_slot = entity.get_vehicle_logistic_slot
 		end
