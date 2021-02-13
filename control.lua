@@ -131,11 +131,13 @@ script.on_event(defines.events.on_gui_click, function(event)
 			gui.hide_frame(player, lrm.gui.import_frame)
 		end
 
-		
 	else
-		local preset_clicked = string.match(gui_clicked, string.gsub(lrm.gui.preset_button, "-", "%%-") .. "(%d+)")
-		if preset_clicked then
-			select_preset(player, tonumber(preset_clicked))
+		local gui_parent = event.element.parent
+		if gui_parent.name == lrm.gui.preset_list then
+			local preset_clicked = string.match(gui_clicked, string.gsub(lrm.gui.preset_button, "-", "%%-") .. "(%d+)")
+			if preset_clicked then
+				select_preset(player, tonumber(preset_clicked))
+			end
 		end
 	end
 end)
@@ -238,7 +240,7 @@ function close_or_toggle (event, toggle)
 		parent_frame = nil
 	end
 
-	if (event.element.name == "logistic-request-manager-gui-button" and event.shift) then
+	if (event.element and event.element.name == "logistic-request-manager-gui-button" and event.shift) then
 		global["screen_location"][player.index] = {85, 65}
 		if master_frame then
 			master_frame.location = {85, 65}
