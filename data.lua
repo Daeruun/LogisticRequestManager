@@ -35,4 +35,15 @@ data:extend(
         mipmap_count = 2,
         scale = 0.5
       },
+
+      -- dummy item for removed items
+      {
+          type = "item",
+          name = "LRM-dummy-item",
+          icon = "__core__/graphics/cancel.png",
+          icon_size = 64,
+          flags = {"hidden", "not-stackable"},
+          subgroup = "other",
+          stack_size = 1          
+      }
 })
