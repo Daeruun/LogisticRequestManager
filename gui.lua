@@ -4,19 +4,28 @@ if not gui then gui = {} end
 
 -- [toggle button]
 
--- main GUI:
--- ------------------------------------------------------------------------------------------------------------
--- - title                          X -  export            X  -  import            X  - preview             X -
--- ------------------------------------------------------------------------------------------------------------
--- - [ textfield - save as ] [S] [BP] - [                   ] - [                   ] - [t-field save as] [S] -
--- - [S][A][X][E][I]                  - [                   ] - [                   ] -                       -
--- ------------------------------------ [      textbox      ] - [      textbox      ] - # # # # # # # # # # I -
--- - presets  - # # # # # # # # # # I - [                   ] - [                   ] - # # # # # # # # # # | -
--- -    .     - # # # # # # # # # # | - [                   ] - [                   ] - # # # # # # # # # # | -
--- -    .     - # # # # # # # # # # | - [                   ] - [                   ] - # # # # # # # # # # | -
--- -    .     - # # # # # # # # # # | - [                   ] - [                   ] - # # # # # # # # # # | -
--- -          - # # # # # # # # # # | -                  [OK] -                  [OK] -                       -
--- ------------------------------------------------------------------------------------------------------------
+-- GUI:
+-- - invisible master frame
+--   - frame
+--     - titlebar 
+--     - [toolbar]
+--     - body
+--       - flow:-> scrollpane, flow: v - request-window
+--                                     - entity-flow
+
+--  main - always shown when open     |optional, toggled by [E]|optional, toggled by [I]  |substitutes import after OK
+-- ----------------------------------------------------------------------------------------------------------------
+-- - title                          X - export                X - import                X - preview             X -
+-- ----------------------------------------------------------------------------------------------------------------
+-- - [t-field] [S+][S][A][E][I][T][BP]-[                       ]-[                       ]- [t-field       ] [S+] -
+-- ------------------------------------[        textbox        ]-[        textbox        ]-------------------------
+-- - presets  -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -    .     -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -    .     -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -    .     -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -          -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -          -Entity [E]             -                     [OK]-                     [OK]-                       -
+-- ----------------------------------------------------------------------------------------------------------------
 
 function gui.destroy(player)
 	local frame_flow = player.gui.screen
@@ -265,10 +274,6 @@ function gui.build_target_menu(player, parent)
 	}
 	target_menu.style.top_margin = 1
 	target_menu.style.left_margin = 5
-	-- target_menu.style.right_margin = 100
-	--parent.style.horizontal_align = "right"
-
-
 
 	local label = target_menu.add {
 		type = "label",
@@ -279,9 +284,7 @@ function gui.build_target_menu(player, parent)
 	local target_slot = target_menu.add {
 		type = "sprite-button",
 		name = lrm.gui.target_slot,
-		style = "inventory_slot",
-
-		locked = true	-- read only flag
+		style = "inventory_slot"
 	}
 
 	gui.set_target(player, target_slot)
@@ -343,8 +346,9 @@ function gui.build_slots(player, preset_slots, parent_to_extend)
 			elem_type = "item",
 			style = lrm.gui.request_slot,
 
-			locked = true	-- read only flag
+			
 		}
+		request.locked = true	-- read only flag
 		
 		local min = request.add {
 			type = "label",
@@ -458,6 +462,12 @@ function gui.build(player)
 end
 
 function gui.force_rebuild(player, open)
+	local button_flow = mod_gui.get_button_flow(player)
+	if button_flow[lrm.gui.toggle_button] then
+		button_flow[lrm.gui.toggle_button].destroy()
+		gui.build_toggle_button(player)
+	end
+
 	local frame_flow = player.gui.screen
 	local master        = frame_flow and frame_flow[lrm.gui.master] or nil
 	local frame         = gui.get_gui_frame(player, lrm.gui.frame)
@@ -536,7 +546,7 @@ function gui.display_preset(player, preset_data, request_window)
 	
 	for i = 1, slots do
 		local item = preset_data and preset_data[i] or nil
-		if item then
+		if item and item.name then
 			-- TODO see if there's a way to detect prototype name changes
 			if game.item_prototypes[item["name"]] then
 				request_table.children[i].elem_value = item["name"]
@@ -553,7 +563,8 @@ function gui.display_preset(player, preset_data, request_window)
 					request_table.children[i].children[2].caption = util.format_number(item["max"], true)
 				end
 			else
-				-- as the table was just created, there is nothing to clear
+				request_table.children[i].elem_value = "LRM-dummy-item"
+				request_table.children[i].tooltip = item.name .. " was removed"
 			end
 		else
 			-- as the table was just created, there is nothing to clear
