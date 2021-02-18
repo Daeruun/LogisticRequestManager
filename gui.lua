@@ -152,28 +152,33 @@ function gui.build_tool_bar(player, gui_frame)
 		type = "sprite-button",
 		name = lrm.gui.save_as_button,
 		style = "shortcut_bar_button_green",
-		sprite = "utility/copy",
+		sprite = "LRM-save-as",
+		-- sprite = "utility/copy",
 		tooltip = {"tooltip.save-as"}
 	}
 	save_as_button.enabled = inventory_open
+	save_as_button.style.padding = 2
 
 	local save_button = gui_toolbar.add {
 		type = "sprite-button",
 		name = lrm.gui.save_button,
 		style = "shortcut_bar_button",
-		sprite = "LRM-copy",
+		sprite = "LRM-save",
+		-- sprite = "LRM-copy",
 		tooltip = {"tooltip.save-preset"},
 	}
 	save_button.enabled = inventory_open
+	save_button.style.padding = 2
 	
 	local load_button = gui_toolbar.add {
 		type = "sprite-button",
 		name = lrm.gui.load_button,
 		style = "shortcut_bar_button",
-		sprite = "LRM-paste",
+		sprite = "LRM-apply",
 		tooltip = {"tooltip.load-preset"}
 	}
 	load_button.enabled = inventory_open
+	load_button.style.padding = 4
 	load_button.style.right_margin = 5
 	
 	-- local empty = gui_toolbar.add {
@@ -189,6 +194,7 @@ function gui.build_tool_bar(player, gui_frame)
 		sprite = "utility/export",
 		tooltip = {"tooltip.export-preset"}
 	}
+	export_button.style.padding = 4
 
 	local import_button = gui_toolbar.add {
 		type = "sprite-button",
@@ -198,6 +204,7 @@ function gui.build_tool_bar(player, gui_frame)
 		tooltip = {"tooltip.import-preset"}
 	}
 	import_button.style.right_margin = 5
+	import_button.style.padding = 4
 
 
 	local delete_button = gui_toolbar.add {
@@ -208,6 +215,7 @@ function gui.build_tool_bar(player, gui_frame)
 		tooltip = {"tooltip.delete-preset"}
 	}
 	delete_button.style.right_margin = 5
+	delete_button.style.padding = 4
 
 	-- local empty = gui_toolbar.add {
 	-- 	type = "empty-widget",
@@ -405,6 +413,10 @@ function gui.set_gui_elements_enabled(player)
 	local target_menu = body_right and body_right[lrm.gui.target_menu]
 	local target_slot = target_menu and target_menu[lrm.gui.target_slot]
 	gui.set_target(player, target_slot)
+
+	if frame.parent and frame.parent.visible then 
+		frame.parent.bring_to_front() 
+	end
 end
 
 function gui.set_gui_element_enabled(gui_element, inventory_open, preset_selected, localized_tooltip)
