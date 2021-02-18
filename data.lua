@@ -15,25 +15,36 @@ data:extend(
 {
     {
         type = "sprite",
-        name = "LRM-paste",
-        filename = "__base__/graphics/icons/shortcut-toolbar/mip/paste-x24.png",
+        name = "LRM-apply",
+        filename = "__LogisticRequestManager__/icons/apply-personal-logistics-x32.png",
         priority = "extra-high-no-scale",
-        width = 24,
-        height = 24,
+        width = 32,
+        height = 32,
         flags = {"gui-icon"},
         mipmap_count = 2,
         scale = 0.5
       },
       {
         type = "sprite",
-        name = "LRM-copy",
-        filename = "__base__/graphics/icons/shortcut-toolbar/mip/copy-x24.png",
+        name = "LRM-save",
+        filename = "__LogisticRequestManager__/icons/save-x48.png",
         priority = "extra-high-no-scale",
-        width = 24,
-        height = 24,
+        width = 48,
+        height = 48,
         flags = {"gui-icon"},
-        mipmap_count = 2,
-        scale = 0.5
+        mipmap_count = 1,
+        -- scale = 0.5
+      },
+      {
+        type = "sprite",
+        name = "LRM-save-as",
+        filename = "__LogisticRequestManager__/icons/save-as-x48.png",
+        priority = "extra-high-no-scale",
+        width = 48,
+        height = 48,
+        flags = {"gui-icon"},
+        mipmap_count = 1,
+        -- scale = 0.5
       },
 
       -- dummy item for removed items
