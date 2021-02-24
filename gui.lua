@@ -313,7 +313,7 @@ function lrm.gui.build_target_menu(player, parent)
 	}
 	load_button.enabled = inventory_open
 	load_button.style.padding = 4
---	load_button.style.right_margin = 5
+	-- load_button.style.right_margin = 5
 	load_button.style.size = {40,40}
 
 	lrm.gui.set_target(player, target_slot)
@@ -610,23 +610,23 @@ function lrm.gui.display_preset(player, preset_data, request_window)
 		local item = preset_data and preset_data[i] or nil
 		if item and item.name then
 			-- TODO see if there's a way to detect prototype name changes
-			if game.item_prototypes[item["name"]] then
-				request_table.children[i].elem_value = item["name"]
-				if ( item["min"] > 0 ) then
-					request_table.children[i].children[1].caption = util.format_number(item["min"], true)
+			if game.item_prototypes[item.name] then
+				request_table.children[i].elem_value = item.name
+				if ( item.min > 0 ) then
+					request_table.children[i].children[1].caption = util.format_number(item.min, true)
 				else
 					-- as the table was just created and no min required leave the field empty
 				end
-				if ( item["max"] == 0xFFFFFFFF ) then
+				if ( item.max == 0xFFFFFFFF ) then
 					request_table.children[i].children[2].style = lrm.defines.gui.request_infinit
 					request_table.children[i].children[2].caption = "∞"
 				else
 					request_table.children[i].children[2].style = lrm.defines.gui.request_max
-					request_table.children[i].children[2].caption = util.format_number(item["max"], true)
+					request_table.children[i].children[2].caption = util.format_number(item.max, true)
 				end
 			else
 				request_table.children[i].elem_value = "LRM-dummy-item"
-				request_table.children[i].tooltip = item.name .. " was removed"
+				request_table.children[i].tooltip = {"tooltip.missing-item", item.name}
 			end
 		else
 			-- as the table was just created, there is nothing to clear
