@@ -204,7 +204,7 @@ function lrm.request_manager.import_preset(player)
 
 	local decoded_string = game.decode_string(encoded_string)
 	if decoded_string == nil then
-		player.print({"messages.error_invalid_string"})
+		player.print({"messages.error-invalid-string"})
 	else
 		local preset_data = game.json_to_table(decoded_string)
 		return preset_data
