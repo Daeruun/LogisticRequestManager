@@ -192,7 +192,7 @@ script.on_configuration_changed(function(event)
 				local item = preset_data[i]
 				if item.name then
 					if game.item_prototypes[item.name] == nil then
-						player.print ("LRM Item \"" .. item.name .. "\", listed in preset " .. serpent.line(global["preset-names"][player.index][preset_index]) .. " seems to be gone.")
+						player.print ({"messages.error-item-removed", item.name, serpent.line(global["preset-names"][player.index][preset_index])} )
 					end
 				end
 			end
@@ -205,6 +205,24 @@ script.on_configuration_changed(function(event)
 			lrm.select_preset(player, global["presets-selected"][player.index])
 		end
 
+		if ( event.mod_changes 
+		 	and event.mod_changes.LogisticRequestManager 
+		 	and event.mod_changes.LogisticRequestManager.old_version )
+		 then
+			local old_version = util.split (event.mod_changes.LogisticRequestManager.old_version, ".") or nil
+			local new_version = {1,1,7}
+			if old_version then 
+				local print_version_hint = false
+				for index, value in pairs(old_version) do
+					if tonumber(value) < new_version[index] then print_version_hint = true end
+				end
+				
+				if print_version_hint then 
+					player.print({"messages.new-gui-new-feature-export-import"})
+				end
+			end
+
+		end
 	end
 end)
 
