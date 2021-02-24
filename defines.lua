@@ -25,7 +25,7 @@ lrm.defines.gui = {
 	body_right                  = lrm.defines.guiprefix .. "body_right",
 	
 	sidebar                     = lrm.defines.guiprefix .. "sidebar",
-	sidebar_button               = lrm.defines.guiprefix .. "sidebar-button",
+	sidebar_button              = lrm.defines.guiprefix .. "sidebar-button",
 	save_button                 = lrm.defines.guiprefix .. "save-button",
 	load_button                 = lrm.defines.guiprefix .. "load-button",
 	delete_button               = lrm.defines.guiprefix .. "delete-button",
