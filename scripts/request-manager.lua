@@ -1,11 +1,11 @@
-if not request_manager then request_manager = {} end
+if not lrm.request_manager then lrm.request_manager = {} end
 
-function request_manager.request_blueprint(player)
+function lrm.request_manager.request_blueprint(player)
 	if not (player.is_cursor_blueprint()) then 
 		return nil 
 	end
 
-	local entity = get_inventory_entity(player, {"messages.target-entity"}, {"messages.append"}, {"messages.blueprint"})
+	local entity = lrm.blueprint_requests.get_inventory_entity(player, {"messages.target-entity"}, {"messages.append"}, {"messages.blueprint"})
 	if not (entity and entity.valid) then
 		return nil
 	end
@@ -68,7 +68,7 @@ function request_manager.request_blueprint(player)
 	end
 end
 
-function request_manager.apply_preset(preset_data, entity)
+function lrm.request_manager.apply_preset(preset_data, entity)
 	local logistic_point = entity.get_logistic_point(defines.logistic_member_index.character_requester)
 	if (	not (logistic_point.mode == defines.logistic_mode.requester ) 			-- no requester
 		and not (logistic_point.mode == defines.logistic_mode.buffer ) 	) then		-- no buffer
@@ -76,6 +76,7 @@ function request_manager.apply_preset(preset_data, entity)
 	end
 	
 	logistic_point = entity.get_logistic_point(defines.logistic_member_index.character_provider)
+	local set_slot = nil
 	if not (logistic_point) then 						-- no auto-trash
 		set_slot = entity.set_request_slot
 	else
@@ -118,8 +119,8 @@ function request_manager.apply_preset(preset_data, entity)
 	end
 end
 
-function request_manager.save_preset(player, preset_number, preset_name)
-	local entity = get_inventory_entity(player, {"messages.source-entity"}, {"messages.save"}, {"messages.preset"})
+function lrm.request_manager.save_preset(player, preset_number, preset_name)
+	local entity = lrm.blueprint_requests.get_inventory_entity(player, {"messages.source-entity"}, {"messages.save"}, {"messages.preset"})
 	if not (entity and entity.valid) then
 		return nil
 	end
@@ -177,26 +178,26 @@ function request_manager.save_preset(player, preset_number, preset_name)
 	return preset_number
 end
 
-function request_manager.load_preset(player, preset_number)
+function lrm.request_manager.load_preset(player, preset_number)
 	local player_presets = global["preset-data"][player.index]
 	local preset = player_presets[preset_number]
 	if not preset then return end
 	
-	local entity = get_inventory_entity(player, {"messages.target-entity"}, {"messages.load"}, {"messages.preset"})
+	local entity = lrm.blueprint_requests.get_inventory_entity(player, {"messages.target-entity"}, {"messages.load"}, {"messages.preset"})
 	if entity and entity.valid then
-		request_manager.apply_preset(preset, entity)
+		lrm.request_manager.apply_preset(preset, entity)
 	else
 		return nil
 	end
 end
 
-function request_manager.delete_preset(player, preset_number)
+function lrm.request_manager.delete_preset(player, preset_number)
 	global["preset-names"][player.index][preset_number] = nil
 	global["preset-data"][player.index][preset_number] = nil
 end
 
-function request_manager.import_preset(player)
-	local encoded_string = gui.get_import_string(player)
+function lrm.request_manager.import_preset(player)
+	local encoded_string = lrm.gui.get_import_string(player)
 	if not (encoded_string) or encoded_string == "" then
 		return
 	end
@@ -210,8 +211,8 @@ function request_manager.import_preset(player)
 	end
 end
 
-function request_manager.save_imported_preset(player, preset_name)
-	local preset_data = request_manager.import_preset(player)
+function lrm.request_manager.save_imported_preset(player, preset_name)
+	local preset_data = lrm.request_manager.import_preset(player)
 	local last_slot = table_size (preset_data)
 	
 	if (preset_data[last_slot].LRM_preset_name) then
@@ -232,7 +233,7 @@ function request_manager.save_imported_preset(player, preset_name)
 	return preset_number
 end
 
-function request_manager.export_preset(player, preset_number, coded)
+function lrm.request_manager.export_preset(player, preset_number, coded)
 	local preset_table = {}
 
 	local preset_name = global["preset-names"][player.index][preset_number]
