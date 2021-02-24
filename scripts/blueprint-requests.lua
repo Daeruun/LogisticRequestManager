@@ -1,4 +1,6 @@
-function get_inventory_entity(player, ent_text, action_txt, subject_txt)
+if not lrm.blueprint_requests then lrm.blueprint_requests = {} end
+
+function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_txt, subject_txt)
 	local entity = global["inventories-open"][player.index]
 
 	if not (entity) then
@@ -28,7 +30,7 @@ function get_inventory_entity(player, ent_text, action_txt, subject_txt)
 	return entity
 end
 
-function get_event_entities(event)
+function lrm.blueprint_requests.get_event_entities(event)
 	local player = game.players[event.player_index]
 	local entity = nil
 	
@@ -47,11 +49,15 @@ function get_event_entities(event)
 	return player, entity
 end
 
-function on_tick()
+function lrm.blueprint_requests.on_tick()
 	local inventories = global["inventories-open"] or {}
-	
+	local bring_to_front = global["bring_to_front"] or {}
+	if table_size(bring_to_front) > 0 then 
+		lrm.gui.bring_to_front()
+	end
+
 	if table_size(inventories) == 0 then
-		unregister_on_tick()
+		lrm.blueprint_requests.unregister_on_tick()
 		return
 	end
 	
@@ -66,50 +72,52 @@ function on_tick()
 		-- 	local request = inventory.get_request_slot(slot)
 		-- 	if request and (request.name == "blueprint" or request.name == "blueprint-book") then
 		-- 		inventory.clear_request_slot(slot)
-		-- 		request_manager.request_blueprint(player, inventory)
+		-- 		lrm.request_manager.request_blueprint(player, inventory)
 		-- 	end
 		-- end
 	end
 end
 
-function register_on_tick()
+function lrm.blueprint_requests.register_on_tick()
 	global.on_tick = true
-	script.on_event(defines.events.on_tick, on_tick)
+	script.on_event(defines.events.on_tick, lrm.blueprint_requests.on_tick)
 end
 
-function unregister_on_tick()
+function lrm.blueprint_requests.unregister_on_tick()
 	global.on_tick = false
 	script.on_event(defines.events.on_tick, nil)
 end
 
-function check_on_tick()
+function lrm.blueprint_requests.check_on_tick()
 	if global.on_tick and table_size(global["inventories-open"]) == 0 then
-		unregister_on_tick()
+		lrm.blueprint_requests.unregister_on_tick()
 	end
 end
 
 script.on_event(defines.events.on_gui_opened, function(event)
-	local player, inventory = get_event_entities(event)
+	local player, inventory = lrm.blueprint_requests.get_event_entities(event)
 	
 	if not (player and inventory) then return end
 	
 	global["inventories-open"][player.index] = inventory
-	gui.set_gui_elements_enabled(player)
+	global["bring_to_front"][player.index]	 = 2
+	lrm.gui.set_gui_elements_enabled(player)
 	
-	register_on_tick()
+	lrm.blueprint_requests.register_on_tick()
 end)
 
 script.on_event(defines.events.on_gui_closed, function(event)
-	local player = get_event_entities(event)
-	if not player then return end
+	local player, inventory = lrm.blueprint_requests.get_event_entities(event)
+	if not (player and inventory) then return end
 	global["inventories-open"][player.index] = nil
-	gui.set_gui_elements_enabled(player)
+	global["bring_to_front"][player.index]	 = nil
+	lrm.gui.set_gui_elements_enabled(player)
 	
-	check_on_tick()
+	lrm.blueprint_requests.check_on_tick()
 end)
 
 script.on_load(function()
 	if global.on_tick then
-		register_on_tick()
+		lrm.blueprint_requests.register_on_tick()
 	end
 end)
