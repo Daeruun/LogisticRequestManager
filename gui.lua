@@ -783,9 +783,11 @@ function lrm.gui.build_import_preview_frame (player)
 		-- style = "tool_button_green",
 		style = "shortcut_bar_button",
 		-- style = "shortcut_bar_button_green",
-		sprite = "utility/copy",
+		sprite = "LRM-save-as",
+		-- sprite = "utility/copy",
 		tooltip = {"tooltip.save-as"}
 	}
+	save_as_button.style.padding = 2
 
 	local request_window = gui_frame.add {
 		type = "scroll-pane",
