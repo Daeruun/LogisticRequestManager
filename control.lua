@@ -192,7 +192,7 @@ script.on_configuration_changed(function(event)
 				local item = preset_data[i]
 				if item.name then
 					if game.item_prototypes[item.name] == nil then
-						player.print ({"messages.error-item-removed", item.name, serpent.line(global["preset-names"][player.index][preset_index])} )
+						lrm.message (player, {"messages.error-item-removed", item.name, serpent.line(global["preset-names"][player.index][preset_index])} )
 					end
 				end
 			end
@@ -218,7 +218,7 @@ script.on_configuration_changed(function(event)
 				end
 				
 				if print_version_hint then 
-					player.print({"messages.new-gui-new-feature-export-import"})
+					lrm.message( player, {"", {"messages.new-feature-export-import"}," [color=yellow]", {"messages.new-gui"}, "[/color] ", {"messages.new-how-to"} })
 				end
 			end
 
@@ -298,3 +298,18 @@ function lrm.close_or_toggle (event, toggle)
 	end
 end
 
+function lrm.message (player, localized_string)
+	if not ( player and localized_string ) then 
+		return
+	end
+
+	player.print ({"", "[color=yellow][LRM][/color] ", localized_string})
+end
+
+function lrm.error (player, localized_string)
+	if not ( player and localized_string ) then 
+		return
+	end
+
+	player.print ({"", "[color=red][LRM][/color] ", {"messages.Error"}, ": ", localized_string})
+end
