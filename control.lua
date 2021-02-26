@@ -44,7 +44,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 		if not parent_frame then return end
 		local preset_name = lrm.gui.get_save_as_name(player, parent_frame)
 		if not preset_name or preset_name == "" then
-			player.print({"messages.name-needed"})
+			lrm.message(player, {"messages.name-needed"})
 		else
 			local new_preset = nil
 			if parent_frame.name == lrm.defines.gui.frame then
@@ -67,7 +67,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 	elseif gui_clicked == lrm.defines.gui.save_button then
 		local preset_selected = global["presets-selected"][player.index]
 		if preset_selected == 0 then
-			player.print({"messages.select-preset", {"messages.save"}})
+			lrm.message(player, {"messages.select-preset", {"messages.save"}})
 		else
 			lrm.request_manager.save_preset(player, preset_selected)
 			lrm.select_preset(player, preset_selected)
@@ -76,7 +76,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 	elseif gui_clicked == lrm.defines.gui.load_button then
 		local preset_selected = global["presets-selected"][player.index]
 		if preset_selected == 0 then
-			player.print({"messages.select-preset", {"messages.load"}})
+			lrm.message(player, {"messages.select-preset", {"messages.load"}})
 		else
 			lrm.request_manager.load_preset(player, preset_selected)
 		end
@@ -84,7 +84,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 	elseif gui_clicked == lrm.defines.gui.delete_button then
 		local preset_selected = global["presets-selected"][player.index]
 		if preset_selected == 0 then
-			player.print({"messages.select-preset", {"messages.delete"}})
+			lrm.message(player, {"messages.select-preset", {"messages.delete"}})
 		else
 			lrm.request_manager.delete_preset(player, preset_selected)
 			lrm.gui.delete_preset(player, preset_selected)
@@ -109,7 +109,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 		else
 			local preset_selected = global["presets-selected"][player.index]
 			if preset_selected == 0 then
-				player.print({"messages.select-preset", {"messages.export"}})
+				lrm.message(player, {"messages.select-preset", {"messages.export"}})
 			else
 				local encoded_string = lrm.request_manager.export_preset(player, preset_selected, coded)
 				if encoded_string and not (encoded_string == "")  then
@@ -157,7 +157,6 @@ script.on_event(defines.events.on_player_created, function(event)
 	if not (player and player.valid) then return end
 	
 	lrm.globals.init_player(player)
-	player.print(on_player_created)
 	local request_data = {}
 	for i = 1, 40 do
 		request_data[i] = { nil }
@@ -173,7 +172,6 @@ script.on_init(function()
 	lrm.globals.init()
 
 	for _, player in pairs(game.players) do
-		player.print(on_init)
 		lrm.globals.init_player(player)
 		if (player.force.technologies["logistic-robotics"]["researched"]) then
 			lrm.gui.build(player)
