@@ -8,7 +8,7 @@ function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_tx
 			return player.character
 		else
 			if (ent_text and action_txt and subject_txt) then
-				player.print ({"messages.no-request-entity-selected", ent_text, action_txt, subject_txt})
+				lrm.error(player, {"messages.no-request-entity-selected", ent_text, action_txt, subject_txt})
 			end
 			return nil
 		end
@@ -22,7 +22,7 @@ function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_tx
 			return player.character
 		else
 			if (ent_text and action_txt and subject_txt) then
-				player.print ({"messages.open-entity-does-not-support-requests", entity.localised_name })
+				lrm.error(player, {"messages.open-entity-does-not-support-requests", entity.localised_name})
 			end
 			return nil
 		end
