@@ -199,16 +199,17 @@ end
 function lrm.request_manager.import_preset(player)
 	local encoded_string = lrm.gui.get_import_string(player)
 	if not (encoded_string) or encoded_string == "" then
-		return
+		return nil
 	end
 
 	local decoded_string = game.decode_string(encoded_string)
-	if decoded_string == nil then
-		player.print({"messages.error-invalid-string"})
-	else
+	if decoded_string and (decoded_string ~= "") then
 		local preset_data = game.json_to_table(decoded_string)
-		return preset_data
+		if preset_data and (next(preset_data) ~= nil) then
+			return preset_data
+		end
 	end
+	lrm.error(player, {"messages.error-invalid-string"})
 end
 
 function lrm.request_manager.save_imported_preset(player, preset_name)
@@ -251,7 +252,7 @@ function lrm.request_manager.export_preset(player, preset_number, coded)
 		end
 	end
 
-	table.insert(preset_table, {LRM_preset_name = preset_name[1] or preset_name})
+	table.insert(preset_table, {LRM_preset_version = 1, LRM_preset_name = preset_name[1] or preset_name})
 	local jsoned_table   = game.table_to_json(preset_table)
 	local encoded_string = game.encode_string(jsoned_table)
 
