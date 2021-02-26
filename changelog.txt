@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.7
+Date: 26.2.2021
+  Features:
+    - gui reworked
+      => buttons use sprites now (I'd love to get some feedback on the new GUI)
+    - presets can be exported and imported
+---------------------------------------------------------------------------------------------------
 Version: 1.1.6
 Date: 07.02.2020
   Bugfixes:
@@ -54,6 +61,13 @@ Date: 28.11.2020
     - updated GUI:
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
+---------------------------------------------------------------------------------------------------
+Version: 0.18.4
+Date: 26.2.2021
+  Features:
+    - gui reworked
+      => buttons use sprites now (I'd love to get some feedback on the GUI)
+    - presets can be exported and imported
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.3
 Date: 07.02.2021

@@ -1,67 +1,78 @@
 default_gui = data.raw["gui-style"].default
 
-default_gui[lrm.gui.frame] = {
+default_gui[lrm.defines.gui.frame] = {
 	type = "frame_style",
 	parent = "inner_frame_in_outer_frame",
 	maximal_width = 800,
 	maximal_height = 700
 }
 
-default_gui[lrm.gui.save_as_textfield] = {
+default_gui[lrm.defines.gui.title_flow] = {
+	type = "horizontal_flow_style",
+	horizontally_stretchable = "on",
+	horizontal_spacing = 8,
+	right_margin = 4		
+}
+default_gui[lrm.defines.gui.title_frame] = {
+	type = "frame_style",
+	parent = "invisible_frame",
+}
+default_gui[lrm.defines.gui.close_button] = {
+	type = "button_style",
+	parent = "frame_action_button",
+	font = "lrm.infinit",
+	default_font_color = {255,255,255}
+}
+
+default_gui[lrm.defines.gui.save_as_textfield] = {
 	type = "textbox_style",
 	parent = "stretchable_textfield"
 }
 
-default_gui[lrm.gui.save_as_button] = {
+
+default_gui[lrm.defines.gui.save_as_button] = {
 	type = "button_style",
 	parent = "button",
 	minimal_width = 40,
 }
 
-default_gui[lrm.gui.blueprint_button] = {
+default_gui[lrm.defines.gui.blueprint_button] = {
 	type = "button_style",
-	parent = "slot_button"
+	parent = "slot_button",
+	padding = 1,
 }
 
-default_gui[lrm.gui.sidebar] = {
-	type = "vertical_flow_style",
-	vertical_spacing = 5,
-	minimal_height = 32,
-	horizontally_stretchable = "on"
-}
-
-default_gui[lrm.gui.sidebar_button] = {
+default_gui[lrm.defines.gui.sidebar_button] = {
 	type = "button_style",
 	parent = "button",
-	minimal_width = 55,
-	maximal_width = 114,
+	width = 114,
 	horizontally_stretchable = "on"
 }
 
-default_gui[lrm.gui.preset_list] = {
+default_gui[lrm.defines.gui.preset_list] = {
 	type = "scroll_pane_style",
 	parent = "scroll_pane",
+	width = 150,
 	vertically_stretchable = "on",
 	horizontally_stretchable = "on"
 }
 
-default_gui[lrm.gui.preset_button] = {
+default_gui[lrm.defines.gui.preset_button] = {
 	type = "button_style",
 	parent = "button",
 	horizontally_stretchable = "on",
 	horizontally_squashable = "on"
 }
 
-default_gui[lrm.gui.preset_button_selected] = {
+default_gui[lrm.defines.gui.preset_button_selected] = {
 	type = "button_style",
-	parent = lrm.gui.preset_button,
+	parent = lrm.defines.gui.preset_button,
 	default_graphical_set = {base = {position = {34, 17}, corner_size = 8}},
 	hovered_graphical_set = {base = {position = {34, 17}, corner_size = 8}},
 	clicked_graphical_set = {base = {position = {34, 17}, corner_size = 8}},
-	horizontally_stretchable = "on"
 }
 
-default_gui[lrm.gui.request_window] = {
+default_gui[lrm.defines.gui.request_window] = {
 	type = "scroll_pane_style",
 	parent = "scroll_pane",
 	width = 420,
@@ -70,12 +81,11 @@ default_gui[lrm.gui.request_window] = {
 	maximal_height = 208,
 	margin = 0,
 	padding = 0,
---	extra_padding_when_activated = 0
---	vertically_stretchable = "off",
+	vertical_align = "bottom",
 	vertically_squashable = "off"
 }
 
-default_gui[lrm.gui.request_table] = {
+default_gui[lrm.defines.gui.request_table] = {
 	type = "table_style",
 	parent = "table",
 	vertical_spacing = 0,
@@ -84,12 +94,12 @@ default_gui[lrm.gui.request_table] = {
 	padding = 0
 }
 
-default_gui[lrm.gui.request_slot] = {
+default_gui[lrm.defines.gui.request_slot] = {
 	type = "button_style",
 	parent = "slot_button"
 }
 
-default_gui[lrm.gui.request_min] = {
+default_gui[lrm.defines.gui.request_min] = {
 	type = "label_style",
 	parent = "count_label",
 	width = 36,
@@ -101,7 +111,7 @@ default_gui[lrm.gui.request_min] = {
 	vertical_align = "bottom"
 }
 
-default_gui[lrm.gui.request_max] = {
+default_gui[lrm.defines.gui.request_max] = {
 	type = "label_style",
 	parent = "count_label",
 	width = 36,
@@ -123,7 +133,7 @@ data:extend(
   }
 )
 
-default_gui[lrm.gui.request_infinit] = {
+default_gui[lrm.defines.gui.request_infinit] = {
 	type = "label_style",
 	parent = "count_label",
 	font = "lrm.infinit",
@@ -134,4 +144,38 @@ default_gui[lrm.gui.request_infinit] = {
 	bottom_padding = -4,
 	horizontal_align = "right",
 	vertical_align = "bottom"
+}
+
+default_gui[lrm.defines.gui.export_frame] = {
+	type = "frame_style",
+	parent = "inner_frame_in_outer_frame",
+	direction = "vertical",
+	width = 424,
+	heigth = 338,
+	vertically_stretchable = "on",
+}
+
+default_gui[lrm.defines.gui.code_textbox] = {
+ 	type = "textbox_style",
+ 	minimal_width = 400,
+ 	minimal_height = 250,
+ 	maximal_width = 400,
+ 	maximal_height = 250,
+}
+
+default_gui[lrm.defines.gui.import_frame] = {
+	type = "frame_style",
+	parent = "inner_frame_in_outer_frame",
+	direction = "vertical",
+	width = 424,
+	heigth = 338,
+	vertically_stretchable = "on",
+}
+default_gui[lrm.defines.gui.import_preview_frame] = { 
+	type = "frame_style",
+	parent = "inner_frame_in_outer_frame",
+	direction = "vertical",
+	minimal_width = 424,
+	minimal_heigth = 30,
+	vertically_stretchable = "on",
 }
