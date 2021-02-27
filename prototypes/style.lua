@@ -20,8 +20,8 @@ default_gui[lrm.defines.gui.title_frame] = {
 default_gui[lrm.defines.gui.close_button] = {
 	type = "button_style",
 	parent = "frame_action_button",
-	font = "lrm.infinit",
-	default_font_color = {255,255,255}
+	-- font = "lrm.infinit",
+	-- default_font_color = {255,255,255}
 }
 
 default_gui[lrm.defines.gui.save_as_textfield] = {
@@ -157,9 +157,9 @@ default_gui[lrm.defines.gui.export_frame] = {
 
 default_gui[lrm.defines.gui.code_textbox] = {
  	type = "textbox_style",
- 	minimal_width = 400,
+ 	minimal_width = 420,
  	minimal_height = 250,
- 	maximal_width = 400,
+ 	maximal_width = 420,
  	maximal_height = 250,
 }
 

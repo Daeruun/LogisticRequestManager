@@ -255,6 +255,7 @@ function lrm.request_manager.import_preset(player)
 		end
 	end
 	lrm.error(player, {"messages.error-invalid-string"})
+	return nil
 end
 
 function lrm.request_manager.save_imported_preset(player, preset_name)

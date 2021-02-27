@@ -57,6 +57,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 				end
 			end
 			if not (new_preset) then return end
+			lrm.gui.clear_save_as_name(player, parent_frame)
 			lrm.gui.build_preset_list(player)
 			lrm.select_preset(player, new_preset)
 		end
@@ -92,11 +93,13 @@ script.on_event(defines.events.on_gui_click, function(event)
 		end
 	
 	elseif gui_clicked == lrm.defines.gui.import_button then
-		local frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.import_frame)
-		if frame and frame.visible then
+		local i_frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.import_frame) 
+		local p_frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.import_preview_frame)
+		if i_frame and i_frame.visible or p_frame and p_frame.visible then
 			lrm.gui.hide_frame(player, lrm.defines.gui.import_frame)
 			lrm.gui.hide_frame(player, lrm.defines.gui.import_preview_frame)
 		else	
+			lrm.gui.hide_frame(player, lrm.defines.gui.export_frame)
 			lrm.gui.show_frame(player, lrm.defines.gui.import_frame)
 		end
 
@@ -113,6 +116,8 @@ script.on_event(defines.events.on_gui_click, function(event)
 			else
 				local encoded_string = lrm.request_manager.export_preset(player, preset_selected, coded)
 				if encoded_string and not (encoded_string == "")  then
+					lrm.gui.hide_frame(player, lrm.defines.gui.import_frame)
+					lrm.gui.hide_frame(player, lrm.defines.gui.import_preview_frame)
 					lrm.gui.display_export_code(player, encoded_string)
 				end
 			end
@@ -125,8 +130,10 @@ script.on_event(defines.events.on_gui_click, function(event)
 			lrm.gui.hide_frame(player, lrm.defines.gui.export_frame)
 		elseif parent_frame and parent_frame.name == lrm.defines.gui.import_frame then
 			local preset_data = lrm.request_manager.import_preset(player)
-			lrm.gui.show_imported_preset(player, preset_data)
-			lrm.gui.hide_frame(player, lrm.defines.gui.import_frame)
+			if preset_data then
+				lrm.gui.show_imported_preset(player, preset_data)
+				lrm.gui.hide_frame(player, lrm.defines.gui.import_frame)
+			end
 		end
 
 	else

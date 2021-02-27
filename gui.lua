@@ -122,7 +122,7 @@ function lrm.gui.build_title_bar(player, gui_frame, localized_title)
 		type = "sprite-button",
 		name = lrm.defines.gui.close_button,
 		style = lrm.defines.gui.close_button,
-		sprite = "utility/close_white"	-- hover & clicked ?!?
+		sprite = "utility/close_white"
 	}
 end
 
@@ -423,10 +423,12 @@ function lrm.gui.set_gui_elements_enabled(player)
 	local blueprint_button 	= toolbar and toolbar[lrm.defines.gui.blueprint_button] or nil
 	lrm.gui.set_gui_element_enabled ( save_as_textfield, inventory_open,			 nil, {"tooltip.save-as-textfield"} )
 
+	local entity_icon = open_entity and "[img=entity." .. open_entity.name .. "]" or ""
+
 	if open_entity then
-		lrm.gui.set_gui_element_enabled ( load_button, 		 inventory_open, preset_selected, {"tooltip.load-preset","[img=entity." .. open_entity.name .. "]"} )
-		lrm.gui.set_gui_element_enabled ( save_as_button, 	 inventory_open,			 nil, {"tooltip.save-as","[img=entity." .. open_entity.name .. "]"} )
-		lrm.gui.set_gui_element_enabled ( save_button, 		 inventory_open, preset_selected, {"tooltip.save-preset", preset_name, "[img=entity." .. open_entity.name .. "]"} )
+		lrm.gui.set_gui_element_enabled ( load_button, 		 inventory_open, preset_selected, {"tooltip.load-preset", entity_icon} )
+		lrm.gui.set_gui_element_enabled ( save_as_button, 	 inventory_open,			 nil, {"tooltip.save-as", entity_icon} )
+		lrm.gui.set_gui_element_enabled ( save_button, 		 inventory_open, preset_selected, {"tooltip.save-preset", preset_name, entity_icon} )
 	else
 		lrm.gui.set_gui_element_enabled ( save_as_button, 	 inventory_open,			 nil, {"tooltip.save-as"} )
 		lrm.gui.set_gui_element_enabled ( save_button, 		 inventory_open, preset_selected, {"tooltip.save-preset"} )
@@ -435,7 +437,7 @@ function lrm.gui.set_gui_elements_enabled(player)
 	lrm.gui.set_gui_element_enabled ( delete_button,				nil, preset_selected, {"tooltip.delete-preset", preset_name} )
 	lrm.gui.set_gui_element_enabled ( export_button,		  		nil, preset_selected, {"tooltip.export-preset", preset_name} )
 
-	lrm.gui.set_gui_element_enabled ( blueprint_button,  inventory_open,			 nil, {"tooltip.blueprint-request", preset_name} )
+	lrm.gui.set_gui_element_enabled ( blueprint_button,  inventory_open,			 nil, {"tooltip.blueprint-request", entity_icon} )
 
 	local body	      = frame and frame[lrm.defines.gui.body]
 	local body_right  = body and body[lrm.defines.gui.body_right]
@@ -445,7 +447,7 @@ function lrm.gui.set_gui_elements_enabled(player)
 	lrm.gui.set_target(player, target_slot)
 
 	if open_entity then
-		lrm.gui.set_gui_element_enabled ( load_button, 		 inventory_open, preset_selected, {"tooltip.load-preset", preset_name,"[img=entity." .. open_entity.name .. "]"} )
+		lrm.gui.set_gui_element_enabled ( load_button, 		 inventory_open, preset_selected, {"tooltip.load-preset", preset_name, entity_icon} )
 	else
 		lrm.gui.set_gui_element_enabled ( load_button, 		 inventory_open, preset_selected, {"tooltip.load-preset"} )
 	end
@@ -564,6 +566,13 @@ function lrm.gui.get_save_as_name(player, parent_frame)
 	local textfield = toolbar and toolbar[lrm.defines.gui.save_as_textfield]
 
 	return textfield and textfield.text
+end
+function lrm.gui.clear_save_as_name(player, parent_frame)
+	--local frame =  lrm.gui.get_gui_frame (player, parent_frame)
+	local toolbar = parent_frame and parent_frame[lrm.defines.gui.toolbar]
+	local textfield = toolbar and toolbar[lrm.defines.gui.save_as_textfield]
+
+	textfield.text=""
 end
 
 function lrm.gui.select_preset(player, preset_selected)
@@ -685,6 +694,7 @@ function lrm.gui.build_code_frame(player, frame_name, localized_frame_title, exp
 		direction = "vertical",
 	}
 	code_frame.visible = false
+	code_frame.style.width = 444
 
 	lrm.gui.build_title_bar(player, code_frame, localized_frame_title)
 
@@ -702,7 +712,7 @@ function lrm.gui.build_code_frame(player, frame_name, localized_frame_title, exp
 		name = lrm.defines.gui.toolbar,
 		direction = "horizontal"
 	}
-	gui_toolbar.style.width = 400
+	--gui_toolbar.style.width = 400
 	gui_toolbar.style.vertical_align = "bottom"
 	-- manually align buttons with request_window (bottom)
 	gui_toolbar.style.height = 43
@@ -787,7 +797,7 @@ function lrm.gui.build_import_preview_frame (player)
 		-- style = "shortcut_bar_button_green",
 		sprite = "LRM-save-as",
 		-- sprite = "utility/copy",
-		tooltip = {"tooltip.save-as"}
+		tooltip = {"tooltip.save-as", {"tooltip.imported-string"}}
 	}
 	save_as_button.style.padding = 2
 
