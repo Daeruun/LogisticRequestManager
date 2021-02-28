@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.8
+Date: 28.2.2021
+  Bugfixes:
+    - fixed crash on opening some entity if required research not yet completed / gui was not created for any reason
+---------------------------------------------------------------------------------------------------
 Version: 1.1.7
 Date: 28.2.2021
   Features:
@@ -61,6 +66,11 @@ Date: 28.11.2020
     - updated GUI:
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
+---------------------------------------------------------------------------------------------------
+Version: 0.18.5
+Date: 28.2.2021
+  Bugfixes:
+    - fixed crash on opening some entity if required research not yet completed / gui was not created for any reason
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.4
 Date: 28.2.2021

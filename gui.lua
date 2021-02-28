@@ -329,6 +329,8 @@ function lrm.gui.build_preset_list(player, gui_body_flow)
 		gui_body_flow		= frame and frame[lrm.defines.gui.body] or nil
 	end
 
+	if not gui_body_flow then return end
+
 	local preset_list = gui_body_flow[lrm.defines.gui.preset_list] or gui_body_flow.add {
 		type = "scroll-pane",
 		name = lrm.defines.gui.preset_list,
@@ -459,7 +461,7 @@ function lrm.gui.bring_to_front()
 		local player = game.players[index] or nil
 		if player then
 			local frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.frame)
-			if frame.parent and frame.parent.visible then 
+			if frame and frame.parent and frame.parent.visible then 
 				frame.parent.bring_to_front()
 				if count > 1 then
 					count = count - 1
@@ -468,6 +470,8 @@ function lrm.gui.bring_to_front()
 				end
 				
 				global["bring_to_front"][player.index] = count
+			else
+				global["bring_to_front"][player.index] = nil
 			end
 		end
 	end
