@@ -572,7 +572,7 @@ function lrm.gui.clear_save_as_name(player, parent_frame)
 	local toolbar = parent_frame and parent_frame[lrm.defines.gui.toolbar]
 	local textfield = toolbar and toolbar[lrm.defines.gui.save_as_textfield]
 
-	textfield.text=""
+	if textfield then textfield.text="" end
 end
 
 function lrm.gui.select_preset(player, preset_selected)
@@ -755,6 +755,12 @@ function lrm.gui.get_import_string(player)
 	local code_textbox	= frame and frame[lrm.defines.gui.code_textbox] or nil
 
 	return (code_textbox and code_textbox.text)
+end
+function lrm.gui.clear_import_string(player)
+	local frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.import_frame)
+	local code_textbox	= frame and frame[lrm.defines.gui.code_textbox] or nil
+
+	if code_textbox then code_textbox.text="" end
 end
 
 function lrm.gui.build_import_preview_frame (player)

@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.7
-Date: 26.2.2021
+Date: 28.2.2021
   Features:
     - gui reworked
       => buttons use sprites now (I'd love to get some feedback on the new GUI)
@@ -63,7 +63,7 @@ Date: 28.11.2020
       * reduced jumping of frames
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.4
-Date: 26.2.2021
+Date: 28.2.2021
   Features:
     - gui reworked
       => buttons use sprites now (I'd love to get some feedback on the GUI)

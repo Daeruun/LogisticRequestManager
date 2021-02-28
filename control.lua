@@ -99,6 +99,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 			lrm.gui.hide_frame(player, lrm.defines.gui.import_frame)
 			lrm.gui.hide_frame(player, lrm.defines.gui.import_preview_frame)
 		else	
+			lrm.gui.clear_import_string(player)
 			lrm.gui.hide_frame(player, lrm.defines.gui.export_frame)
 			lrm.gui.show_frame(player, lrm.defines.gui.import_frame)
 		end
