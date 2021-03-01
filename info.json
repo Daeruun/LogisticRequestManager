@@ -9,5 +9,9 @@
   "description": "Allows you to save and switch between custom logistic request presets, as well as request blueprints. (based on the works of Goalie)",
   "dependencies": [
     "base >= 0.18.13"
-  ]
+  ],
+
+  "package": {
+    "ignore": ["man/**"]
+  }
 }
