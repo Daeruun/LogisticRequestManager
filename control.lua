@@ -216,7 +216,7 @@ script.on_configuration_changed(function(event)
 		 	and event.mod_changes.LogisticRequestManager.old_version )
 		 then
 			local old_version = util.split (event.mod_changes.LogisticRequestManager.old_version, ".") or nil
-			local new_version = {1,1,7}
+			local new_version = {0,18,4}
 			if old_version then 
 				local print_version_hint = false
 				for index, value in pairs(old_version) do
