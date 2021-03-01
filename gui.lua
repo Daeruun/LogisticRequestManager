@@ -342,10 +342,6 @@ function lrm.gui.build_preset_list(player, gui_body_flow)
 	preset_list.clear()
 	
 	local presets = global["preset-names"][player.index]
-	if #presets < 1 then 
-		export_button.enabled = false
-		delete_button.enabled = false
-	end
 	for i,preset in pairs(presets) do
 		local button = preset_list.add {
 			type = "button",

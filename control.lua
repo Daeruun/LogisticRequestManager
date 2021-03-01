@@ -139,7 +139,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 
 	else
 		local gui_parent = event.element.parent
-		if gui_parent.name == lrm.defines.gui.preset_list then
+		if gui_parent and gui_parent.name == lrm.defines.gui.preset_list then
 			local preset_clicked = string.match(gui_clicked, string.gsub(lrm.defines.gui.preset_button, "-", "%%-") .. "(%d+)")
 			if preset_clicked then
 				lrm.select_preset(player, tonumber(preset_clicked))
@@ -172,8 +172,8 @@ script.on_event(defines.events.on_player_created, function(event)
 	global["preset-data"][player.index][1]  = request_data
 	global["preset-names"][player.index][1] = {"gui.empty"}
 	global["presets-selected"][player.index] = 1
-	
-	lrm.gui.build(player)
+
+	lrm.gui.force_rebuild(player)
 end)
 
 script.on_init(function()
@@ -263,9 +263,6 @@ script.on_event("LRM-input-close-gui", function(event)
 		return
 	end
 	
-	local frame_flow = player.gui.screen
-	local master_frame = frame_flow and frame_flow[lrm.defines.gui.master] or nil
-	
 	lrm.close_or_toggle(event, false)
 end)
 
@@ -278,11 +275,14 @@ function lrm.close_or_toggle (event, toggle)
 		parent_frame = nil
 	end
 
-	if (event.element and event.element.name == "logistic-request-manager-gui-button" and event.shift) then
-		global["screen_location"][player.index] = {85, 65}
-		if master_frame then
-			master_frame.location = {85, 65}
-			master_frame.visible = false
+	if (event.element and event.element.name == "logistic-request-manager-gui-button" ) then
+		parent_frame = nil
+		if event.shift then
+			global["screen_location"][player.index] = {85, 65}
+			if master_frame then
+				master_frame.location = {85, 65}
+				master_frame.visible = false
+			end
 		end
 	end
 

@@ -12,14 +12,15 @@ Saved presets can be exported as strings (similar to blueprints) and exchanged o
 This function is compatible with serveral other mods, for example [Personal Logistics Import/Export](https://mods.factorio.com/mod/PersonalLogisticsImportExport)
 
 Access to the GUI is available via the logistic bot icon in the top-left of the screen or a short-cut, once personal logistics is researched:
+
 ![this icon in the topleft corner opens the GUI](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/LRM_toggle_button.png?raw=true)
 
-## Version 0.18.x only ##
+## Version 0.18.x only 
 - Requests to chests can only contain 30 different item-types. 
 Therefor presets that contain more than 30 different item-types will be rejected.
 If the limit is not exceeded, but the requests are spread out over more than the first 30 slots all empty slots will be ignored and the requests will be squished together.
 
-## Version 1.1.x only ##
+## Version 1.1.x only
 - Vehicles as the spidertron can be used in the same way as the player-character.
 
 
@@ -27,20 +28,23 @@ If the limit is not exceeded, but the requests are spread out over more than the
 # Configuration
 At the moment two things can be configured:
 
-### 1) user-specific setting: character as default target
+## user-specific setting: character as default target
 ![mod settings - per player - charcter as default](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings.png?raw=true)
 This setting allows to interact with the character when no other entity that supports logistic requests is open. It can be changed anytime.
 
-### 2) user-control/hot-key to toggle the GUI
+## user-control / hot-keys:
+### toggle the GUI:
 ![controls - mods - Toggle Logitic Request Manager GUI](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/controls_settings.png?raw=true)
 This shortcut opens or closes the whole GUI.
 
+### close the GUI:
+This one is a linked to the 'toggle-menu' hotkey and cannot be changed.
 
-# How to use
+# How to
 For this How-To it is assumed that the player-character is NOT configured as default-target.
 In each part of the How-To another entity is used as interaction target (character, requester & buffer chest, spidertron). All these interactions can be done with each of these entities - as far as available in-game.
 
-### First time opening the GUI and creating the first preset:
+## First time opening the GUI and creating the first preset:
 - Once you open the GUI for the first time, all you will see is a frame with some buttons, and an empty preset you can select.
 - Depending on whether an entity that supports logistic requests is opened, or the player-character is configured as default target* some buttons may be disabled or not.
 - The current target for interactions with the GUI is shown in the bottom-middle of the frame.
@@ -51,7 +55,7 @@ In each part of the How-To another entity is used as interaction target (charact
 
 ![01_save_a_first_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/01_save_a_first_preset.gif?raw=true)
 
-### To export a preset as encoded string
+## To export a preset as encoded string
 - Have the mods GUI open.
 - Chose the preset to export.
 - Click the button with the arrow pointing out of the basket.
@@ -60,7 +64,7 @@ In each part of the How-To another entity is used as interaction target (charact
 
 ![02_export_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/02_export_a_preset.gif?raw=true)
 
-### To import a preset from an encoded string
+## To import a preset from an encoded string
 - Have the mods GUI open.
 - Chose the preset to export.
 - Click the button with the arrow pointing into the basket.
@@ -75,7 +79,7 @@ In each part of the How-To another entity is used as interaction target (charact
 
 ![03_import_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/03_import_a_preset.gif?raw=true)
 
-### To load a preset (into a chest and create a new preset from there):
+## To load a preset (into a chest and create a new preset from there):
 - Have the mods gui open.
 - Choose an existing preset.
 - Open a chest (buffer-chest in this example), or another requester-entity.
@@ -87,7 +91,7 @@ Presets with more slots, that do not contain more than 40 items are squished tog
 - If you now create a new preset, potentially missing items are NOT part of the new preset any more!
 ![04_apply_and_create_a_preset_to_or_from_chest](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/04_apply_and_create_a_preset_to_or_from_chest.gif?raw=true)
 
-### To request the content of a blueprint (into spidertron):
+## To request the content of a blueprint (into spidertron):
 - Have the mods GUI open.
 - Open the spidertron, or another requester-entity to update.
 - Pick a blueprint(book) with the mouse.
@@ -97,7 +101,7 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 - Save the new configuration if required.
 ![05_request_a_blueprint_into_spidertron](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/05_request_a_blueprint_into_spidertron.gif?raw=true)
 
-### To modify or overwrite a preset:
+## To modify or overwrite a preset:
 - Have the mods GUI open.
 - Select the preset to modify.
 - Open the player-character or another requester-entity.
@@ -106,7 +110,7 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 **There is no undo function for this.**
 ![06_modify_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/06_modify_a_preset.gif?raw=true)
 
-### To delete a preset
+## To delete a preset
 - Have the mods GUI open.
 - Select the preset to delete.
 - Delete the preset by clicking the red button with the trash-bin.
@@ -114,12 +118,12 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 ![07_delete_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/07_delete_a_preset.gif?raw=true)
 
 
-## Known bugs
+# Known bugs
 - Blueprints that are stored in the library cannot be imported correctly due to limitations in the factorio-api.
 Workaround: 
 Copy(!) the blueprint/book into the player-inventory and import it from here.
 
-## To Do
+# To Do
 - ~~Possibly enable editing requests in the mod.~~ (I see no real reason to do this)
 
 # Feedback
