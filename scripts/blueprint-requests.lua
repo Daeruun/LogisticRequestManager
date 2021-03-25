@@ -1,10 +1,10 @@
 if not lrm.blueprint_requests then lrm.blueprint_requests = {} end
 
 function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_txt, subject_txt)
-	local entity = global["inventories-open"][player.index]
+	local entity = global["inventories-open"][player.index] and player.opened or player.opened_self and player.character or nil
 
-	if not (entity) then
-		if settings.get_player_settings(player)["LRM-default-to-user"].value then
+	if not (entity and entity.valid) then
+		if settings.get_player_settings(player)["LogisticRequestManager-default_to_user"].value then
 			return player.character
 		else
 			if (ent_text and action_txt and subject_txt) then
@@ -15,10 +15,14 @@ function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_tx
 	end
 	
 	local logistic_point = entity and entity.get_logistic_point(defines.logistic_member_index.character_requester) 
-	if ( not (logistic_point) 
-		or (	not (logistic_point.mode == defines.logistic_mode.requester ) 			-- no requester
-			and not (logistic_point.mode == defines.logistic_mode.buffer ) 	) ) then	-- no buffer
-		if settings.get_player_settings(player)["LRM-default-to-user"].value then
+	local control_behavior = entity and entity.get_control_behavior()
+	if ( ( not (logistic_point) 
+		 or (	not (logistic_point.mode == defines.logistic_mode.requester ) 			-- no requester
+			and not (logistic_point.mode == defines.logistic_mode.buffer ) 	) )			-- no buffer
+		and ( not ( (control_behavior)													
+				and (control_behavior.type == defines.control_behavior.type.constant_combinator) -- no constant combinaor
+				and (settings.get_player_settings(player)["LogisticRequestManager-allow_constant_combinator"].value or false) ) ) ) then 
+		if settings.get_player_settings(player)["LogisticRequestManager-default_to_user"].value then
 			return player.character
 		else
 			if (ent_text and action_txt and subject_txt) then
@@ -29,6 +33,8 @@ function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_tx
 	end
 	return entity
 end
+
+
 
 function lrm.blueprint_requests.get_event_entities(event)
 	local player = game.players[event.player_index]
@@ -42,7 +48,7 @@ function lrm.blueprint_requests.get_event_entities(event)
 		entity = player and player.character or nil
 	end
 	
-	if not (entity and entity.request_slot_count > 0) then -- check for request_slot_count removed in 1.1.x
+	if not entity then
 		return nil
 	end
 	
@@ -50,32 +56,11 @@ function lrm.blueprint_requests.get_event_entities(event)
 end
 
 function lrm.blueprint_requests.on_tick()
-	local inventories = global["inventories-open"] or {}
-	-- not possible before factorio 1.1.x
-	-- local bring_to_front = global["bring_to_front"] or {}
-	-- if table_size(bring_to_front) > 0 then 
-	-- 	lrm.gui.bring_to_front()
-	-- end
-
-	if table_size(inventories) == 0 then
+	local bring_to_front = global["bring_to_front"] or {}
+	if table_size(bring_to_front) > 0 then 
+		lrm.gui.bring_to_front()
+	else
 		lrm.blueprint_requests.unregister_on_tick()
-		return
-	end
-	
-	for player_index,inventory in pairs(inventories) do
-		local player = game.players[player_index]
-		if not (player and player.valid and inventory and inventory.valid) then
-			global["inventories-open"][player_index] = nil
-			return
-		end
-		
-		-- for slot = 1, inventory.request_slot_count do
-		-- 	local request = inventory.get_request_slot(slot)
-		-- 	if request and (request.name == "blueprint" or request.name == "blueprint-book") then
-		-- 		inventory.clear_request_slot(slot)
-		-- 		lrm.request_manager.request_blueprint(player, inventory)
-		-- 	end
-		-- end
 	end
 end
 
@@ -89,36 +74,52 @@ function lrm.blueprint_requests.unregister_on_tick()
 	script.on_event(defines.events.on_tick, nil)
 end
 
-function lrm.blueprint_requests.check_on_tick()
-	if global.on_tick and table_size(global["inventories-open"]) == 0 then
-		lrm.blueprint_requests.unregister_on_tick()
-	end
-end
-
 script.on_event(defines.events.on_gui_opened, function(event)
 	local player, inventory = lrm.blueprint_requests.get_event_entities(event)
 	
 	if not (player and inventory) then return end
 	
-	global["inventories-open"][player.index] = inventory
-	global["bring_to_front"][player.index]	 = 2
+	global["inventories-open"][player.index] = true
 	lrm.gui.set_gui_elements_enabled(player)
 	
-	lrm.blueprint_requests.register_on_tick()
+	if not (global.feature_level == "1.0") then
+		global["bring_to_front"][player.index]	 = 2
+	end
+	if lrm.gui.set_gui_elements_enabled(player) then
+		lrm.blueprint_requests.register_on_tick()
+	end
 end)
 
 script.on_event(defines.events.on_gui_closed, function(event)
 	local player, inventory = lrm.blueprint_requests.get_event_entities(event)
 	if not (player and inventory) then return end
-	global["inventories-open"][player.index] = nil
+	global["inventories-open"][player.index] = false
 	global["bring_to_front"][player.index]	 = nil
 	lrm.gui.set_gui_elements_enabled(player)
 	
-	lrm.blueprint_requests.check_on_tick()
+	lrm.blueprint_requests.unregister_on_tick()
 end)
 
-script.on_load(function()
-	if global.on_tick then
-		lrm.blueprint_requests.register_on_tick()
+script.on_event(defines.events.on_entity_died, function(event)
+	for _, player in pairs(game.players) do
+		 inventory_entity = (global["inventories-open"][player.index] and player.opened) or nil
+
+		 if inventory_entity and inventory_entity==event.entity then
+			global["inventories-open"][player.index]=false
+			lrm.gui.set_gui_elements_enabled(player)
+		end
+
 	end
+	
+end,{
+	{filter="type", type = "logistic-container"},
+	{filter="type", type = "spider-vehicle"},
+	{filter="type", type = "constant-combinator"}
+})
+
+script.on_load(function()
+--  	if global.on_tick then
+--  		lrm.blueprint_requests.register_on_tick()
+--  	end
+	lrm.commands.init()
 end)

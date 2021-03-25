@@ -1,3 +1,5 @@
+require 'defines'
+
 default_gui = data.raw["gui-style"].default
 
 default_gui[lrm.defines.gui.frame] = {
@@ -99,19 +101,7 @@ default_gui[lrm.defines.gui.request_slot] = {
 	parent = "slot_button"
 }
 
-default_gui[lrm.defines.gui.request_min] = {
-	type = "label_style",
-	parent = "count_label",
-	width = 36,
-	height = 36,
-	left_padding = -4,
-	right_padding = 4,
-	bottom_padding = 10,
-	horizontal_align = "right",
-	vertical_align = "bottom"
-}
-
-default_gui[lrm.defines.gui.request_max] = {
+default_gui[lrm.defines.gui.request_count] = {
 	type = "label_style",
 	parent = "count_label",
 	width = 36,

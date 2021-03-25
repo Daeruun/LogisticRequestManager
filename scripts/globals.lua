@@ -8,7 +8,10 @@ function lrm.globals.init()
 	global["inventories-open"]	= global["inventories-open"] or {}
 	global["screen_location"]	= global["screen_location"] or {}
 	global["bring_to_front"] 	= global["bring_to_front"] or {}
+
 	global.on_tick = global.on_tick or false
+	
+	global.feature_level = global.feature_level or "1.0"
 end
 
 function lrm.globals.init_player(player)

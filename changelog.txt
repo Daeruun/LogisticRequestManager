@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.10
+Date: 25.03.2021
+  Bugfixes:
+    - added an option to use constant combinators as source/target for presets (thanks to WildBraas for the idea) 
+    - added modifiers that can be used to change the way presets are saved or loaded (thanks to WildBraas for the idea)
+    - added settings for these modifiers to configure them
+    - added a default preset that can be used to clear all items from the target-entity if loaded
+    - default presets can no longer be overwritten, they can still be deleted though
+    - added commands to recreate the default presets (if they were deleted or if the auto-trasher needs to be updated because of new mods for example)
+---------------------------------------------------------------------------------------------------
 Version: 1.1.9
 Date: 01.03.2021
   Bugfixes:
@@ -73,6 +83,16 @@ Date: 28.11.2020
     - updated GUI:
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
+---------------------------------------------------------------------------------------------------
+Version: 0.18.7
+Date: 25.03.2021
+  Bugfixes:
+    - added an option to use constant combinators as source/target for presets (thanks to WildBraas for the idea) 
+    - added modifiers that can be used to change the way presets are saved or loaded (thanks to WildBraas for the idea)
+    - added settings for these modifiers to configure them
+    - added a default preset that can be used to clear all items from the target-entity if loaded
+    - default presets can no longer be overwritten, they can still be deleted though
+    - added commands to recreate the default presets (if they were deleted or if the auto-trasher needs to be updated because of new mods for example)
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.6
 Date: 01.03.2021

@@ -26,11 +26,33 @@ If the limit is not exceeded, but the requests are spread out over more than the
 
 
 # Configuration
-At the moment two things can be configured:
+A few things can be configured:
 
-## user-specific setting: character as default target
-![mod settings - per player - charcter as default](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings.png?raw=true)
+## user-specific settings:
+### character as default target
+![mod settings - per player - charcter as default](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings.png?raw=true)  
 This setting allows to interact with the character when no other entity that supports logistic requests is open. It can be changed anytime.
+
+### always add requests from blueprints to existing requests
+![mod settings - per player - always add blueprints](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_add_blueprints.png?raw=true)  
+If this setting is enabled blueprints will not overwrite existing requests regardless of the corresponding modifier settings below.
+
+### create unlimited requests from blueprints
+![mod settings - per player - infinite blueprint requests](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_infinte_blueprint_requests.png?raw=true)  
+If this is enabled, blueprint requets will be created with an unlimited request if added to player or vehicles as the spidertron.
+Otherwise the modifier-setting for unlimited chets below will be used.
+
+### modifier to add requests to existing requets
+![mod settings - per player - add presets to requests](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_modifier_add_requests.png?raw=true)  
+This setting allows to add new requests to existing ones instead of overwriting them.
+
+### modifier to save requests from chests with unlimited max
+![mod settings - per player - unlimited chest requests](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_modifier_unlimited_chest_requests.png?raw=true)  
+By default requests from entities with only one setting for requests will be limited to that value. This modifier allows to change this limit to infinity.
+
+### modifier to round up requests to their stacksize
+![mod settings - per player - unlimited chest requests](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_modifier_round_up_requests_to_stacksize.png?raw=true)  
+This modifier allows to round up requests to their stacksize. If the request happens to be configured at a multiple of its stacksize it is not changed.
 
 ## user-control / hot-keys:
 ### toggle the GUI:
@@ -38,14 +60,14 @@ This setting allows to interact with the character when no other entity that sup
 This shortcut opens or closes the whole GUI.
 
 ### close the GUI:
-This one is a linked to the 'toggle-menu' hotkey and cannot be changed.
+This one is linked to the 'toggle-menu' hotkey and cannot be changed.
 
 # How to
 For this How-To it is assumed that the player-character is NOT configured as default-target.
 In each part of the How-To another entity is used as interaction target (character, requester & buffer chest, spidertron). All these interactions can be done with each of these entities - as far as available in-game.
 
 ## First time opening the GUI and creating the first preset:
-- Once you open the GUI for the first time, all you will see is a frame with some buttons, and an empty preset you can select.
+- Once you open the GUI for the first time, all you will see is a frame with some buttons, and an two presets you can select.
 - Depending on whether an entity that supports logistic requests is opened, or the player-character is configured as default target* some buttons may be disabled or not.
 - The current target for interactions with the GUI is shown in the bottom-middle of the frame.
 - Now open the player-character and configure some requests that you want to reuse.
@@ -104,6 +126,7 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 ## To modify or overwrite a preset:
 - Have the mods GUI open.
 - Select the preset to modify.
+- Default-presets cannot be overwritten.
 - Open the player-character or another requester-entity.
 - Configure your request(s) in the open entity.
 - Save the preset by clicking the button with the disk-icon in the mods GUI.
@@ -117,6 +140,11 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 **There is no undo function for this.**
 ![07_delete_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/07_delete_a_preset.gif?raw=true)
 
+## Commands
+At the moment one command with two valid parameters exists.
+It can be used to re-create the default templates after they were deleted or if the auto-trash-preset needs to be updated (if a mod added new items for example).
+Usage:  
+`/lrm [parameter]` with one of these parameters: `inject_empty, inject_autotrash`
 
 # Known bugs
 - Blueprints that are stored in the library cannot be imported correctly due to limitations in the factorio-api.

@@ -12,5 +12,4 @@ for _, player in pairs(game.players) do
     if location and not next(location) then 
         global["screen_location"][player.index] = nil 
     end
-    --player.print("[LRM] import/export functionality available. GUI was changed. Please have a look at the mod portal for updated how-to's.")
 end

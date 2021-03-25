@@ -1,6 +1,9 @@
 if not lrm then lrm = {} end 
 if not lrm.defines then lrm.defines = {} end
 
+lrm.defines.preset_string_version=2
+lrm.defines.protected_presets=10
+
 lrm.defines.id        = "logistic-request-manager"
 lrm.defines.guiprefix = lrm.defines.id .. "-gui-"
 
@@ -43,6 +46,7 @@ lrm.defines.gui = {
 	request_window              = lrm.defines.guiprefix .. "request-window",
 	request_table               = lrm.defines.guiprefix .. "request-table",
 	request_slot                = lrm.defines.guiprefix .. "request-slot",
+	request_count               = lrm.defines.guiprefix .. "request-count",
 	request_min                 = lrm.defines.guiprefix .. "request-min",
 	request_max                 = lrm.defines.guiprefix .. "request-max",
 	request_infinit             = lrm.defines.guiprefix .. "request-infinit",

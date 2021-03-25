@@ -1,9 +1,12 @@
-if not lrm.request_manager then lrm.request_manager = {} end
+require 'defines'
+if not lrm.request_manager then 
+	lrm.request_manager = {} 
+end
 
-function lrm.request_manager.request_blueprint(player)
-	-- if not (player.is_cursor_blueprint()) then 
-	-- 	return nil 
-	-- end
+function lrm.request_manager.request_blueprint(player, modifiers)
+	if not (global.feature_level == "1.0" and player.is_cursor_blueprint()) then 
+		return nil 
+	end
 
 	local entity = lrm.blueprint_requests.get_inventory_entity(player, {"messages.target-entity"}, {"messages.append"}, {"messages.blueprint"})
 	if not (entity and entity.valid) then
@@ -27,149 +30,125 @@ function lrm.request_manager.request_blueprint(player)
 		return nil
 	end
 	
+
+	if modifiers.always_append_blueprints then -- this overwrites the other append-settings
+		modifiers.append=true
+	end
+	
 	local required_slots = 0
-	local blueprint_items = {}
+	local blueprint_data = {}
 	for item, count in pairs(blueprint.cost_to_build) do
 		if item and not (game.item_prototypes[item] == nil) then
-			required_slots = required_slots + 1
-			blueprint_items[item] = count
-		end
-	end
-	
-	local free_slots = {}
-	local slots = entity.request_slot_count -- + required slots - not usable in 0.18.x
-	for i = 1, slots do
-		local request = entity.get_request_slot(i)
-		if request then
-			-- If the item is already being requested add the count rather than overwriting it
-			if blueprint_items[request.name] then
-				blueprint_items[request.name] = blueprint_items[request.name] + request.count
-				required_slots = required_slots - 1
+			if (modifiers.blueprint_item_requests_unlimited) then
+				table.insert (blueprint_data, {name=item, min=count, max=0xFFFFFFFF, type="item"})
+			else
+				table.insert (blueprint_data, {name=item, min=count, max=count, type="item"})
 			end
-		else
-			free_slots[i] = true
 		end
 	end
-	
-	-- no longer required in 1.1.x as all slots can grow as required
-	if required_slots > table_size(free_slots) then
-		if entity.type == "character" then
-			slots = entity.character_logistic_slot_count + required_slots
-			entity.character_logistic_slot_count = slots
-		else
-			player.print({"messages.not-enough-slots", {"messages.blueprint"}})
-			return nil
-		end
-	end
-	--
 
-	for i = 1, slots do
-		local request = entity.get_request_slot(i)
-		if request then
-			if blueprint_items[request.name] then
-				entity.set_request_slot({name = request.name, count = blueprint_items[request.name]}, i)
-				blueprint_items[request.name] = nil
-			end
-		end
-	end
-	
-	for name,count in pairs(blueprint_items) do
-		local slot = next(free_slots, nil)
-		free_slots[slot] = nil
-		entity.set_request_slot({name = name, count = count}, slot)
-	end
+	lrm.request_manager.apply_preset(player, entity, blueprint_data, modifiers, {"messages.blueprint"})
 end
 
-function lrm.request_manager.apply_preset(player, preset_data, entity) -- player no longer required in 1.1.x
-	local logistic_point = entity.get_logistic_point(defines.logistic_member_index.character_requester)
-	if (	not (logistic_point.mode == defines.logistic_mode.requester ) 			-- no requester
-		and not (logistic_point.mode == defines.logistic_mode.buffer ) 	) then		-- no buffer
-		return nil
+function lrm.request_manager.apply_preset(player, entity, data_to_apply, modifiers, localized_data_type)
+	if not (player or entity or data_to_apply) then 
+		return
 	end
-	
-	logistic_point = entity.get_logistic_point(defines.logistic_member_index.character_provider)
-	local set_slot = nil
-	if not (logistic_point) then 						-- no auto-trash
-		set_slot = entity.set_request_slot
+
+	local logistic_requester = entity.get_logistic_point(defines.logistic_member_index.character_requester)
+	local logistic_provider  = entity.get_logistic_point(defines.logistic_member_index.character_provider)
+
+	if modifiers.round_up then
+		for index, item in pairs(data_to_apply) do
+			if item and item.name then
+				local min_count = data_to_apply[index].min or 0
+				local stack_size= game.item_prototypes[item.name] and game.item_prototypes[item.name].stack_size or 1
+
+				item.min = math.ceil (min_count / stack_size) * stack_size
+			end
+		end
+	end
+
+	if modifiers.append then
+		local current_data = {}
+		local max_value = (modifiers.undefined_max_as_infinit and 0xFFFFFFFF) or nil
+		if ( not logistic_requester	
+		  or ( not (logistic_requester.mode == defines.logistic_mode.requester ) 			-- no requester
+		   and not (logistic_requester.mode == defines.logistic_mode.buffer )  ) ) then		-- no buffer
+
+			current_data = lrm.request_manager.pull_requests_from_constant_combinator(player, entity, max_value)
+
+		else
+			if not (logistic_provider) then 												-- no auto-trash
+				current_data = lrm.request_manager.pull_requests_from_requester(player, entity, max_value)
+			else
+				current_data = lrm.request_manager.pull_requests_from_autotrasher(player, entity)
+			end
+		end
 		
-		-- no longer required in 1.1.x as all slots can grow as required
-		local slots = entity.request_slot_count
-		local preset_size = table_size(preset_data)
-		if preset_size > slots then				 		
-			local valid_item_requests={}
-			local valid_item_count=0
-			for i=1, preset_size do
-				local item = preset_data[i]
-				if item and item.name and not (game.item_prototypes[item.name] == nil) then
-					valid_item_count = valid_item_count + 1
-					valid_item_requests[valid_item_count] = item
-					--player.print("found valid item #"..valid_item_count..":"..item.name)
+		local current_requests, slot_map, free_slots, slot_limit, highest_configured_slot
+
+		current_requests        = current_data.data
+		slot_map                = current_data.slot_map
+		free_slots              = current_data.free_slots
+		slot_limit              = current_data.slot_limit
+		highest_configured_slot = current_data.highest_configured_slot
+		 
+		for index, item in pairs(data_to_apply) do
+			if item and item.name then
+				local slot = nil
+				local min_count = data_to_apply[index].min
+				if slot_map[item.name] then
+					slot = slot_map[item.name]
+					current_requests[slot].min=current_requests[slot].min+min_count
+					current_requests[slot].max=(current_requests[slot].max and (current_requests[slot].max > current_requests[slot].min)) and current_requests[slot].max or current_requests[slot].min
+				else
+					slot = next(free_slots, nil)
+					if (slot) then
+						free_slots[slot] = nil
+						current_requests[slot] = data_to_apply[index]
+					else
+						if not slot_limit or slot_limit < highest_configured_slot then
+							highest_configured_slot = highest_configured_slot + 1
+							slot=highest_configured_slot
+							current_requests[slot] = data_to_apply[index]
+							highest_configured_slot = highest_configured_slot + 1
+						else
+							lrm.message(player, {"messages.not-enough-slots-to-append", localized_data_type})
+						end
+					end
 				end
 			end
-			if valid_item_count > slots then
-				lrm.message(player, {"messages.not-enough-slots", {"messages.preset"}})
-				return nil
-			else
-				preset_data = valid_item_requests
-			end
 		end
-		--
-		clear_slot = entity.clear_request_slot	-- in 1.1.x this works for character as well
-	else
-		if entity.type == "character" then		-- easy & quite certain
-			set_slot = entity.set_personal_logistic_slot
-			clear_slot = entity.clear_personal_logistic_slot
-		-- else											-- spidertron OK & quite sure that this will work for modded vehicles as well...
-		-- 	set_slot = entity.set_vehicle_logistic_slot
-		end
+		data_to_apply = current_requests
 	end
-	
-	if not set_slot then 
-		return nil 
-	end
-	
-	-- clear current logistic slots
-	local slots = entity.request_slot_count
-	
-	for i = 1, slots do
-		clear_slot(i)	-- in 1.1.x entity.clear_request_slot(i) can be used for all entities
-	end
-	
-	-- get required number of personal logistic slots
-	slots = table_size(preset_data or {})
-	
-	-- as only players personal logistic slots support min & max requests, we need to destinguish between player-character and entities like requester-box or similar
-	if not (logistic_point) then 						-- no auto-trash
-		if slots > entity.request_slot_count then 		-- no longer required in 1.1.x as all slots can grow as required
-			lrm.message(player, {"messages.not-enough-slots", {"messages.preset"}})
-			return nil
-		end
+
+	if ( not logistic_requester	
+	  or ( not (logistic_requester.mode == defines.logistic_mode.requester ) 				-- no requester
+	   and not (logistic_requester.mode == defines.logistic_mode.buffer )  ) ) then			-- no buffer
 		
-		for i = 1, slots do
-			local item = preset_data[i]
-			if item and item.name and not (game.item_prototypes[item.name] == nil) then
-				set_slot({name=item.name, count=item.min}, i)
-			end
-		end
+		lrm.request_manager.push_requests_to_constant_combinator(player, entity, data_to_apply, localized_data_type)
+
 	else
-		entity.character_logistic_slot_count = slots	-- no longer required in 1.1.x as all slots can grow as required
-		for i = 1, slots do
-			local item = preset_data[i]
-			if item and item.name and not (game.item_prototypes[item.name] == nil) then
-				set_slot(i, item)
-			end
-		end
-	end
+		if not (logistic_provider) then 													-- no auto-trash
+			lrm.request_manager.push_requests_to_requester(player, entity, data_to_apply, localized_data_type)
+	  	else
+			lrm.request_manager.push_requests_to_autotrasher(player, entity, data_to_apply)
+	  	end
+  	end
 end
 
-function lrm.request_manager.save_preset(player, preset_number, preset_name)
+function lrm.request_manager.save_preset(player, preset_number, preset_name, modifiers)
 	local entity = lrm.blueprint_requests.get_inventory_entity(player, {"messages.source-entity"}, {"messages.save"}, {"messages.preset"})
 	if not (entity and entity.valid) then
 		return nil
 	end
-
+	
+	local logistic_requester = entity.get_logistic_point(defines.logistic_member_index.character_requester)
+	local logistic_provider  = entity.get_logistic_point(defines.logistic_member_index.character_provider)
+	
 	local player_presets = global["preset-names"][player.index]
-	local total = 0
+	local total = lrm.defines.protected_presets
 	for number, name in pairs(player_presets) do
 		if number > total then total = number end
 		if preset_number == number then
@@ -181,41 +160,37 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name)
 		preset_number = total + 1
 	end
 
-	local request_data = {}
 	local slots = entity.request_slot_count
-	-- not usefull before 1.1.x
-	--if slots % 10 then
-	--	slots = slots + 10 - (slots % 10)
-	--end
-	--if slots < 40 then 
-	--	slots = 40
-	--end
-	--
-	local get_slot = nil
+	local request_data
+	local max_value = (modifiers.undefined_max_as_infinit and 0xFFFFFFFF) or nil
+	if ( not logistic_requester	
+	  or ( not (logistic_requester.mode == defines.logistic_mode.requester ) 			-- no requester
+	   and not (logistic_requester.mode == defines.logistic_mode.buffer )  ) ) then		-- no buffer
 
-	local logistic_provider_point = entity.get_logistic_point(defines.logistic_member_index.character_provider) 
-	if not (logistic_provider_point) then 						-- no auto-trash
-		get_slot = entity.get_request_slot
+		request_data = lrm.request_manager.pull_requests_from_constant_combinator(player, entity, max_value).data
+
 	else
-		if entity.type == "character" then				-- easy & quite certain
-			get_slot = entity.get_personal_logistic_slot
-		-- else											-- spidertron OK & quite sure that this will work for modded vehicles as well...
-		-- 	get_slot = entity.get_vehicle_logistic_slot
+		if not (logistic_provider) then 												-- no auto-trash
+			request_data = lrm.request_manager.pull_requests_from_requester(player, entity, max_value).data
+		else
+			request_data = lrm.request_manager.pull_requests_from_autotrasher(player, entity).data
 		end
 	end
 
-	if not get_slot then 
-		return nil 
-	end
-	
-	for i = 1, slots do
-		local request = get_slot(i) -- .get_personal_logistic_slot(i)
-		if request and request.name then
-			request_data[i] = { name = request.name, min = request.min or request.count, max = request.max or 0xFFFFFFFF }
-		else
-			request_data[i] = { nil }
+	if modifiers.round_up then
+		for index, item in pairs(request_data) do
+			if item and item.name then
+				local min_count = item.min or 0
+				local stack_size= game.item_prototypes[item.name] and game.item_prototypes[item.name].stack_size or 1
+
+				item.min = math.ceil (min_count / stack_size) * stack_size
+				if (item.max and item.max < item.min) then
+					item.max = nil
+				end
+			end
 		end
 	end
+
 	
 	global["preset-names"][player.index][preset_number] = preset_name
 	global["preset-data"][player.index][preset_number]  = request_data
@@ -223,14 +198,261 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name)
 	return preset_number
 end
 
-function lrm.request_manager.load_preset(player, preset_number)
+function lrm.request_manager.push_requests_to_requester( player, entity, data_to_push, localized_data_type )
+	local set_slot = entity.set_request_slot
+
+	if not set_slot then
+		return nil
+	end
+
+	local slots = entity.request_slot_count
+
+	-- count-check in 1.1.x no longer required here as slots can grow as required
+	if (global.feature_level == "1.0") then
+		data_to_push = lrm.request_manager.check_slot_count ( player, data_to_push, slots, localized_data_type )
+		if not data_to_push then 
+			return 
+		end
+	end
+	-- end count-check
+
+	-- clear current logistic slots
+	for i = 1, slots do
+		entity.clear_request_slot(i)
+	end
+
+	-- get required number of personal logistic slots
+	slots = table_size(data_to_push or {})
+	
+	-- apply only items to request slots
+	for i = 1, slots do
+		local item = data_to_push[i]
+		if item and item.name and not (game.item_prototypes[item.name] == nil) then
+			set_slot({name=item.name, count=item.min}, i)
+		end
+	end
+end
+function lrm.request_manager.push_requests_to_autotrasher( player, entity, data_to_push )
+	local set_slot = nil
+	local clear_slot = entity.clear_request_slot
+	
+	if entity.type == "character" then				-- easy & quite certain
+		set_slot = entity.set_personal_logistic_slot
+		if (global.feature_level == "1.0") then
+			clear_slot = entity.clear_personal_logistic_slot
+		end
+	else											-- spidertron OK & quite sure that this will work for modded vehicles as well...
+		if not (global.feature_level == "1.0") then
+			set_slot = entity.set_vehicle_logistic_slot
+		end
+	end
+
+	if not set_slot then
+		return nil
+	end
+
+	local slots = entity.request_slot_count
+
+	-- clear current logistic slots
+	for i = 1, slots do
+		clear_slot(i)
+	end
+
+	-- get required number of personal logistic slots
+	slots = table_size(data_to_push or {})
+	
+	-- adjust request slots - no longer required in 1.1.x as requestslots are automatically generated as required
+	if (global.feature_level == "1.0") then
+		entity.character_logistic_slot_count = slots
+	end
+	-- end adjust request slots
+
+	-- apply only items to request slots
+	for i = 1, slots do
+		local item = data_to_push[i]
+		if item and item.name and not (game.item_prototypes[item.name] == nil) then
+			set_slot(i, item)
+		end
+	end
+end
+function lrm.request_manager.push_requests_to_constant_combinator( player, entity, data_to_push, localized_data_type )
+	local control_behavior = entity and entity.get_control_behavior()
+
+	if not ( control_behavior 
+		and (control_behavior.type == defines.control_behavior.type.constant_combinator) ) then
+		return nil
+	end
+
+	local slots = control_behavior.signals_count
+	local set_slot = control_behavior.set_signal
+	
+	if not (slots and set_slot) then
+		return nil
+	end
+
+	-- count-check in 1.1.x only required here as all other slots can grow as required
+	data_to_push = lrm.request_manager.check_slot_count ( player, data_to_push, slots, localized_data_type )
+	if not data_to_push then 
+		return 
+	end
+	-- end count-check
+
+	for i = 1, slots do
+		local item = data_to_push[i]
+		if item and item.name then
+			local signal_id={type=item.type or "item", name=item.name}
+			local signal={signal=signal_id, count=item.min}
+			set_slot(i, signal)
+		else -- clear slot
+			set_slot (i, nil)
+		end
+	end
+end
+
+function lrm.request_manager.check_slot_count ( player, data_to_push, max_available_slots, localized_data_type )
+	local signal_count = table_size(data_to_push)
+	if signal_count > max_available_slots then				 		
+		local valid_slots = {}
+		local valid_slot_count = 0
+		local highest_valid_slot = 0
+		for i=1, signal_count do
+			local item = data_to_push[i]
+			if ( item.name and (
+			    ( (item.type == nil or item.type == "item") and game.item_prototypes[item.name] )
+			 or ( (item.type == "fluid") and game.fluid_prototypes[item.name] )
+			 or ( (item.type == "virtual" or item.type == "virtual-signal") and game.virtual_signal_prototypes[item.name] )
+			   ) ) then
+				valid_slot_count = valid_slot_count + 1
+				highest_valid_slot = i
+				valid_slots[valid_slot_count] = item
+				--player.print("found valid item #"..valid_slot_count..":"..item.name)
+			end
+		end
+		
+		if valid_slot_count > max_available_slots then
+			lrm.message(player, {"messages.not-enough-slots-to-request", localized_data_type})
+			data_to_push = nil
+		else
+			if highest_valid_slot > max_available_slots then
+				data_to_push = valid_slots
+			end
+		end
+	end
+	return data_to_push
+end
+
+function lrm.request_manager.pull_requests_from_requester( player, entity, max_value)
+	local get_slot = entity.get_request_slot
+
+	if not get_slot then
+		return nil
+	end
+
+	local slots = entity.request_slot_count
+	local current_slots={}
+	local free_slots={}
+	local slot_map={}
+	for i = 1, slots do
+		local request = get_slot(i)
+		if request and request.name then
+			current_slots[i] = { name = request.name, min = request.count, max = max_value or request.count, type ="item" }
+			slot_map[request.name]=i
+		else
+			current_slots[i] = { nil }
+			free_slots[i]=true
+		end
+	end
+
+	return {data=current_slots, 
+			slot_map=slot_map, 
+			free_slots=free_slots, 
+			slot_limit=(global.feature_level=="1.0") and slots or nil, 
+			highest_configured_slot=slots}
+
+end
+function lrm.request_manager.pull_requests_from_autotrasher( player, entity )
+	local get_slot = nil
+	if entity.type == "character" then				-- easy & quite certain
+		get_slot = entity.get_personal_logistic_slot
+	else											-- spidertron OK & quite sure that this will work for modded vehicles as well...
+		get_slot = entity.get_vehicle_logistic_slot
+	end
+
+	if not get_slot then
+		return nil
+	end
+	
+	local slots = entity.request_slot_count
+
+	local current_slots={}
+	local free_slots={}
+	local slot_map={}
+	for i = 1, slots do
+		local request = get_slot(i)
+		if request and request.name then
+			current_slots[i] = { name = request.name, min = request.min, max = request.max, type ="item" }
+			slot_map[request.name]=i
+		else
+			current_slots[i] = { nil }
+			free_slots[i]=true
+		end
+	end
+
+	return {data=current_slots, 
+			slot_map=slot_map, 
+			free_slots=free_slots, 
+			slot_limit=nil, 
+			highest_configured_slot=slots}
+end
+function lrm.request_manager.pull_requests_from_constant_combinator( player, entity, max_value )
+	local control_behavior = entity and entity.get_control_behavior()
+
+	if not ( control_behavior 
+		and (control_behavior.type == defines.control_behavior.type.constant_combinator) ) then
+		return nil
+	end
+
+	local slots = control_behavior.signals_count
+	local get_slot = control_behavior.get_signal
+	
+	if not (slots and get_slot) then
+		return nil
+	end
+
+	local current_slots={}
+	local free_slots={}
+	local slot_map={}
+
+	for i = 1, slots do
+		local signal = get_slot(i)
+		if (signal and signal.signal) then
+			local signal_id=signal.signal
+			if  ( signal_id.type == "item" 
+				and signal_id.name ) then
+				slot_map[signal_id.name]=i
+			end
+			current_slots[i] = {name = signal_id.name, min = signal.count, max = max_value or signal.count, type = signal_id.type}
+		else
+			current_slots[i] = { nil }
+			free_slots[i]=true
+		end
+	end
+
+	return {data=current_slots, 
+			slot_map=slot_map, 
+			free_slots=free_slots, 
+			slot_limit=nil, 
+			highest_configured_slot=slots}
+end
+
+function lrm.request_manager.load_preset(player, preset_number, modifiers)
 	local player_presets = global["preset-data"][player.index]
-	local preset = player_presets[preset_number]
-	if not preset then return end
+	local preset_data = table.deepcopy(player_presets[preset_number])
+	if not preset_data then return end
 	
 	local entity = lrm.blueprint_requests.get_inventory_entity(player, {"messages.target-entity"}, {"messages.load"}, {"messages.preset"})
 	if entity and entity.valid then
-		lrm.request_manager.apply_preset(player, preset, entity) -- player no longer required in 1.1.x
+		lrm.request_manager.apply_preset(player, entity, preset_data, modifiers, {"messages.preset"})
 	else
 		return nil
 	end
@@ -251,6 +473,25 @@ function lrm.request_manager.import_preset(player)
 	if decoded_string and (decoded_string ~= "") then
 		local preset_data = game.json_to_table(decoded_string)
 		if preset_data and (next(preset_data) ~= nil) then
+			local last_slot = table_size (preset_data)
+			local version_imported = preset_data[last_slot].LRM_preset_version or 0
+			if ( version_imported <  lrm.defines.preset_string_version ) then
+				if ( version_imported < 2 ) then
+					for index, dataset in pairs(preset_data) do
+						if  ( version_imported == 1 ) then -- only items were exported here
+							dataset.type="item"
+						elseif not dataset.name then
+							-- ?
+						elseif game.virtual_signal_prototypes[dataset.name] then
+							dataset.type="virtual"
+						elseif game.fluid_prototypes[dataset.name] then
+							dataset.type="fluid"
+						elseif game.item_prototypes[dataset.name] then
+							dataset.type="item"
+						end
+					end
+				end
+			end
 			return preset_data
 		end
 	end
@@ -298,7 +539,7 @@ function lrm.request_manager.export_preset(player, preset_number, coded)
 		end
 	end
 
-	table.insert(preset_table, {LRM_preset_version = 1, LRM_preset_name = preset_name[1] or preset_name})
+	table.insert(preset_table, {LRM_preset_version = lrm.defines.preset_string_version, LRM_preset_name = preset_name[1] or preset_name})
 	local jsoned_table   = game.table_to_json(preset_table)
 	local encoded_string = game.encode_string(jsoned_table)
 
