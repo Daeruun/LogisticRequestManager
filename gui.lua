@@ -526,19 +526,16 @@ function lrm.gui.set_target(player, target_slot)
 end
 
 function lrm.gui.build(player)
-	if not player.force.technologies["logistic-robotics"].researched then
-		return nil
-	end
+	if not ( lrm.check_logistics_available (player) ) then return end
 	
 	lrm.gui.build_toggle_button(player)
 	lrm.gui.build_gui(player)
 end
 
-function lrm.gui.force_rebuild(player, open)
+function lrm.gui.force_rebuild(player)
 	local button_flow = mod_gui.get_button_flow(player)
 	if button_flow[lrm.defines.gui.toggle_button] then
 		button_flow[lrm.defines.gui.toggle_button].destroy()
-		lrm.gui.build_toggle_button(player)
 	end
 
 	local frame_flow = player.gui.screen
@@ -556,15 +553,19 @@ function lrm.gui.force_rebuild(player, open)
 
 	lrm.gui.build(player)
 
-	master       = frame_flow and frame_flow[lrm.defines.gui.master] or nil
-	frame        = lrm.gui.get_gui_frame(player, lrm.defines.gui.frame)
-	export_frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.export_frame)
-	import_frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.import_frame)
+	if lrm.check_logistics_available(player) then
+		lrm.gui.build_toggle_button(player) 
 
-	if master       then master       .visible = visible_master       end
-	if frame        then frame        .visible = visible_frame        end
-	if export_frame then export_frame .visible = visible_export_frame end
-	if import_frame then import_frame .visible = visible_import_frame end
+		master       = frame_flow and frame_flow[lrm.defines.gui.master] or nil
+		frame        = lrm.gui.get_gui_frame(player, lrm.defines.gui.frame)
+		export_frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.export_frame)
+		import_frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.import_frame)
+	
+		if master       then master       .visible = visible_master       end
+		if frame        then frame        .visible = visible_frame        end
+		if export_frame then export_frame .visible = visible_export_frame end
+		if import_frame then import_frame .visible = visible_import_frame end
+	end
 end
 
 function lrm.gui.get_save_as_name(player, parent_frame)

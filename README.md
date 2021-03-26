@@ -67,7 +67,8 @@ For this How-To it is assumed that the player-character is NOT configured as def
 In each part of the How-To another entity is used as interaction target (character, requester & buffer chest, spidertron). All these interactions can be done with each of these entities - as far as available in-game.
 
 ## First time opening the GUI and creating the first preset:
-- Once you open the GUI for the first time, all you will see is a frame with some buttons, and an two presets you can select.
+- Once you open the GUI for the first time, all you will see is a frame with some buttons, and an two presets you can select.  
+The `empty` preset will simply remove all requests from the target, the `auto-trash`-preset configures requests with an auto-trash limit of zero for every normal item in the game but such with an inventory (armors, spidertron and such). Those will not be auto-trashed at all.
 - Depending on whether an entity that supports logistic requests is opened, or the player-character is configured as default target* some buttons may be disabled or not.
 - The current target for interactions with the GUI is shown in the bottom-middle of the frame.
 - Now open the player-character and configure some requests that you want to reuse.
@@ -106,10 +107,10 @@ In each part of the How-To another entity is used as interaction target (charact
 - Choose an existing preset.
 - Open a chest (buffer-chest in this example), or another requester-entity.
 - Click the green button in the bottom-right corner (the one with the upward arrow and a logistic bot pictogram) to apply the preset.
-- The preset is loaded into the chest.
-**In Factorio <= 1.0.0 chests have a fixed maximum of 30 items to request.**
-Presets with more slots, that do not contain more than 40 items are squished together to fit. Presets containing more than 40 items will not be applied and an error-message will be printed.
-- **NOTE:** Items that are not available (marked as red X in the gui) CANNOT be configured into the target.
+- The preset is loaded into the chest.  
+**In Factorio <= 1.0.0 chests have a fixed maximum of 30 items to request, constant combinators are limited to 18 signals, in Factorio 1.1.x. constant combinators can hold 20 signals**
+Presets with more slots, that do not contain more than items/signals as supported are squished together to fit. Presets containing more than that will not be applied and an error-message will be printed.
+- **NOTE:** Items/signals that are not available (marked as red X in the gui) CANNOT be configured into the target.
 - If you now create a new preset, potentially missing items are NOT part of the new preset any more!
 ![04_apply_and_create_a_preset_to_or_from_chest](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/04_apply_and_create_a_preset_to_or_from_chest.gif?raw=true)
 
@@ -144,7 +145,7 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 At the moment one command with two valid parameters exists.
 It can be used to re-create the default templates after they were deleted or if the auto-trash-preset needs to be updated (if a mod added new items for example).
 Usage:  
-`/lrm [parameter]` with one of these parameters: `inject_empty, inject_autotrash`
+`/lrm [parameter]` with one of these parameters: `help, force_gui, inject_empty, inject_autotrash`
 
 # Known bugs
 - Blueprints that are stored in the library cannot be imported correctly due to limitations in the factorio-api.

@@ -1,6 +1,8 @@
 if not lrm.blueprint_requests then lrm.blueprint_requests = {} end
 
 function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_txt, subject_txt)
+	if not lrm.check_logistics_available (player) then return nil end
+	
 	local entity = global["inventories-open"][player.index] and player.opened or player.opened_self and player.character or nil
 
 	if not (entity and entity.valid) then

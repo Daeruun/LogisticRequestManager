@@ -1,7 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.11
+Date: 26.03.2021
+  Bugfixes:
+    - fixed crash in event 'on_runtime_mod_setting_changed'
+  Features:
+    - changed detection of logistics availablility
+    - added a setting to enable the GUI regardless of logistics availablility
+    - added commands 'help' and 'force_gui'
+---------------------------------------------------------------------------------------------------
 Version: 1.1.10
 Date: 25.03.2021
-  Bugfixes:
+  Features:
     - added an option to use constant combinators as source/target for presets (thanks to WildBraas for the idea) 
     - added modifiers that can be used to change the way presets are saved or loaded (thanks to WildBraas for the idea)
     - added settings for these modifiers to configure them
@@ -84,9 +93,18 @@ Date: 28.11.2020
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.8
+Date: 26.03.2021
+  Bugfixes:
+    - fixed crash in event 'on_runtime_mod_setting_changed'
+  Features:
+    - changed detection of logistics availablility
+    - added a setting to enable the GUI regardless of logistics availablility
+    - added commands 'help' and 'force_gui'
+---------------------------------------------------------------------------------------------------
 Version: 0.18.7
 Date: 25.03.2021
-  Bugfixes:
+  Features:
     - added an option to use constant combinators as source/target for presets (thanks to WildBraas for the idea) 
     - added modifiers that can be used to change the way presets are saved or loaded (thanks to WildBraas for the idea)
     - added settings for these modifiers to configure them

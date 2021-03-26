@@ -3,6 +3,13 @@ require 'defines'
 data:extend({
     {
         type = "bool-setting",
+        name = "LogisticRequestManager-allow_gui_without_research",
+        order = "aaa",
+        setting_type = "runtime-per-user",
+        default_value = false
+    },
+    {
+        type = "bool-setting",
         name = "LogisticRequestManager-default_to_user",
         order = "aaa",
         setting_type = "runtime-per-user",

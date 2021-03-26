@@ -19,15 +19,6 @@ script.on_event(defines.events.on_gui_click, function(event)
 	if not (player and player.valid) then return end
 	local frame_flow = player.gui.screen
 	local gui_clicked = event.element.name
-	
-	if not (player.force.technologies["logistic-robotics"]["researched"]) then
-		for _, player in pairs(player.force.players) do
-			lrm.gui.destroy(player)
-		end
-		return
-	end
-
-	local modifiers = lrm.check_modifiers(event)
 
 	if gui_clicked == lrm.defines.gui.toggle_button then
 		if (event.control and event.alt and event.shift) then 
@@ -39,9 +30,13 @@ script.on_event(defines.events.on_gui_click, function(event)
 
 	elseif gui_clicked == lrm.defines.gui.close_button then
 		lrm.close_or_toggle(event, false)
-		
+	end
 
-	elseif gui_clicked == lrm.defines.gui.save_as_button then
+	if not lrm.check_logistics_available(player) then return end
+
+	local modifiers = lrm.check_modifiers(event)
+
+	if gui_clicked == lrm.defines.gui.save_as_button then
 		local parent_frame = event.element.parent and event.element.parent.parent
 		if not parent_frame then return end
 		local preset_name = lrm.gui.get_save_as_name(player, parent_frame)
@@ -152,15 +147,17 @@ script.on_event(defines.events.on_gui_click, function(event)
 end)
 
 script.on_event(defines.events.on_research_finished, function(event)
-	if string.match(event.research.name, "logistic%-robotics") then
-		lrm.globals.init()
+	-- if string.match(event.research.name, "logistic%-robotics") then
+	 	lrm.globals.init()
 		
 		for _, player in pairs(event.research.force.players) do
-			lrm.globals.init_player(player)
-			lrm.gui.force_rebuild(player)
-			lrm.select_preset(player, global["presets-selected"][player.index])
+			if ( lrm.check_logistics_available (player) ) then
+				lrm.globals.init_player(player)
+				lrm.gui.force_rebuild(player)
+				lrm.select_preset(player, global["presets-selected"][player.index])
+			end
 		end
-	end
+	-- end
 end)
 	
 script.on_event(defines.events.on_player_created, function(event)
@@ -183,7 +180,7 @@ script.on_init(function()
 		lrm.globals.init_player(player)
 		lrm.inject_empty_preset (player)
 		lrm.inject_autotrash_preset (player)
-		if (player.force.technologies["logistic-robotics"]["researched"]) then
+		if ( lrm.check_logistics_available (player) ) then
 			lrm.gui.build(player)
 		end
 	end
@@ -212,31 +209,31 @@ script.on_configuration_changed(function(event)
 		end
 	end
 	
-	for _, player in pairs(game.players) do
-		lrm.globals.init_player(player)
+	if ( event.mod_changes 
+		and event.mod_changes.LogisticRequestManager 
+		and event.mod_changes.LogisticRequestManager.old_version ) then
 
-		if ( event.mod_changes 
-		 and event.mod_changes.LogisticRequestManager 
-		 and event.mod_changes.LogisticRequestManager.old_version ) then
+		local version_map_1_0_0={import_export={0,18,4}, modifiers_combinator={0,18,7}}
+		local version_map_1_1_0={import_export={1,1,7},modifiers_combinator={1,1,10}}
 
-			local version_map_1_0_0={import_export={0,18,4}, modifiers_combinator={0,18,7}}
-			local version_map_1_1_0={import_export={1,1,7},modifiers_combinator={1,1,10}}
+		local old_version = util.split (event.mod_changes.LogisticRequestManager.old_version, ".") or nil
+		for i, v in pairs (old_version) do
+			old_version[i]=tonumber(v)
+		end
 
-			local old_version = util.split (event.mod_changes.LogisticRequestManager.old_version, ".") or nil
-			for i, v in pairs (old_version) do
-				old_version[i]=tonumber(v)
-			end
-
-			local new_version ={}
-			local new_how_to = false
-			
-			if (old_version[1]==0) or (old_version[1]==1 and old_version[2]==0) then 
-				new_versions = version_map_1_0_0
-			else 
-				new_versions = version_map_1_1_0 
-			end
+		local new_version ={}
+		local new_how_to = false
+		
+		if (old_version[1]==0) or (old_version[1]==1 and old_version[2]==0) then 
+			new_versions = version_map_1_0_0
+		else 
+			new_versions = version_map_1_1_0 
+		end
 
 
+		for _, player in pairs(game.players) do
+			lrm.globals.init_player(player)
+	
 			if old_version[3] < new_versions.import_export[3] then 
 				lrm.message( player, {"", {"messages.new_feature-export_import"}, " [color=yellow]", {"messages.new-gui"}, "[/color] " })
 				new_how_to = true
@@ -259,7 +256,9 @@ script.on_configuration_changed(function(event)
 				lrm.message( player, {"", " [color=orange]", {"messages.new-how_to"}, "[/color]\n" })
 			end
 		end
+	end
 
+	for _, player in pairs(game.players) do
 		for preset_index,preset_data in pairs(global["preset-data"][player.index]) do
 			local slots = table_size(preset_data)
 			for i = 1, slots do
@@ -287,9 +286,7 @@ script.on_configuration_changed(function(event)
 			end
 		end
 
-		if not (player.force.technologies["logistic-robotics"]["researched"]) then
-			lrm.gui.destroy(player)
-		else
+		if ( lrm.check_logistics_available (player) ) then
 			lrm.gui.force_rebuild(player)
 			lrm.select_preset(player, global["presets-selected"][player.index])
 		end
@@ -297,42 +294,25 @@ script.on_configuration_changed(function(event)
 end)
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
-	local player = game.players[event.player_index]
+	local player = event.player_index and game.players[event.player_index]
+		
 	if not (player and player.valid) then return end
-
-	if not (player.force.technologies["logistic-robotics"]["researched"]) then return end
+    -- if not ( lrm.check_logistics_available (player) ) then return end
 
 	if (event.setting == "LogisticRequestManager-default_to_user") then 
+
 		lrm.gui.set_gui_elements_enabled(player) 
+	end
+	if (event.setting == "LogisticRequestManager-allow_gui_without_research") then
+		lrm.gui.force_rebuild(player)
+		lrm.select_preset(player, global["presets-selected"][player.index])
 	end
 end)
 
 script.on_event("LRM-input-toggle-gui", function(event)
-	local player = game.players[event.player_index]
-	if not (player and player.valid) then return end
-	if not (player.force.technologies["logistic-robotics"]["researched"]) then
-		for _, player in pairs(player.force.players) do
-			lrm.gui.destroy(player)
-		end
-		return
-	end
-
 	lrm.close_or_toggle(event, true)
 end)
-
 script.on_event("LRM-input-close-gui", function(event)
-	local player = game.players[event.player_index]
-	if not (player and player.valid) then return end
-	if not (player.force.technologies["logistic-robotics"]["researched"]) then
-		for _, player in pairs(player.force.players) do
-			lrm.gui.destroy(player)
-		end
-		return
-	end
-	
-	local frame_flow = player.gui.screen
-	local master_frame = frame_flow and frame_flow[lrm.defines.gui.master] or nil
-	
 	lrm.close_or_toggle(event, false)
 end)
 
@@ -347,10 +327,9 @@ function lrm.inject_empty_preset (player)
 	end
 	global["preset-data"][player.index][1]  = preset
 	global["preset-names"][player.index][1] = {"gui.empty"}
-	global["presets-selected"][player.index] = 1
+	lrm.gui.build_preset_list(player)
+	lrm.select_preset(player, 1)
 end
-
-
 function lrm.inject_autotrash_preset (player)
     local preset={}
     for _, item in pairs (game.item_prototypes) do 
@@ -378,6 +357,8 @@ function lrm.inject_autotrash_preset (player)
 	end
 	global["preset-data"][player.index][2]  = preset
 	global["preset-names"][player.index][2] = {"gui.auto_trash"}
+	lrm.gui.build_preset_list(player)
+	lrm.select_preset(player, 2)
 end
 
 function lrm.get_feature_level ()
@@ -438,8 +419,10 @@ function lrm.move_presets (player)
 end
 
 function lrm.close_or_toggle (event, toggle)
-	local player = game.players[event.player_index]
-	local frame_flow = player.gui.screen
+	local player = event.player_index and game.players[event.player_index]
+	if not player then return end
+	
+	local frame_flow = player and player.gui.screen
 	local master_frame = frame_flow and frame_flow[lrm.defines.gui.master] or nil
 	local parent_frame = event.element and event.element.parent.parent or nil
 	if not (parent_frame and parent_frame.parent) then
@@ -471,6 +454,9 @@ function lrm.close_or_toggle (event, toggle)
 	elseif toggle then
 		lrm.gui.build(player, true)
 		lrm.select_preset(player, global["presets-selected"][player.index])
+
+		if not ( lrm.check_logistics_available (player) ) then return end
+		
 		if master_frame[lrm.defines.gui.frame] then 
 			master_frame[lrm.defines.gui.frame].visible = true 
 			lrm.gui.set_gui_elements_enabled(player)
@@ -567,4 +553,19 @@ function lrm.check_modifiers(event)
 	end
 
 	return matched_modifiers
+end
+
+function lrm.check_logistics_available (player)
+	if not player then return false end
+
+	local allow_gui_without_research = settings.get_player_settings(player)["LogisticRequestManager-allow_gui_without_research"].value or false
+	-- if player.force.technologies["logistic%-robotics"] then
+	-- 	if not (player.force.technologies["logistic%-robotics"]["researched"]) then
+	-- 	 	return false
+	-- 	end
+	-- end
+	if not ( allow_gui_without_research or ( player.character and player.character.get_logistic_point(defines.logistic_member_index.character_requester) ) ) then
+		return false
+	end
+	return true
 end
