@@ -534,8 +534,10 @@ end
 
 function lrm.gui.force_rebuild(player)
 	local button_flow = mod_gui.get_button_flow(player)
+	local button=false
 	if button_flow[lrm.defines.gui.toggle_button] then
 		button_flow[lrm.defines.gui.toggle_button].destroy()
+		button=true
 	end
 
 	local frame_flow = player.gui.screen
@@ -565,6 +567,8 @@ function lrm.gui.force_rebuild(player)
 		if frame        then frame        .visible = visible_frame        end
 		if export_frame then export_frame .visible = visible_export_frame end
 		if import_frame then import_frame .visible = visible_import_frame end
+	elseif button then
+		lrm.gui.build_toggle_button(player) 
 	end
 end
 

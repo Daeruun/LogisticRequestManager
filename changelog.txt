@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.12
+Date: 27.03.2021
+  Bugfixes:
+    - fixed crash due to uninitialized global
+---------------------------------------------------------------------------------------------------
 Version: 1.1.11
 Date: 26.03.2021
   Bugfixes:
@@ -92,6 +97,11 @@ Date: 28.11.2020
     - updated GUI:
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
+---------------------------------------------------------------------------------------------------
+Version: 0.18.9
+Date: 27.03.2021
+  Bugfixes:
+    - fixed crash due to uninitialized global
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.8
 Date: 26.03.2021

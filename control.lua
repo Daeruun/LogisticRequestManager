@@ -213,8 +213,11 @@ script.on_configuration_changed(function(event)
 		and event.mod_changes.LogisticRequestManager 
 		and event.mod_changes.LogisticRequestManager.old_version ) then
 
+		lrm.get_feature_level ()
+
 		local version_map_1_0_0={import_export={0,18,4}, modifiers_combinator={0,18,7}}
-		local version_map_1_1_0={import_export={1,1,7},modifiers_combinator={1,1,10}}
+		local version_map_1_1_0={import_export={1,1,7},  modifiers_combinator={1,1,10}}
+
 
 		local old_version = util.split (event.mod_changes.LogisticRequestManager.old_version, ".") or nil
 		for i, v in pairs (old_version) do
@@ -457,7 +460,9 @@ function lrm.close_or_toggle (event, toggle)
 
 		if not ( lrm.check_logistics_available (player) ) then return end
 		
-		if master_frame[lrm.defines.gui.frame] then 
+		if not master_frame then master_frame = frame_flow and frame_flow[lrm.defines.gui.master] or nil end
+
+		if master_frame and master_frame[lrm.defines.gui.frame] then 
 			master_frame[lrm.defines.gui.frame].visible = true 
 			lrm.gui.set_gui_elements_enabled(player)
 			if not (global.feature_level == "1.0") then
