@@ -7,7 +7,7 @@ for _, player in pairs(game.players) do
     end
 
     -- remove old static gui from gui.left
-	local frame_flow = mod_gui.get_frame_flow(player)
+    local frame_flow = mod_gui.get_frame_flow(player)
     if frame_flow["logistic-request-manager-gui-frame"] then
         frame_flow["logistic-request-manager-gui-frame"].destroy()
     end

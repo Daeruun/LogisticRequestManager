@@ -33,6 +33,11 @@ A few things can be configured:
 ![mod settings - per player - charcter as default](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings.png?raw=true)  
 This setting allows to interact with the character when no other entity that supports logistic requests is open. It can be changed anytime.
 
+### add appended requests at the end
+![mod settings - per player - append requests at the end](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_add_requests_at_the_end.png?raw=true)  
+If this is enabled, requets that are added to existing ones will be created in a new line after the last existing request if no existing request can be extended.
+Otherwise new requests will be squeezed in wherever possible.
+
 ### always add requests from blueprints to existing requests
 ![mod settings - per player - always add blueprints](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_add_blueprints.png?raw=true)  
 If this setting is enabled blueprints will not overwrite existing requests regardless of the corresponding modifier settings below.
@@ -142,10 +147,11 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 ![07_delete_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/07_delete_a_preset.gif?raw=true)
 
 ## Commands
-At the moment one command with two valid parameters exists.
-It can be used to re-create the default templates after they were deleted or if the auto-trash-preset needs to be updated (if a mod added new items for example).
+At the moment one command with some valid parameters exists.
+Usually it should only be used to re-create the default templates after they were deleted or if the auto-trash-preset was not correctly updated after changes to mods were applied (if a mod added new items or removed one for example).  
+  
 Usage:  
-`/lrm [parameter]` with one of these parameters: `help, force_gui, inject_empty, inject_autotrash`
+`/lrm [parameter]` with one of these parameters: `help, force_gui, renew_empty, renew_autotrash`
 
 # Known bugs
 - Blueprints that are stored in the library cannot be imported correctly due to limitations in the factorio-api.

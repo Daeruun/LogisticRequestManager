@@ -22,6 +22,13 @@ data:extend({
         setting_type = "runtime-per-user",
         default_value = false
     },
+    {
+        type = "bool-setting",
+        name = "LogisticRequestManager-appended_requests_after_existing_ones",
+        order = "aab",
+        setting_type = "runtime-per-user",
+        default_value = true
+    },
 
     {
         type = "bool-setting",

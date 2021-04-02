@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.13
+Date: 02.04.2021
+  Bugfixes:
+    - fixed presets beeing appended incompletely and scattered/with alternating empty slots
+  Features:
+    - auto-update preconfigured presets if they are present when a mod or the basegame is changed/updated
+    - appending presets will no longer fill gabs (added a setting to change that)
+  Changes:
+    - commands inject_empty_preset and inject_autotrash_preset renamed to renew_empty and renew_autotrash
+---------------------------------------------------------------------------------------------------
 Version: 1.1.12
 Date: 27.03.2021
   Bugfixes:
@@ -97,6 +107,16 @@ Date: 28.11.2020
     - updated GUI:
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
+---------------------------------------------------------------------------------------------------
+Version: 0.8.10
+Date: 02.04.2021
+  Bugfixes:
+    - fixed presets beeing appended incompletely and scattered/with alternating empty slots
+  Features:
+    - auto-update preconfigured presets if they are present when a mod or the basegame is changed/updated
+    - appending presets will no longer fill gabs (added a setting to change that)
+  Changes:
+    - commands inject_empty_preset and inject_autotrash_preset renamed to renew_empty and renew_autotrash
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.9
 Date: 27.03.2021
