@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.14
+Date: 09.04.2021
+  Changes:
+    - added setting to prevent the auto-trash preset from beeing created
+    - reduced number of forced gui creations
+---------------------------------------------------------------------------------------------------
 Version: 1.1.13
 Date: 02.04.2021
   Bugfixes:
@@ -108,7 +114,13 @@ Date: 28.11.2020
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
 ---------------------------------------------------------------------------------------------------
-Version: 0.8.10
+Version: 0.18.11
+Date: 09.04.2021
+  Changes:
+    - added setting to prevent the auto-trash preset from beeing created
+    - reduced number of forced gui creations
+---------------------------------------------------------------------------------------------------
+Version: 0.18.10
 Date: 02.04.2021
   Bugfixes:
     - fixed presets beeing appended incompletely and scattered/with alternating empty slots

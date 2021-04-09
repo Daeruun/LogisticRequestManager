@@ -151,7 +151,8 @@ script.on_event(defines.events.on_research_finished, function(event)
         lrm.globals.init()
         
         for _, player in pairs(event.research.force.players) do
-            if ( lrm.check_logistics_available (player) ) then
+            if not ( player.gui.screen[lrm.defines.gui.frame] ) 
+               and ( lrm.check_logistics_available (player) ) then
                 lrm.globals.init_player(player)
                 lrm.gui.force_rebuild(player)
                 lrm.select_preset(player, global["presets-selected"][player.index])
@@ -166,8 +167,10 @@ script.on_event(defines.events.on_player_created, function(event)
     
     lrm.globals.init_player(player)
     lrm.recreate_empty_preset (player)
-    lrm.recreate_autotrash_preset (player)
-
+    if player.mod_settings["LogisticRequestManager-create_preset-autotrash"].value == true then
+        lrm.recreate_autotrash_preset (player)
+    end
+    
     lrm.gui.force_rebuild(player)
 end)
 
@@ -179,7 +182,9 @@ script.on_init(function()
     for _, player in pairs(game.players) do
         lrm.globals.init_player(player)
         lrm.recreate_empty_preset (player)
-        lrm.recreate_autotrash_preset (player)
+        if player.mod_settings["LogisticRequestManager-create_preset-autotrash"].value == true then
+            lrm.recreate_autotrash_preset (player)
+        end
         if ( lrm.check_logistics_available (player) ) then
             lrm.gui.build(player)
         end
@@ -245,7 +250,9 @@ script.on_configuration_changed(function(event)
             if old_version[3] < new_versions.modifiers_combinator[3] then 
                 lrm.move_presets (player)
                 lrm.recreate_empty_preset (player)
-                lrm.recreate_autotrash_preset (player)
+                if player.mod_settings["LogisticRequestManager-create_preset-autotrash"].value == true then
+                    lrm.recreate_autotrash_preset (player)
+                end
 
                 lrm.message( player, {"", {"messages.new_feature-constant_combinator"}, " [color=yellow]", {"messages.new-setting"}, "[/color] " })
                 lrm.message( player, {"", {"messages.new_feature-modifiers"}, " [color=yellow]", {"messages.new-settings"}, "[/color] " })

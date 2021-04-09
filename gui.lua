@@ -29,7 +29,7 @@ if not lrm.gui then lrm.gui = {} end
 -- ----------------------------------------------------------------------------------------------------------------
 
 function lrm.gui.destroy(player)
-    local frame_flow = player.gui.screen
+    local frame_flow = player.gui.screen 
     if frame_flow[lrm.defines.gui.frame] then 
         frame_flow[lrm.defines.gui.frame].destroy()
     end
@@ -153,7 +153,7 @@ function lrm.gui.build_tool_bar(player, gui_frame)
         sprite = "LRM-save-as",
     }
     save_as_button.style.padding = 2
-
+    
     local save_button = gui_toolbar.add {
         type = "sprite-button",
         name = lrm.defines.gui.save_button,
@@ -161,7 +161,7 @@ function lrm.gui.build_tool_bar(player, gui_frame)
         sprite = "LRM-save",
     }
     save_button.style.padding = 2
-
+    
     local export_button = gui_toolbar.add {
         type = "sprite-button",
         name = lrm.defines.gui.export_button,

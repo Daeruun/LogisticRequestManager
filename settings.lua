@@ -3,17 +3,24 @@ require 'defines'
 data:extend({
     {
         type = "bool-setting",
-        name = "LogisticRequestManager-allow_gui_without_research",
-        order = "aaa",
+        name = "LogisticRequestManager-default_to_user",
+        order = "aaaa",
         setting_type = "runtime-per-user",
         default_value = false
     },
     {
         type = "bool-setting",
-        name = "LogisticRequestManager-default_to_user",
-        order = "aaa",
+        name = "LogisticRequestManager-allow_gui_without_research",
+        order = "aaab",
         setting_type = "runtime-per-user",
         default_value = false
+    },
+    {
+        type = "bool-setting",
+        name = "LogisticRequestManager-create_preset-autotrash",
+        order = "aaac",
+        setting_type = "runtime-per-user",
+        default_value = true
     },
     {
         type = "bool-setting",
