@@ -151,7 +151,7 @@ script.on_event(defines.events.on_research_finished, function(event)
         lrm.globals.init()
         
         for _, player in pairs(event.research.force.players) do
-            if not ( player.gui.screen[lrm.defines.gui.frame] ) 
+            if not ( player.gui.screen[lrm.defines.gui.master] ) 
                and ( lrm.check_logistics_available (player) ) then
                 lrm.globals.init_player(player)
                 lrm.gui.force_rebuild(player)

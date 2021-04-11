@@ -4,31 +4,43 @@ if not lrm.request_manager then
 end
 
 function lrm.request_manager.request_blueprint(player, modifiers)
-    if not (global.feature_level == "1.0" and player.is_cursor_blueprint()) then 
-        return nil 
-    end
-
     local entity = lrm.blueprint_requests.get_inventory_entity(player, {"messages.target-entity"}, {"messages.append"}, {"messages.blueprint"})
     if not (entity and entity.valid) then
         return nil
     end
     local blueprint = player.cursor_stack
+    local blueprint_bom = {}
     
     if not (blueprint and blueprint.valid and blueprint.valid_for_read) then
-        return nil
+        if (global.feature_level == "1.0") then
+            lrm.message(player, {"messages.error-library_blueprints"})
+            return nil
+        else
+            if player.is_cursor_blueprint() then 
+                lrm.message(player, {"messages.library_blueprints"})
+                for _, item in pairs(player.get_blueprint_entities()) do
+                    blueprint_bom[item.name] = (blueprint_bom[item.name] or 0) + 1
+                end
+            else
+                return nil
+            end
+        end
+    else
+        if blueprint.is_blueprint_book and blueprint.active_index then
+            blueprint = blueprint.get_inventory(defines.inventory.item_main)[blueprint.active_index]
+        end
+        
+        if not blueprint.is_blueprint then
+            return nil
+        end
+        
+        if next(blueprint.cost_to_build) == nil then
+            return nil
+        else
+            blueprint_bom = blueprint.cost_to_build
+        end
     end
     
-    if blueprint.is_blueprint_book and blueprint.active_index then
-        blueprint = blueprint.get_inventory(defines.inventory.item_main)[blueprint.active_index]
-    end
-    
-    if not blueprint.is_blueprint then
-        return nil
-    end
-    
-    if next(blueprint.cost_to_build) == nil then
-        return nil
-    end
     
 
     if modifiers.always_append_blueprints then -- this overwrites the other append-settings
@@ -37,7 +49,7 @@ function lrm.request_manager.request_blueprint(player, modifiers)
     
     local required_slots = 0
     local blueprint_data = {}
-    for item, count in pairs(blueprint.cost_to_build) do
+    for item, count in pairs(blueprint_bom) do
         if item and not (game.item_prototypes[item] == nil) then
             if (modifiers.blueprint_item_requests_unlimited) then
                 table.insert (blueprint_data, {name=item, min=count, max=0xFFFFFFFF, type="item"})
@@ -186,7 +198,7 @@ function lrm.request_manager.apply_preset(player, entity, data_to_apply, modifie
         else
             lrm.request_manager.push_requests_to_autotrasher(player, entity, data_to_apply)
         end
-      end
+    end
 end
 
 function lrm.request_manager.save_preset(player, preset_number, preset_name, modifiers)

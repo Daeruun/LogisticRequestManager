@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.15
+Date: 12.04.2021
+  Bugfixes:
+    - removed unneccessary forced gui creations
+    - fixed blueprints not beeing applied
+  Changes:
+    - blueprints from library can now be used as well; as tiles cannot be extracted, a message is created to warn about that
+---------------------------------------------------------------------------------------------------
 Version: 1.1.14
 Date: 09.04.2021
   Changes:
@@ -113,6 +121,12 @@ Date: 28.11.2020
     - updated GUI:
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
+---------------------------------------------------------------------------------------------------
+Version: 0.18.12
+Date: 12.04.2021
+  Bugfixes:
+    - removed unneccessary forced gui creations
+    - fixed blueprints not beeing applied
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.11
 Date: 09.04.2021
