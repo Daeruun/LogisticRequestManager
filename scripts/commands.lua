@@ -71,6 +71,12 @@ function lrm.commands.debug(player, parameters)
     elseif parameters[2]=="feature_level" then
         lrm.message(player, "feature_level: " .. tostring(global.feature_level))
 
+    elseif parameters[2]=="preset_size" then
+        local preset_number = global["presets-selected"][player.index] or 0
+        local preset_name   = global["preset-names"][player.index][preset_number] or "nil"
+        local preset_size   = table_size(global["preset-data"][player.index][preset_number] or {} )
+        lrm.message(player, {"", "number of items in preset ", preset_name, ": ", tostring(preset_size)})
+
     else
         lrm.message(player, {"", {"command.parameter_invalid"}, "   ", lrm.commands.usage} )
     end

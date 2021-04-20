@@ -3,6 +3,7 @@ if not lrm.defines then lrm.defines = {} end
 
 lrm.defines.preset_string_version=2
 lrm.defines.protected_presets=10
+lrm.defines.preset_slots_warning_level = 100
 
 lrm.defines.id        = "logistic-request-manager"
 lrm.defines.guiprefix = lrm.defines.id .. "-gui-"
@@ -44,6 +45,8 @@ lrm.defines.gui = {
     preset_button_selected      = lrm.defines.guiprefix .. "preset-button-selected",
     
     request_window              = lrm.defines.guiprefix .. "request-window",
+    request_notice              = lrm.defines.guiprefix .. "request-notice",
+    request_notice_sprite       = lrm.defines.guiprefix .. "request-notice-sprite",
     request_table               = lrm.defines.guiprefix .. "request-table",
     request_slot                = lrm.defines.guiprefix .. "request-slot",
     request_count               = lrm.defines.guiprefix .. "request-count",

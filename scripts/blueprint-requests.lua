@@ -64,9 +64,23 @@ end
 
 function lrm.blueprint_requests.on_tick()
     local bring_to_front = global["bring_to_front"] or {}
+    local unregister = true
     if table_size(bring_to_front) > 0 then 
+        unregister = false
         lrm.gui.bring_to_front()
-    else
+    end
+
+    local data_to_view = global["data_to_view"]
+    if table_size(data_to_view) > 0 then
+        unregister = false
+        for index, _ in pairs(data_to_view) do
+            if (game.tick % ( global["data_to_view"][index].ticks or 10) ) == 0 then 
+                lrm.gui.display_preset_junk (index)
+            end
+        end
+    end
+
+    if unregister then 
         lrm.blueprint_requests.unregister_on_tick()
     end
 end
@@ -126,8 +140,8 @@ end,{
 })
 
 script.on_load(function()
---      if global.on_tick then
---          lrm.blueprint_requests.register_on_tick()
---      end
+     if global.on_tick then
+         lrm.blueprint_requests.register_on_tick()
+     end
     lrm.commands.init()
 end)

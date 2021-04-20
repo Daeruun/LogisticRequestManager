@@ -79,6 +79,7 @@ default_gui[lrm.defines.gui.request_window] = {
     parent = "scroll_pane",
     width = 420,
     heigth = 208,
+    maximal_width  = 420,
     minimal_height = 208,
     maximal_height = 208,
     margin = 0,

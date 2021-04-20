@@ -2,6 +2,21 @@ require 'defines'
 
 data:extend({
     {
+        type = "double-setting",
+        name = "LogisticRequestManager-display_slots_by_tick_ratio",
+        order = "zy",
+        setting_type = "runtime-per-user",
+        allowed_values ={0,0.1,0.2,0.3,0.5,1,2,3,4,5,6,7,8,9,10,15,20,25,50},
+        default_value = 0
+    },
+    {
+        type = "bool-setting",
+        name = "LogisticRequestManager-display_slots_warning",
+        order = "zz",
+        setting_type = "runtime-per-user",
+        default_value = true
+    },
+    {
         type = "bool-setting",
         name = "LogisticRequestManager-default_to_user",
         order = "aaaa",
@@ -36,7 +51,6 @@ data:extend({
         setting_type = "runtime-per-user",
         default_value = true
     },
-
     {
         type = "bool-setting",
         name = "LogisticRequestManager-always_append_blueprints",

@@ -30,8 +30,8 @@ if not lrm.gui then lrm.gui = {} end
 
 function lrm.gui.destroy(player)
     local frame_flow = player.gui.screen 
-    if frame_flow[lrm.defines.gui.frame] then 
-        frame_flow[lrm.defines.gui.frame].destroy()
+    if frame_flow[lrm.defines.gui.master] then 
+        frame_flow[lrm.defines.gui.master].destroy()
     end
     local button_flow = mod_gui.get_button_flow(player)
     if button_flow[lrm.defines.gui.toggle_button] then
@@ -225,6 +225,43 @@ function lrm.gui.build_body(player, gui_frame)
     request_window.vertical_scroll_policy = "auto-and-reserve-space"
     request_window.style.vertical_align = "bottom"
     
+    local request_notice_flow = request_window.add {
+        type = "flow",
+        name = lrm.defines.gui.request_notice,
+        direction = "horizontal"
+    }
+    request_notice_flow.visible = false
+    request_notice_flow.style.horizontal_align = "center"
+    request_notice_flow.style.vertical_align = "center"
+    request_notice_flow.style.margin = 4
+    
+
+    local request_notice_sprite = request_notice_flow.add {
+        type = "sprite",
+        name = lrm.defines.gui.request_notice_sprite,
+        sprite = "utility/warning_icon"
+    }
+    request_notice_sprite.style.right_margin = 4
+
+    local request_notice = request_notice_flow.add {
+        type = "label",
+        name = lrm.defines.gui.request_notice
+    }
+    -- request_notice.style.maximal_width = request_window.style.maximal_width
+    -- request_notice.style.width  = 300
+    -- request_notice.style.height = 64
+    -- request_notice.style.horizontal_align = "center"
+    -- request_notice.style.vertical_align = "center"
+    -- request_notice.style.vertically_stretchable = "on"
+    -- request_notice.style.horizontally_stretchable = "on"
+    -- request_notice.style.horizontally_squashable = "on"
+    -- request_notice.word_wrap = true
+    -- request_notice.read_only = true
+    -- request_notice.selectable = false
+    request_notice.style.single_line = false
+    request_notice.style.font = "default-bold"
+
+
     lrm.gui.build_slots(player, nil, request_window)
 
     lrm.gui.build_target_menu(player, gui_body_flow_right)
@@ -333,14 +370,15 @@ function lrm.gui.build_slots(player, preset_slots, parent_to_extend)
     local slots = preset_slots
     for i = 1, slots do
         local request = request_table.add {
-            type = "choose-elem-button",
+            type = "sprite-button",
+            --type = "choose-elem-button",
             name = lrm.defines.gui.request_slot .. i,
-            elem_type = "signal",
+            --elem_type = "signal",
             style = lrm.defines.gui.request_slot,
 
             
         }
-        request.locked = true    -- read only flag
+        -- request.locked = true    -- read only flag
         
         local min = request.add {
             type = "label",
@@ -536,7 +574,6 @@ function lrm.gui.force_rebuild(player)
     local button_flow = mod_gui.get_button_flow(player)
     local button=false
     if button_flow[lrm.defines.gui.toggle_button] then
-        button_flow[lrm.defines.gui.toggle_button].destroy()
         button=true
     end
 
@@ -551,18 +588,16 @@ function lrm.gui.force_rebuild(player)
     local visible_export_frame  = export_frame and export_frame.visible or false
     local visible_import_frame  = import_frame and import_frame.visible or false
 
-    if master then master.destroy() end
-
-    lrm.gui.build(player)
+    lrm.gui.destroy(player)
 
     if lrm.check_logistics_available(player) then
-        lrm.gui.build_toggle_button(player) 
+        lrm.gui.build(player)
 
         master       = frame_flow and frame_flow[lrm.defines.gui.master] or nil
         frame        = lrm.gui.get_gui_frame(player, lrm.defines.gui.frame)
         export_frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.export_frame)
         import_frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.import_frame)
-    
+        
         if master       then master       .visible = visible_master       end
         if frame        then frame        .visible = visible_frame        end
         if export_frame then export_frame .visible = visible_export_frame end
@@ -573,15 +608,15 @@ function lrm.gui.force_rebuild(player)
 end
 
 function lrm.gui.get_save_as_name(player, parent_frame)
-    local toolbar = parent_frame and parent_frame[lrm.defines.gui.toolbar]
+    local toolbar   = parent_frame and parent_frame[lrm.defines.gui.toolbar]
     local textfield = toolbar and toolbar[lrm.defines.gui.save_as_textfield]
 
     return textfield and textfield.text
 end
 function lrm.gui.clear_save_as_name(player, parent_frame)
-    local toolbar = parent_frame and parent_frame[lrm.defines.gui.toolbar]
+    local toolbar   = parent_frame and parent_frame[lrm.defines.gui.toolbar]
     local textfield = toolbar and toolbar[lrm.defines.gui.save_as_textfield]
-
+    
     if textfield then textfield.text="" end
 end
 
@@ -609,6 +644,8 @@ end
 
 function lrm.gui.display_preset(player, preset_data, request_window)
     local slots = preset_data and table_size(preset_data)
+    if slots == nil then return end
+    -- there is nothing to display...
 
     if not request_window then
         local frame      = lrm.gui.get_gui_frame(player, lrm.defines.gui.frame)
@@ -619,24 +656,67 @@ function lrm.gui.display_preset(player, preset_data, request_window)
         if not request_window then return end
     end
 
+    local notice_flow = request_window[lrm.defines.gui.request_notice] or nil
+    local notice_frame = notice_flow and notice_flow[lrm.defines.gui.request_notice] or nil
+    if (preset_data.notice) then
+        if notice_frame then 
+            notice_frame.caption = preset_data.notice
+            notice_flow.visible = true
+        end
+        preset_data.notice = nil
+        slots = slots - 1
+    else
+        if notice_frame then 
+            notice_frame.caption = ""
+            notice_flow.visible = false
+        end
+    end
+
     lrm.gui.build_slots(player, slots, request_window)
-
-    if slots == nil then return end
-    -- there is nothing to display...
-
-    local request_table = request_window[lrm.defines.gui.request_table]
     
-    for i = 1, slots do
+    local request_table = request_window[lrm.defines.gui.request_table]
+    local increment, ticks
+    increment = math.ceil(player.mod_settings["LogisticRequestManager-display_slots_by_tick_ratio"].value)
+    ticks     = math.ceil(1 / player.mod_settings["LogisticRequestManager-display_slots_by_tick_ratio"].value)
+    
+    global["data_to_view"][player.index] = {data=table.deepcopy(preset_data), position=1, parent_table=request_table, increment=increment, ticks=ticks }
+    
+    lrm.gui.display_preset_junk (player.index)
+end
+
+function lrm.gui.display_preset_junk (index)
+    if not index then return end
+    local preset_data, position, request_table, increment 
+    preset_data   = global["data_to_view"][index].data or {}
+    position      = global["data_to_view"][index].position or 0
+    request_table = global["data_to_view"][index].parent_table or nil
+    increment     = ( global["data_to_view"][index].increment or 1 ) - 1
+
+    if increment > 1 then increment = increment - 1 end
+
+    local preset_size = #preset_data
+    local slots = position + increment
+    if increment < 0 or slots > preset_size then 
+        slots = preset_size
+    end
+    
+    for i = position, slots do
         local item = preset_data and preset_data[i] or nil
         if item and item.name then
             -- TODO see if there's a way to detect prototype name changes
             local valid_prototype = true
             if (item.type == "item") and game.item_prototypes[item.name] then
-                request_table.children[i].elem_value = {name=item.name, type="item"}
+                request_table.children[i].sprite = "item." .. item.name
+                request_table.children[i].tooltip = item.name
+                --request_table.children[i].elem_value = {name=item.name, type="item"}
             elseif (item.type == "fluid") and game.fluid_prototypes[item.name] then
-                request_table.children[i].elem_value = {name=item.name, type="fluid"}
+                request_table.children[i].sprite = "fluid." .. item.name
+                request_table.children[i].tooltip = item.name
+                --request_table.children[i].elem_value = {name=item.name, type="fluid"}
             elseif (item.type == "virtual" or item.type == "virtual-signal") and game.virtual_signal_prototypes[item.name] then
-                request_table.children[i].elem_value = {name=item.name, type="virtual"}
+                request_table.children[i].sprite = "virtual-signal." .. item.name
+                request_table.children[i].tooltip = item.name
+                --request_table.children[i].elem_value = {name=item.name, type="virtual"}
             else
                 valid_prototype = false
             end
@@ -661,7 +741,8 @@ function lrm.gui.display_preset(player, preset_data, request_window)
                     request_table.children[i].children[2].caption = util.format_number(item.max, true)
                 end
             else
-                request_table.children[i].elem_value = {name="LRM-dummy-item", type="item"}
+                request_table.children[i].sprite = "item.LRM-dummy-item"
+                -- request_table.children[i].elem_value = {name="LRM-dummy-item", type="item"}
                 if (item.type == "item") or (item.type == "fluid") or (item.type == "virtual") then
                     request_table.children[i].tooltip = {"tooltip.missing-object", {"common.The-" .. item.type or ""}, item.name}
                 else
@@ -671,6 +752,13 @@ function lrm.gui.display_preset(player, preset_data, request_window)
         else
             -- as the table was just created, there is nothing to clear
         end
+    end
+
+    if slots < preset_size then
+        global["data_to_view"][index].position=slots+1
+        lrm.blueprint_requests.register_on_tick()
+    else
+        global["data_to_view"][index] = nil
     end
 end
 
@@ -812,7 +900,7 @@ function lrm.gui.build_import_preview_frame (player)
         name = lrm.defines.gui.save_as_button,
         style = "shortcut_bar_button",
         sprite = "LRM-save-as",
-        tooltip = {"tooltip.save-as", {"tooltip.imported-string"}}
+        tooltip = {"tooltip.save_as", {"tooltip.imported-string"}}
     }
     save_as_button.style.padding = 2
 

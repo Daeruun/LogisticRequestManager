@@ -224,6 +224,8 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name, mod
     end
 
     local slots = entity.request_slot_count
+
+
     local request_data
     local max_value = (modifiers.undefined_max_as_infinit and 0xFFFFFFFF) or nil
     if ( not logistic_requester 
@@ -240,9 +242,12 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name, mod
         end
     end
 
-    if modifiers.round_up then
-        for index, item in pairs(request_data) do
-            if item and item.name then
+    local configured_slots = 0
+
+    for index, item in pairs(request_data) do
+        if item and item.name then
+            configured_slots = configured_slots + 1
+            if modifiers.round_up then
                 local min_count = item.min or 0
                 local stack_size= game.item_prototypes[item.name] and game.item_prototypes[item.name].stack_size or 1
 
@@ -253,6 +258,12 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name, mod
             end
         end
     end
+
+    local slot_count_warning = player.setting["LogisticRequestManager-display_slots_warning"] and player.setting["LogisticRequestManager-display_slots_warning"].value
+    if slot_count_warning and ( configured_slots > lrm.defines.preset_slots_warning_level )  then
+        lrm.message(player, {"messages.large_preset_warning"})
+    end
+
 
     
     global["preset-names"][player.index][preset_number] = preset_name
@@ -585,6 +596,19 @@ function lrm.request_manager.save_imported_preset(player, preset_name)
     
     local preset_number = total + 1
 
+    local configured_slots = 0
+
+    for index, item in pairs(preset_data) do
+        if item and item.name then
+            configured_slots = configured_slots + 1
+        end
+    end
+
+    local slot_count_warning = player.mod_settings["LogisticRequestManager-display_slots_warning"] and player.mod_settings["LogisticRequestManager-display_slots_warning"].value
+    if slot_count_warning and ( configured_slots > lrm.defines.preset_slots_warning_level )  then
+        lrm.message(player, {"messages.large_preset_warning"})
+    end
+    
     global["preset-names"][player.index][preset_number] = preset_name
     global["preset-data"][player.index][preset_number]  = preset_data
 

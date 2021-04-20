@@ -8,7 +8,8 @@ function lrm.globals.init()
     global["inventories-open"] = global["inventories-open"] or {}
     global["screen_location"]  = global["screen_location"] or {}
     global["bring_to_front"]   = global["bring_to_front"] or {}
-
+    global["data_to_view"]     = global["data_to_view"] or {}
+    
     global.on_tick = global.on_tick or false
     
     global.feature_level = global.feature_level or "1.0"
