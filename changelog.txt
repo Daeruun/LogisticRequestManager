@@ -1,6 +1,11 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.1.16
+Version: 1.1.17
 Date: 22.04.2021
+  Bugfixes:
+    - Fixed a crash on saving.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.16
+Date: 21.04.2021
   Changes:
     - The clear-all preset is no longer displayed completly. Only items with a non-zero-request and a message regarding the others are displayed.
     - Added a setting to tweak the number of updated GUI-elements per tick to help mitigating future freezes when previewing very large presets.
@@ -130,8 +135,13 @@ Date: 28.11.2020
       * buttons ('save as', 'save', 'load', 'delete') grow to fit text if on non english locale
       * reduced jumping of frames
 ---------------------------------------------------------------------------------------------------
-Version: 0.18.13
+Version: 0.18.14
 Date: 22.04.2021
+  Bugfixes:
+    - Fixed a crash on saving.
+---------------------------------------------------------------------------------------------------
+Version: 0.18.13
+Date: 21.04.2021
   Changes:
     - The clear-all preset is no longer displayed completly. Only items with a non-zero-request and a message regarding the others are displayed.
     - Added a setting to tweak the number of updated GUI-elements per tick to help mitigating future freezes when previewing very large presets.

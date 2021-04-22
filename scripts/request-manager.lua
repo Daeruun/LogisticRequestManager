@@ -259,7 +259,7 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name, mod
         end
     end
 
-    local slot_count_warning = player.setting["LogisticRequestManager-display_slots_warning"] and player.setting["LogisticRequestManager-display_slots_warning"].value
+    local slot_count_warning = player.mod_settings["LogisticRequestManager-display_slots_warning"].value or true
     if slot_count_warning and ( configured_slots > lrm.defines.preset_slots_warning_level )  then
         lrm.message(player, {"messages.large_preset_warning"})
     end
@@ -604,7 +604,7 @@ function lrm.request_manager.save_imported_preset(player, preset_name)
         end
     end
 
-    local slot_count_warning = player.mod_settings["LogisticRequestManager-display_slots_warning"] and player.mod_settings["LogisticRequestManager-display_slots_warning"].value
+    local slot_count_warning = player.mod_settings["LogisticRequestManager-display_slots_warning"].value or true
     if slot_count_warning and ( configured_slots > lrm.defines.preset_slots_warning_level )  then
         lrm.message(player, {"messages.large_preset_warning"})
     end
