@@ -443,6 +443,7 @@ function lrm.gui.set_gui_elements_enabled(player)
     local append_tooltip      = lrm.gui.create_modifiertooltip(player, "append")
     local undefined_max_as_infinit_tooltip = lrm.gui.create_modifiertooltip(player, "undefined_max_as_infinit")
     local round_up_tooltip    = lrm.gui.create_modifiertooltip(player, "round_up")
+    local subtract_tooltip    = {"", "\n\n", {"tooltip.function-subtract", {"", "[color=yellow]", {"common.R-CLICK"}, "[/color]"} },  (max_configurable and lrm.gui.create_modifiertooltip(player, "append", "subtract_max" ) or "") }
     
 
     -- configure buttons
@@ -455,13 +456,13 @@ function lrm.gui.set_gui_elements_enabled(player)
         end
         -- blueprints are special
         if (append_blueprints and unlimited_blueprints) then
-            lrm.gui.set_gui_element (blueprint_button, true,  {"", {"tooltip.always_append_blueprints", entity_icon}, round_up_tooltip })
+            lrm.gui.set_gui_element (blueprint_button, true,  {"", {"tooltip.always_append_blueprints", entity_icon}, round_up_tooltip, subtract_tooltip })
         elseif unlimited_blueprints then
-            lrm.gui.set_gui_element (blueprint_button, true,  {"", {"tooltip.blueprint-request",        entity_icon}, append_tooltip, round_up_tooltip })
+            lrm.gui.set_gui_element (blueprint_button, true,  {"", {"tooltip.blueprint-request",        entity_icon}, append_tooltip, round_up_tooltip, subtract_tooltip })
         elseif append_blueprints then
-            lrm.gui.set_gui_element (blueprint_button, true,  {"", {"tooltip.blueprint-request",        entity_icon}, undefined_max_as_infinit_tooltip, round_up_tooltip })
+            lrm.gui.set_gui_element (blueprint_button, true,  {"", {"tooltip.blueprint-request",        entity_icon}, undefined_max_as_infinit_tooltip, round_up_tooltip, subtract_tooltip })
         else
-            lrm.gui.set_gui_element (blueprint_button, true,  {"", {"tooltip.blueprint-request",        entity_icon}, append_tooltip, undefined_max_as_infinit_tooltip, round_up_tooltip })
+            lrm.gui.set_gui_element (blueprint_button, true,  {"", {"tooltip.blueprint-request",        entity_icon}, append_tooltip, undefined_max_as_infinit_tooltip, round_up_tooltip, subtract_tooltip })
         end
         -- 
         if (preset_selected) then
@@ -474,7 +475,7 @@ function lrm.gui.set_gui_elements_enabled(player)
             else
                 lrm.gui.set_gui_element (save_button,      false, {"messages.protected-preset", {"messages.save"} })
             end
-            lrm.gui.set_gui_element (load_button,      true,  {"", {"tooltip.load-preset",       preset_name, entity_icon}, append_tooltip, round_up_tooltip })
+            lrm.gui.set_gui_element (load_button,      true,  {"", {"tooltip.load-preset",       preset_name, entity_icon}, append_tooltip, round_up_tooltip, subtract_tooltip })
         else
             lrm.gui.set_gui_element (save_button,      false, {"messages.select-preset", {"messages.save"} })
             lrm.gui.set_gui_element (load_button,      false, {"messages.select-preset", {"messages.load"} })
@@ -507,7 +508,7 @@ function lrm.gui.set_gui_element(gui_element, flag, tooltip_string)
     gui_element.tooltip = tooltip_string or ""
 end
 
-function lrm.gui.create_modifiertooltip(player, modifier_name)
+function lrm.gui.create_modifiertooltip(player, modifier_name, function_name)
     if not (player and modifier_name) then return "" end
     local function_enabled  = player.mod_settings["LogisticRequestManager-enable-" .. modifier_name].value or nil
     local function_modifier = player.mod_settings["LogisticRequestManager-modifier-" .. modifier_name].value or nil
@@ -520,11 +521,11 @@ function lrm.gui.create_modifiertooltip(player, modifier_name)
     if (function_enabled=="never") then
         tooltip_string = ""
     elseif (function_enabled=="always") then
-        tooltip_string = {"tooltip.function-" .. modifier_name}
+        tooltip_string = {"tooltip.function-" .. (function_name or modifier_name)}
     elseif (function_enabled=="on_modifier") then
-        tooltip_string = {"", "\n", {"tooltip.function-" .. modifier_name}, " ", {"tooltip.on_modifier", function_modifier}, "." }
+        tooltip_string = {"", "\n", {"tooltip.function-" .. (function_name or modifier_name)}, " ", {"tooltip.on_modifier", function_modifier}, "." }
     elseif (function_enabled=="not_on_modifier") then
-        tooltip_string =  {"", "\n", {"tooltip.function-" .. modifier_name}, " ", {"tooltip.if_not_modifier", function_modifier}, "." }
+        tooltip_string =  {"", "\n", {"tooltip.function-" .. (function_name or modifier_name)}, " ", {"tooltip.if_not_modifier", function_modifier}, "." }
     else
         tooltip_string =  ""
     end

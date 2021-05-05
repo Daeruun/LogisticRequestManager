@@ -6,6 +6,8 @@ require 'scripts/request-manager'
 require 'scripts/blueprint-requests'
 require 'scripts/commands'
 
+
+
 function lrm.select_preset(player, preset)
     if global["presets-selected"][player.index] == preset then
         return
@@ -33,11 +35,13 @@ function lrm.select_preset(player, preset)
 end
 
 script.on_event(defines.events.on_gui_click, function(event)
+    if not event.element.get_mod() == "LogisticRequestManager" then return end
     local player = game.players[event.player_index]
     if not (player and player.valid) then return end
     local frame_flow = player.gui.screen
     local gui_clicked = event.element.name
 
+    
     if gui_clicked == lrm.defines.gui.toggle_button then
         if (event.control and event.alt and event.shift) then 
             local selected_preset = global["presets-selected"][player.index]
@@ -244,8 +248,8 @@ script.on_configuration_changed(function(event)
 
         lrm.get_feature_level ()
 
-        local version_map_1_0_0={import_export={0,18,4}, modifiers_combinator={0,18,7}}
-        local version_map_1_1_0={import_export={1,1,7},  modifiers_combinator={1,1,10}}
+        local version_map_1_0_0={import_export={0,18,4}, modifiers_combinator={0,18,7}, reduce_freeze={0,18,15}}
+        local version_map_1_1_0={import_export={1,1,7},  modifiers_combinator={1,1,10}, reduce_freeze={1,1,18}}
 
 
         local old_version = util.split (event.mod_changes.LogisticRequestManager.old_version, ".") or nil
@@ -284,6 +288,12 @@ script.on_configuration_changed(function(event)
                 new_how_to = true
 
                 global["inventories-open"][player.index]=global["inventories-open"][player.index]~=nil
+            end
+
+            if old_version[3] < new_versions.reduce_freeze[3] then 
+                if (player.mod_settings["LogisticRequestManager-display_slots_by_tick_ratio"].value==0) then
+                    player.mod_settings["LogisticRequestManager-display_slots_by_tick_ratio"] = {value=10}
+                end
             end
 
             if new_how_to then 
@@ -569,6 +579,9 @@ function lrm.check_modifiers(event)
     matched_modifiers["always_append_blueprints"]          = settings.get_player_settings(player)["LogisticRequestManager-always_append_blueprints"].value
     matched_modifiers["blueprint_item_requests_unlimited"] = settings.get_player_settings(player)["LogisticRequestManager-blueprint_item_requests_unlimited"].value
     
+    matched_modifiers["subtract"] = event.button == defines.mouse_button_type.right
+    matched_modifiers["subtract_max"] = matched_modifiers["append"] or false -- will be mapped to "append"
+
     local active_modifiers={}
     if event.shift   then table.insert(active_modifiers, "SHIFT") end
     if event.control then table.insert(active_modifiers, "CTRL") end
@@ -626,6 +639,8 @@ function lrm.check_modifiers(event)
         end
     end
 
+    matched_modifiers["subtract_max"] = matched_modifiers["append"] or false
+    
     return matched_modifiers
 end
 

@@ -51,7 +51,7 @@ function lrm.request_manager.request_blueprint(player, modifiers)
     local blueprint_data = {}
     for item, count in pairs(blueprint_bom) do
         if item and not (game.item_prototypes[item] == nil) then
-            if (modifiers.blueprint_item_requests_unlimited) then
+            if (modifiers.blueprint_item_requests_unlimited or modifiers.undefined_max_as_infinit) then
                 table.insert (blueprint_data, {name=item, min=count, max=0xFFFFFFFF, type="item"})
             else
                 table.insert (blueprint_data, {name=item, min=count, max=count, type="item"})
@@ -77,10 +77,28 @@ function lrm.request_manager.apply_preset(player, entity, data_to_apply, modifie
                 local stack_size= game.item_prototypes[item.name] and game.item_prototypes[item.name].stack_size or 1
 
                 item.min = math.ceil (min_count / stack_size) * stack_size
+                if not ( item.max ) or ( item.max < item.min ) then
+                    item.max = item.min
+                end
             end
         end
     end
 
+    if modifiers.subtract then
+        modifiers.append = true
+        for index, item in pairs(data_to_apply) do
+            if item and item.name then
+                item.min = 0 - item.min
+                if modifiers.subtract_max then
+                    item.max = 0 - item.max
+                else
+                    item.max = 0
+                end
+            end
+        end
+
+    end
+    
     if modifiers.append then
         local current_data = {}
         local max_value = (modifiers.undefined_max_as_infinit and 0xFFFFFFFF) or nil
@@ -135,11 +153,12 @@ function lrm.request_manager.apply_preset(player, entity, data_to_apply, modifie
                  or ( ( item.type == "virtual" or item.type == "virtual-signal" ) and game.virtual_signal_prototypes[item.name] ) ) ) )
                ) then
                 local slot = nil
-                local min_count = data_to_apply[index].min
+                local min_count = item.min
+                local max_count = item.max and (item.max < 0 or item.max == 0xFFFFFFFF) and item.max or 0
                 if slot_map[item.name] then
                     slot = slot_map[item.name]
-                    current_requests[slot].min=current_requests[slot].min+min_count
-                    current_requests[slot].max=(current_requests[slot].max and (current_requests[slot].max > current_requests[slot].min)) and current_requests[slot].max or current_requests[slot].min
+                    current_requests[slot].min = current_requests[slot].min + min_count
+                    current_requests[slot].max = current_requests[slot].max + max_count
                     if ( append_at_end ) then
                         matched_in_row = matched_in_row + 1
                         highest_configured_slot = highest_configured_slot + 1
@@ -162,6 +181,16 @@ function lrm.request_manager.apply_preset(player, entity, data_to_apply, modifie
                         end
                     end
                     current_requests[slot] = item
+                end
+
+                if ( current_requests[slot].min < 0 ) then 
+                    current_requests[slot].min = 0
+                end
+                if ( current_requests[slot].max > 0xFFFFFFFF ) then 
+                    current_requests[slot].max = 0xFFFFFFFF
+                end
+                if ( current_requests[slot].max < current_requests[slot].min ) then 
+                    current_requests[slot].max = current_requests[slot].min
                 end
             else
                 empty_in_row = empty_in_row + 1
