@@ -16,8 +16,8 @@ function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_tx
         end
     end
     
-    local logistic_point = entity and entity.get_logistic_point(defines.logistic_member_index.character_requester) or nil
-    local control_behavior = entity and entity.get_control_behavior() or nil
+    local logistic_point = entity and entity.get_logistic_point and entity.get_logistic_point(defines.logistic_member_index.character_requester) or nil
+    local control_behavior = entity and entity.get_control_behavior and entity.get_control_behavior() or nil
     
     if (
          ( ( not (logistic_point == nil) )
