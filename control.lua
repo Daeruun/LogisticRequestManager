@@ -287,7 +287,7 @@ script.on_configuration_changed(function(event)
             game_version[i]=tonumber(v)
         end
 
-        if game_version[1]<1 or (game_version[1] == 1 and game_version[2]) == 0 then
+        if game_version[1]<1 or (game_version[1] == 1 and game_version[2] == 0) then
             global.feature_level = "1.0"
         else
             global.feature_level = "1.1"
@@ -501,7 +501,7 @@ function lrm.get_feature_level ()
             base_version[i]=tonumber(v)
         end
 
-        if base_version[1]<1 or (base_version[1] == 1 and base_version[2]) == 0 then
+        if base_version[1]<1 or (base_version[1] == 1 and base_version[2] == 0) then
             global.feature_level = "1.0"
         else
             global.feature_level = "1.1"
