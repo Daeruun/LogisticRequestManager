@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.32
+Date: 27.01.2024
+  Changes:
+    - fixed a crash on handling a blueprint library based blueprint that only contains tiles
+    - minor code fixes
+---------------------------------------------------------------------------------------------------
 Version: 1.1.31
 Date: 16.08.2023
   Changes:

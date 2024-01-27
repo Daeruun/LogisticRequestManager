@@ -33,6 +33,7 @@ function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_tx
         if settings.get_player_settings(player)["LogisticRequestManager-default_to_user"].value then
             return player.character
         else
+---@diagnostic disable-next-line: need-check-nil
             lrm.error(player, {"messages.open-entity-does-not-support-requests", entity.localised_name})
             return nil
         end
