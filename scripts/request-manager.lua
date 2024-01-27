@@ -18,8 +18,13 @@ function lrm.request_manager.request_blueprint(player, modifiers)
         else
             if player.is_cursor_blueprint() then 
                 lrm.message(player, {"messages.library_blueprints"})
-                for _, item in pairs(player.get_blueprint_entities()) do
-                    blueprint_bom[item.name] = (blueprint_bom[item.name] or 0) + 1
+                local blueprint_data = player.get_blueprint_entities()
+                if not (blueprint_data == nil) then
+                    for _, item in pairs(blueprint_data) do
+                        blueprint_bom[item.name] = (blueprint_bom[item.name] or 0) + 1
+                    end
+                else
+                    return nil
                 end
             else
                 return nil
@@ -63,8 +68,8 @@ function lrm.request_manager.request_blueprint(player, modifiers)
 end
 
 function lrm.request_manager.get_current_data(player, entity, modifiers)
-    if not (player or entity or data_to_apply) then 
-        return
+    if not (player or entity ) then
+        return {}
     end
 
     local logistic_requester = entity.get_logistic_point and entity.get_logistic_point(defines.logistic_member_index.character_requester) or false
@@ -152,7 +157,7 @@ function lrm.request_manager.apply_preset(player, entity, data_to_apply, modifie
             if ( item and item.name 
                 and (
                     ( ( item.type == nil or item.type == "item" ) and game.item_prototypes[item.name] )
-                or ( ( not ( target_supports_items_only ) or append_at_end )
+                or ( ( not ( target_supports_items_only ) )
                 and ( ( ( item.type == "fluid" ) and game.fluid_prototypes[item.name] )
                     or ( ( item.type == "virtual" or item.type == "virtual-signal" ) and game.virtual_signal_prototypes[item.name] ) ) ) )
                 ) then
@@ -493,7 +498,7 @@ function lrm.request_manager.pull_requests_from_requester( player, entity, max_v
     local slots    = entity.request_slot_count
     
     if not (slots and get_slot) then
-        return nil
+        return {}
     end
     
     local current_slots           = {}
@@ -530,7 +535,7 @@ function lrm.request_manager.pull_requests_from_autotrasher( player, entity )
     local slots  = entity.request_slot_count
     
     if not (slots and get_slot) then
-        return nil
+        return {}
     end
     
     local current_slots           = {}
@@ -561,14 +566,14 @@ function lrm.request_manager.pull_requests_from_constant_combinator( player, ent
 
     if not ( control_behavior 
         and (control_behavior.type == defines.control_behavior.type.constant_combinator) ) then
-        return nil
+        return {}
     end
 
     local slots    = control_behavior.signals_count
     local get_slot = control_behavior.get_signal
     
     if not (slots and get_slot) then
-        return nil
+        return {}
     end
 
     local current_slots = {}
@@ -620,7 +625,7 @@ end
 function lrm.request_manager.import_preset(player)
     local encoded_string = lrm.gui.get_import_string(player)
     if not (encoded_string) or encoded_string == "" then
-        return nil
+        return {}
     end
 
     local decoded_string = game.decode_string(encoded_string)
@@ -650,7 +655,7 @@ function lrm.request_manager.import_preset(player)
         end
     end
     lrm.error(player, {"messages.error-invalid-string"})
-    return nil
+    return {}
 end
 
 function lrm.request_manager.save_imported_preset(player, preset_name)
@@ -688,7 +693,7 @@ function lrm.request_manager.save_imported_preset(player, preset_name)
     return preset_number
 end
 
-function lrm.request_manager.export_preset(player, preset_number, coded)
+function lrm.request_manager.export_preset(player, preset_number)
     local preset_table = {}
 
     local preset_name = global["preset-names"][player.index][preset_number]
@@ -757,7 +762,7 @@ function lrm.request_manager.autotrash_inventory(player_index)
         if (trashnotempty) then
             lrm.request_manager.clear_autotrash(player_index)
         end
-        local modifiers = {append = true, appendinline = appendinline}
+        local modifiers = {append = true}
         lrm.request_manager.apply_preset(player, character, trash_items, modifiers, {"messages.autotrash_dataset"})
 
         global["trash"][player_index] = trash_items
@@ -834,7 +839,7 @@ end
 
 function lrm.request_manager.get_filtered_prototypes (player_index, invert, mode)
     if not game.players[player_index] then 
-        return
+        return {}
     end
 
     local flags=global["flags"][player_index] 
