@@ -333,7 +333,7 @@ function lrm.gui.build_target_menu(player, parent)
         "middle", 
         "right", 
     }
-    load_button.enabled = inventory_open
+    load_button.enabled = false
     load_button.style.padding = 4
     -- load_button.style.right_margin = 5
     load_button.style.width = 40
@@ -451,7 +451,7 @@ function lrm.gui.set_gui_elements_enabled(player)
     local preset_selected      = (selected_preset and selected_preset > 0) or false
     local open_entity          = lrm.blueprint_requests.get_inventory_entity(player)
     local inventory_open       = open_entity and open_entity.valid or false
-    local logistic_provider    = inventory_open and open_entity.get_logistic_point and open_entity.get_logistic_point(defines.logistic_member_index.character_provider)
+    local logistic_provider    = inventory_open and open_entity and open_entity.get_logistic_point and open_entity.get_logistic_point(defines.logistic_member_index.character_provider)
     local max_configurable     = logistic_provider and logistic_provider.mode == defines.logistic_mode.active_provider or false
     local combinator_allowed   = player.mod_settings["LogisticRequestManager-allow_constant_combinator"].value or false
     local append_blueprints    = player.mod_settings["LogisticRequestManager-always_append_blueprints"].value or false
@@ -687,6 +687,7 @@ function lrm.gui.display_preset(player, preset_data, request_window)
     if (preset_data.notice) then
         if notice_frame then 
             notice_frame.caption = preset_data.notice
+---@diagnostic disable-next-line: inject-field
             notice_flow.visible = true
         end
         preset_data.notice = nil
@@ -694,6 +695,7 @@ function lrm.gui.display_preset(player, preset_data, request_window)
     else
         if notice_frame then 
             notice_frame.caption = ""
+---@diagnostic disable-next-line: inject-field
             notice_flow.visible = false
         end
     end
@@ -796,7 +798,7 @@ function lrm.gui.delete_preset(player, preset)
 
     -- clear the request-table to make it clear that no template is selected
     local body_right = body and body[lrm.defines.gui.body_right]
-    local request_window = bodbody_righty and body_right[lrm.defines.gui.request_window]
+    local request_window = body_right and body_right[lrm.defines.gui.request_window]
 
     if ( request_window and request_window[lrm.defines.gui.request_table] ) then
         request_window[lrm.defines.gui.request_table].destroy()
