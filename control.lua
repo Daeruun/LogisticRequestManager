@@ -61,7 +61,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             lrm.select_preset(player, selected_preset)
             return
         end
-        lrm.close_or_toggle(event, true, nil)
+        lrm.close_or_toggle(event, true)
 
     elseif gui_clicked == lrm.defines.gui.close_button then
         lrm.close_or_toggle(event, false)
@@ -83,7 +83,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             if parent_frame.name == lrm.defines.gui.frame then
                 new_preset = lrm.request_manager.save_preset(player, 0, preset_name, modifiers)
             elseif parent_frame.name == lrm.defines.gui.import_preview_frame then
-                new_preset = lrm.request_manager.save_imported_preset(player, preset_name, modifiers)
+                new_preset = lrm.request_manager.save_imported_preset(player, preset_name)
                 if (new_preset) then
                     lrm.gui.hide_frame(player, lrm.defines.gui.import_frame)
                     lrm.gui.hide_frame(player, lrm.defines.gui.import_preview_frame)    
@@ -149,7 +149,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             if preset_selected == 0 then
                 lrm.message(player, {"messages.select-preset", {"messages.export"}})
             else
-                local encoded_string = lrm.request_manager.export_preset(player, preset_selected, coded)
+                local encoded_string = lrm.request_manager.export_preset(player, preset_selected)
                 if encoded_string and not (encoded_string == "")  then
                     lrm.gui.hide_frame(player, lrm.defines.gui.import_frame)
                     lrm.gui.hide_frame(player, lrm.defines.gui.import_preview_frame)
@@ -646,7 +646,7 @@ function lrm.close_or_toggle (event, toggle)
         if not master_frame then
             local preset_selected = global["presets-selected"][player.index]
             global["presets-selected"][player.index] = 0
-            lrm.gui.build(player, true)
+            lrm.gui.build(player)
             lrm.select_preset(player, preset_selected)
         else
             master_frame.visible = true
@@ -716,7 +716,7 @@ function lrm.check_modifiers(event)
         local start_pos, end_pos = string.find(setting, "LogisticRequestManager-modifier-", 1, true) -- should match on the last 3 settings
 
         if end_pos and end_pos > 0 then
-             local modifier=string.sub (setting, end_pos+1)
+            local modifier=string.sub (setting, end_pos+1)
             --player.print(setting .. " matches from " .. start_pos .. " to " .. end_pos .. " -> " .. modifier .. " - cnt:" .. cnt)
             local matched=nil
 
