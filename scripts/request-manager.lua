@@ -618,8 +618,41 @@ function lrm.request_manager.load_preset(player, preset_number, modifiers)
 end
 
 function lrm.request_manager.delete_preset(player, preset_number)
-    global["preset-names"][player.index][preset_number] = nil
-    global["preset-data"][player.index][preset_number] = nil
+    if not player or not preset_number then 
+        return
+    end
+
+    local player_index = player.index
+    if global["preset-data"][player_index] and global["preset-data"][player_index][preset_number] then
+        global["preset-data"][player_index][preset_number]  = nil
+    end
+    if global["preset-names"][player_index] and global["preset-names"][player_index][preset_number] then
+        global["preset-names"][player_index][preset_number] = nil
+    end
+
+    lrm.request_manager.align_presets(player)
+end
+
+function lrm.request_manager.align_presets(player)
+    if not player then 
+        return
+    end
+    
+    local player_index = player.index
+    local player_preset_names = global["preset-names"][player_index] or nil
+    if not player_preset_names then
+        return
+    end
+
+    local index = lrm.defines.protected_presets
+    for preset_number, preset_name in pairs(player_preset_names) do
+        if preset_number and preset_number > lrm.defines.protected_presets then
+            index = index + 1
+        end
+        if  preset_number > index then
+            lrm.swap_presets (player, preset_number, index)
+        end
+    end
 end
 
 function lrm.request_manager.import_preset(player)
