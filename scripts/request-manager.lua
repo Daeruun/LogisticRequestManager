@@ -177,7 +177,7 @@ function lrm.request_manager.apply_preset(player, entity, data_to_apply, modifie
         data_to_apply = current_requests
     elseif modifiers.append then
 
-        local append_at_end = player.mod_settings["LogisticRequestManager-appended_requests_after_existing_ones"].value or true
+        local append_at_end = player.mod_settings["LogisticRequestManager-appended_requests_after_existing_ones"].value
         if append_at_end then 
             if (slot_limit) then 
                 slot_limit = slot_limit + table_size(free_slots)
@@ -285,11 +285,10 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name, mod
     if not (entity and entity.valid) then
         return nil
     end
-    
+
     local current_dataset = lrm.request_manager.get_current_data(player, entity, modifiers)
     local request_data    = current_dataset.data
 
-     
     local player_presets = global["preset-names"][player.index]
     local total = lrm.defines.protected_presets
     for number, name in pairs(player_presets) do
@@ -298,11 +297,11 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name, mod
             preset_name = name
         end
     end
-    
+
     if preset_number == 0 then
         preset_number = total + 1
     end
-    
+
     local configured_slots = 0
 
     for index, item in pairs(request_data) do
@@ -324,10 +323,10 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name, mod
     if slot_count_warning and ( configured_slots > lrm.defines.preset_slots_warning_level )  then
         lrm.message(player, {"messages.large_preset_warning"})
     end
-    
+
     global["preset-names"][player.index][preset_number] = preset_name
     global["preset-data"][player.index][preset_number]  = request_data
-    
+
     return preset_number
 end
 
@@ -364,7 +363,7 @@ function lrm.request_manager.push_requests_to_requester( player, entity, data_to
 
     -- get required number of personal logistic slots
     slots = table_size(data_to_push or {})
-    
+
     -- apply only items to request slots
     for i = 1, slots do
         local item = data_to_push[i]
@@ -411,7 +410,7 @@ function lrm.request_manager.push_requests_to_autotrasher( player, entity, data_
 
     -- get required number of personal logistic slots
     slots = table_size(data_to_push or {})
-    
+
     -- adjust request slots - no longer required in 1.1.x as requestslots are automatically generated as required
     if (global.feature_level == "1.0") then
         entity.character_logistic_slot_count = slots
@@ -493,6 +492,23 @@ function lrm.request_manager.check_slot_count ( player, data_to_push, max_availa
     return data_to_push
 end
 
+function fill_slots_up ( slots, current_slot_list, free_slot_list )
+    local last_row_index = slots % 10
+    local startslot = slots + 1
+    slots = slots + 10 - last_row_index
+    if slots < 40 then
+        slots = 40
+    else
+        if slots < 1000 then
+            slots = slots + 10
+        end
+    end
+    for i = startslot, slots do
+        current_slot_list[i] = { nil }
+        free_slot_list[i]    = true
+    end
+    return slots
+end
 function lrm.request_manager.pull_requests_from_requester( player, entity, max_value)
     local get_slot = entity.get_request_slot
     local slots    = entity.request_slot_count
@@ -517,6 +533,7 @@ function lrm.request_manager.pull_requests_from_requester( player, entity, max_v
             free_slots[i]    = true
         end
     end
+    slots = fill_slots_up ( slots, current_slots, free_slots )
 
     return {data                    = current_slots, 
             slot_map                = slot_map, 
@@ -554,6 +571,7 @@ function lrm.request_manager.pull_requests_from_autotrasher( player, entity )
             free_slots[i]    = true
         end
     end
+    slots = fill_slots_up ( slots, current_slots, free_slots )
 
     return {data                    = current_slots, 
             slot_map                = slot_map, 

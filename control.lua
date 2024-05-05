@@ -9,9 +9,6 @@ require 'scripts/commands'
 
 
 function lrm.select_preset(player, preset)
-    if global["presets-selected"][player.index] == preset then
-        return
-    end
     lrm.gui.select_preset(player, preset)
 
     local data = table.deepcopy(global["preset-data"][player.index][preset])
@@ -57,7 +54,6 @@ script.on_event(defines.events.on_gui_click, function(event)
         if (event.control and event.alt and event.shift) then 
             local selected_preset = global["presets-selected"][player.index]
             lrm.gui.force_rebuild(player)
-            global["presets-selected"][player.index] = 0
             lrm.select_preset(player, selected_preset)
             return
         end
@@ -106,6 +102,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             local preset_saved = lrm.request_manager.save_preset(player, preset_selected, nil, modifiers)
             if preset_saved then
                 global["presets-selected"][player.index]=0
+                lrm.gui.build_preset_list(player)
                 lrm.select_preset(player, preset_saved)
             end
         end
@@ -125,6 +122,7 @@ script.on_event(defines.events.on_gui_click, function(event)
         else
             lrm.request_manager.delete_preset(player, preset_selected)
             lrm.gui.delete_preset(player, preset_selected)
+            lrm.gui.build_preset_list(player)
             lrm.select_preset(player, 0)
         end
     
@@ -182,6 +180,20 @@ script.on_event(defines.events.on_gui_click, function(event)
             end
         end
 
+    elseif gui_clicked == lrm.defines.gui.preset_button_down then
+        local index = global["presets-selected"][player.index] or nil
+        if index then
+            lrm.swap_presets(player, index, index + 1)
+            lrm.gui.build_preset_list(player)
+            lrm.select_preset(player, index + 1 )
+        end
+    elseif gui_clicked == lrm.defines.gui.preset_button_up then
+        local index = global["presets-selected"][player.index] or nil
+        if index then
+            lrm.swap_presets(player, index, index - 1)
+            lrm.gui.build_preset_list(player)
+            lrm.select_preset(player, index - 1 )
+        end
     else
         local gui_parent = event.element.parent
         if gui_parent then
@@ -552,10 +564,37 @@ function lrm.move_presets (player)
     global["preset-data"][player.index]  = new_data
 end
 
+function lrm.swap_presets (player, index_to_swap, index_to_swap_with )
+    if not (player) then return end
+
+    local player_preset_names = global["preset-names"][player.index]
+    local player_preset_data  = global["preset-data"][player.index]
+
+    local preset_name_to_swap       = player_preset_names[index_to_swap]
+    local preset_name_to_swap_with  = player_preset_names[index_to_swap_with]
+    local preset_data_to_swap       = table.deepcopy(player_preset_data[index_to_swap])
+    local preset_data_to_swap_with  = table.deepcopy(player_preset_data[index_to_swap_with])
+
+    player_preset_names[index_to_swap_with] = preset_name_to_swap
+    player_preset_names[index_to_swap]      = preset_name_to_swap_with
+    player_preset_data[index_to_swap_with]  = preset_data_to_swap
+    player_preset_data[index_to_swap]       = preset_data_to_swap_with
+
+    local selected_preset = global["presets-selected"][player.index] or 0
+    if selected_preset == index_to_swap then 
+        global["presets-selected"][player.index] = index_to_swap_with 
+    else
+        if selected_preset == index_to_swap_with then 
+            global["presets-selected"][player.index] = index_to_swap
+        end
+    end
+end
+
 function lrm.update_presets ( player )
     if not player then return nil end
 
     local selected_preset = global["presets-selected"][player.index] or nil
+    lrm.request_manager.align_presets(player)
 
     for preset_number, preset_name in pairs(global["preset-names"][player.index]) do
         if preset_number then
@@ -585,6 +624,20 @@ function lrm.check_preset ( player, preset_number )
     local preset_data = global["preset-data"][player.index][preset_number]
     local preset_name = global["preset-names"][player.index][preset_number]
     local slots = table_size(preset_data)
+    local free_slots = {}
+    if ( slots % 10 > 0) then
+        slots = fill_slots_up ( slots, preset_data, free_slots )
+    else
+        local need_update = false
+        for i=slots-10,slots do
+            if not preset_data[i] == { nil } then
+                all_unused = true
+            end
+        end
+        if need_update then
+            slots = fill_slots_up ( slots, preset_data, free_slots )
+        end
+    end
     for i = 1, slots do
         local item = preset_data[i]
         if item.name then

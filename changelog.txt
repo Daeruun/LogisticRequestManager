@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.33
+Date: ??.05.2024
+  Features:
+    - added buttons to sort personal presets
+  Changes:
+    - the preset list tries to show 3 presets above the selected one if available  
+  Bugfixes:
+    - suppress little helpful error message that an opened entity does not support requests when a research finished
+    - fixed default mentioned in the tooltip for setting 'GUI: preset-slot updates per Tick'
+---------------------------------------------------------------------------------------------------
 Version: 1.1.32
 Date: 27.01.2024
   Changes:

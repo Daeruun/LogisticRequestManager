@@ -22,6 +22,26 @@ data:extend(
 data:extend(
 {
     {
+      type = "sprite",
+      name = "LRM-preset-arrow-down",
+      filename = "__LogisticRequestManager__/icons/arrow-down-x48.png",
+      priority = "extra-high-no-scale",
+      width = 48,
+      height = 48,
+      flags = {"gui-icon"},
+      mipmap_count = 1
+    },
+    {
+      type = "sprite",
+      name = "LRM-preset-arrow-up",
+      filename = "__LogisticRequestManager__/icons/arrow-up-x48.png",
+      priority = "extra-high-no-scale",
+      width = 48,
+      height = 48,
+      flags = {"gui-icon"},
+      mipmap_count = 1
+    },
+    {
         type = "sprite",
         name = "LRM-apply",
         filename = "__LogisticRequestManager__/icons/apply-personal-logistics-x32.png",

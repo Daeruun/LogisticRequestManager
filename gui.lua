@@ -287,7 +287,31 @@ function lrm.gui.build_target_menu(player, parent)
         direction = "horizontal"
     }
     target_menu.style.top_margin = 1
-    target_menu.style.left_margin = 5
+    target_menu.style.left_margin = 1
+
+    local up = target_menu[lrm.defines.gui.preset_button_up] or target_menu.add {
+        type = "sprite-button",
+        name = lrm.defines.gui.preset_button_up,
+        style = "shortcut_bar_button",
+        sprite = "LRM-preset-arrow-up",
+        tooltip = {"tooltip.move-preset-up"},
+    }
+    up.style.padding = 4
+    local down = target_menu[lrm.defines.gui.preset_button_down] or target_menu.add {
+        type = "sprite-button",
+        name = lrm.defines.gui.preset_button_down,
+        style = "shortcut_bar_button",
+        sprite = "LRM-preset-arrow-down",
+        tooltip = {"tooltip.move-preset-down"},
+    }
+    down.style.padding = 4
+    down.style.right_margin = 10
+    local spacer = target_menu.add {
+        type = "empty-widget",
+        name = lrm.defines.gui.empty .. "_",
+        minimum_width = 10,
+        maximum_width = 10,
+    }
 
     local label = target_menu.add {
         type = "label",
@@ -379,7 +403,6 @@ function lrm.gui.build_preset_list(player, gui_body_flow)
 end
 
 function lrm.gui.build_slots(player, preset_slots, parent_to_extend)
-    
     local request_table = parent_to_extend[lrm.defines.gui.request_table] or parent_to_extend.add {
         type = "table",
         name = lrm.defines.gui.request_table,
@@ -391,8 +414,9 @@ function lrm.gui.build_slots(player, preset_slots, parent_to_extend)
 
     -- no request-table if nothing is selected
     if ( preset_slots == nil ) then return end
-    
+
     local slots = preset_slots
+
     for i = 1, slots do
         local request = request_table.add {
             type = "sprite-button",
@@ -533,8 +557,8 @@ end
 
 function lrm.gui.create_modifiertooltip(player, modifier_name, function_name)
     if not (player and modifier_name) then return "" end
-    local function_enabled  = player.mod_settings["LogisticRequestManager-enable-" .. modifier_name].value or nil
-    local function_modifier = player.mod_settings["LogisticRequestManager-modifier-" .. modifier_name].value or nil
+    local function_enabled  = player.mod_settings["LogisticRequestManager-enable-" .. modifier_name].value or false
+    local function_modifier = player.mod_settings["LogisticRequestManager-modifier-" .. modifier_name].value or false
 
     if not (function_enabled and function_modifier) then return "" end
     
@@ -658,12 +682,38 @@ function lrm.gui.select_preset(player, preset_selected)
 
     if not preset_list then return end
 
+    local last_preset = 0
+
     for _, preset in pairs(preset_list.children) do
         if preset.name == button_to_select then
             preset.style = lrm.defines.gui.preset_button_selected
-            preset_list.scroll_to_element(preset)
+            preset_list.scroll_to_element(preset, "top-third")
         else
             preset.style = lrm.defines.gui.preset_button
+        end
+        last_preset = tonumber( string.match(preset.name, string.gsub(lrm.defines.gui.preset_button, "-", "%%-") .. "(%d+)") ) or _
+    end
+
+    local right = body  and body[lrm.defines.gui.body_right] or nil
+    local target_menu = right  and right[lrm.defines.gui.target_menu] or nil
+    local up = target_menu and target_menu[lrm.defines.gui.preset_button_up] or nil
+    local down = target_menu and target_menu[lrm.defines.gui.preset_button_down] or nil
+    local protected = ( preset_selected <= lrm.defines.protected_presets )
+    local is_first_preset = ( preset_selected == ( lrm.defines.protected_presets + 1 ) )
+    local is_last_preset = ( preset_selected == last_preset )
+    if protected then
+        lrm.gui.set_gui_element ( up,   false, {"tooltip.protected_preset_move"} )
+        lrm.gui.set_gui_element ( down, false, {"tooltip.protected_preset_move"} )
+    else
+        if ( is_first_preset ) then
+            lrm.gui.set_gui_element ( up,   false, {"tooltip.first-preset"} )
+        else
+            lrm.gui.set_gui_element ( up,   true, {"tooltip.move-preset-up"} )
+        end
+        if ( is_last_preset ) then
+            lrm.gui.set_gui_element ( down, false, {"tooltip.last-preset"} )
+        else
+            lrm.gui.set_gui_element ( down, true, {"tooltip.move-preset-down"} )
         end
     end
 end
@@ -703,6 +753,9 @@ function lrm.gui.display_preset(player, preset_data, request_window)
     lrm.gui.build_slots(player, slots, request_window)
     
     local request_table = request_window[lrm.defines.gui.request_table]
+    if request_table then
+        request_table.visible = true
+    end
     local increment, ticks
     increment = math.ceil(player.mod_settings["LogisticRequestManager-display_slots_by_tick_ratio"].value)
     ticks     = math.ceil(1 / player.mod_settings["LogisticRequestManager-display_slots_by_tick_ratio"].value)
@@ -721,6 +774,7 @@ function lrm.gui.display_preset_junk (index)
     request_table = global["data_to_view"][index].parent_table or nil
     increment     = ( global["data_to_view"][index].increment or 1 ) - 1
 
+    if not request_table then return end
     if increment > 1 then increment = increment - 1 end
 
     local preset_size = #preset_data
@@ -791,17 +845,29 @@ function lrm.gui.display_preset_junk (index)
 end
 
 function lrm.gui.delete_preset(player, preset)
+
+    if not player or not preset then
+        return
+    end
+
     local frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.frame)
     local body = frame and frame[lrm.defines.gui.body]
     local preset_list = body and body[lrm.defines.gui.preset_list]
-    preset_list[lrm.defines.gui.preset_button .. preset].destroy()
+    if preset_list and preset_list[lrm.defines.gui.preset_button .. preset] then
+        preset_list[lrm.defines.gui.preset_button .. preset].destroy()
+    end
 
     -- clear the request-table to make it clear that no template is selected
     local body_right = body and body[lrm.defines.gui.body_right]
     local request_window = body_right and body_right[lrm.defines.gui.request_window]
 
-    if ( request_window and request_window[lrm.defines.gui.request_table] ) then
-        request_window[lrm.defines.gui.request_table].destroy()
+    if request_window then
+        if request_window[lrm.defines.gui.request_notice] then
+            request_window[lrm.defines.gui.request_notice].visible =  false
+        end
+        if request_window[lrm.defines.gui.request_table] then
+            request_window[lrm.defines.gui.request_table].visible = false
+        end
     end
 end
 
@@ -815,8 +881,9 @@ function lrm.gui.display_export_code(player, encoded_string)
     local gui_frame    = gui_master and gui_master[lrm.defines.gui.export_frame] or nil
     local code_textbox = gui_frame  and gui_frame[lrm.defines.gui.code_textbox] or nil
 
-    code_textbox.text = encoded_string
+    if not gui_frame or not code_textbox then return end
 
+    code_textbox.text = encoded_string
     gui_frame.visible = true
 end
 
@@ -952,6 +1019,10 @@ function lrm.gui.show_imported_preset(player, preset_data)
     end
 
     if not preset_data then
+        return
+    end
+
+    if not preset_name_field then
         return
     end
     

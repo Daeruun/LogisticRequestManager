@@ -47,7 +47,7 @@ default_gui[lrm.defines.gui.blueprint_button] = {
 default_gui[lrm.defines.gui.preset_list] = {
     type = "scroll_pane_style",
     parent = "scroll_pane",
-    width = 150,
+    width = 170,
     vertically_stretchable = "on",
     horizontally_stretchable = "on"
 }
