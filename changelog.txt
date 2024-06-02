@@ -6,7 +6,9 @@ Date: 03.06.2024
     - saving an update of an existing preset can now be used to rename it, if SHIFT is pressed while clicking the button
   Changes:
     - added tooltip for the button to remove an empty row from presets
+    - minor fixes
   Bugfixes:
+    - minor fix in localization 
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.33
 Date: 02.06.2024

@@ -573,17 +573,17 @@ function lrm.gui.create_modifiertooltip(player, modifier_name, function_name)
 
     if not (function_enabled and function_modifier) then return "" end
     
-    function_modifier = tostring ({"", "[color=yellow]", {"common." .. function_modifier}, "[/color]"})
-    local tooltip_string=""
+    function_modifier = {"", "[color=yellow]", {"common." .. function_modifier}, "[/color]"}
+    local tooltip_string
 
     if (function_enabled=="never") then
         tooltip_string = ""
     elseif (function_enabled=="always") then
-        tooltip_string = tostring ({"tooltip.function-" .. (function_name or modifier_name)})
+        tooltip_string = {"tooltip.function-" .. (function_name or modifier_name)}
     elseif (function_enabled=="on_modifier") then
-        tooltip_string = tostring ({"", "\n", {"tooltip.function-" .. (function_name or modifier_name)}, " ", {"tooltip.on_modifier", function_modifier}, "." })
+        tooltip_string = {"", "\n", {"tooltip.function-" .. (function_name or modifier_name)}, " ", {"tooltip.on_modifier", function_modifier}, "." }
     elseif (function_enabled=="not_on_modifier") then
-        tooltip_string = tostring ({"", "\n", {"tooltip.function-" .. (function_name or modifier_name)}, " ", {"tooltip.if_not_modifier", function_modifier}, "." })
+        tooltip_string = {"", "\n", {"tooltip.function-" .. (function_name or modifier_name)}, " ", {"tooltip.if_not_modifier", function_modifier}, "." }
     else
         tooltip_string =  ""
     end
