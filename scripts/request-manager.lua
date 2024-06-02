@@ -492,10 +492,40 @@ function lrm.request_manager.check_slot_count ( player, data_to_push, max_availa
     return data_to_push
 end
 
+function lrm.request_manager.add_row ( player, preset, slot_to_move_up, row_length )
+    if not player or not preset or not slot_to_move_up or not row_length then return end
+
+    local preset_data = global["preset-data"][player.index][preset]
+    local slots = table_size(preset_data) + row_length
+    local last_row_index = slot_to_move_up % 10
+    local index_low = slot_to_move_up - last_row_index
+    local index_high = index_low + row_length
+    local updated_preset = {}
+    local i = 1
+    for index = 1, index_low do
+        updated_preset[index] = preset_data[index]
+        i = i + 1
+    end
+    for index = index_low + 1, index_high do
+        updated_preset[index] = { nil }
+    end
+    for index = index_high + 1, slots do
+        updated_preset[index] = preset_data[i]
+        i = i + 1
+    end
+    local empty = {}
+    local current_dataset = lrm.request_manager.fill_slots_up ( (i - 1), updated_preset, empty )
+    updated_preset = current_dataset.data
+
+    global["preset-data"][player.index][preset] = updated_preset
+end
+
 function lrm.request_manager.fill_slots_up ( slots, current_slot_list, free_slot_list )
     local last_row_index = slots % 10
     local startslot = slots + 1
-    slots = slots + 10 - last_row_index
+    if last_row_index > 0 then
+        slots = slots + 10 - last_row_index
+    end
     
     -- if slots < 1000 then
     --     local need_update = false

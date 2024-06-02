@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.34
+Date: 02.06.2024
+  Features:
+    - added button to add empty rows to personal presets
+  Changes:
+    - added tooltip for the button to remove an empty row from presets
+  Bugfixes:
+---------------------------------------------------------------------------------------------------
 Version: 1.1.33
 Date: 02.06.2024
   Features:

@@ -203,13 +203,23 @@ script.on_event(defines.events.on_gui_click, function(event)
                 end
             elseif gui_parent.name == lrm.defines.gui.request_table then
                 local preset_selected = global["presets-selected"][player.index] or nil
-                local row = string.match(gui_clicked, string.gsub(lrm.defines.gui.preset_clear_row, "-", "%%-") .. "(%d+)")
-                if preset_selected and row then
-                    local index_high = tonumber(row) * 10
-                    local index_low  = index_high - 9
-                    local preset_index = tonumber(preset_selected) or 0
-                    lrm.request_manager.trim_preset ( player, preset_index, index_low, index_high )
-                    lrm.select_preset(player, preset_index)
+                if preset_selected then
+                    local row = string.match(gui_clicked, string.gsub(lrm.defines.gui.preset_clear_row, "-", "%%-") .. "(%d+)")
+                    if row then
+                        local index_high = tonumber(row) * 10
+                        local index_low  = index_high - 9
+                        local preset_index = tonumber(preset_selected) or 0
+                        lrm.request_manager.trim_preset ( player, preset_index, index_low, index_high )
+                        lrm.select_preset(player, preset_index)
+                    end
+                    row = string.match(gui_clicked, string.gsub(lrm.defines.gui.preset_add_row, "-", "%%-") .. "(%d+)")
+                    if row then
+                        local index_high = tonumber(row) * 10
+                        local index_low  = index_high - 9
+                        local preset_index = tonumber(preset_selected) or 0
+                        lrm.request_manager.add_row ( player, preset_index, index_low, 10 )
+                        lrm.select_preset(player, preset_index)
+                    end
                 end
             end
         end

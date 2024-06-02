@@ -10,7 +10,7 @@ lrm.defines.guiprefix = lrm.defines.id .. "-gui-"
 
 lrm.defines.gui = {
     toggle_button               = lrm.defines.guiprefix .. "button",
-
+    
     master                      = lrm.defines.guiprefix .. "master",
     frame                       = lrm.defines.guiprefix .. "frame",
     flow                        = lrm.defines.guiprefix .. "flow",
@@ -18,7 +18,7 @@ lrm.defines.gui = {
     title_flow                  = lrm.defines.guiprefix .. "title_flow",
     title_frame                 = lrm.defines.guiprefix .. "title_frame",
     close_button                = lrm.defines.guiprefix .. "close_button",
-
+    
     toolbar                     = lrm.defines.guiprefix .. "toolbar",
     save_as_textfield           = lrm.defines.guiprefix .. "save-as-input",
     save_as_button              = lrm.defines.guiprefix .. "save-as-button",
@@ -36,7 +36,8 @@ lrm.defines.gui = {
     preset_button_down          = lrm.defines.guiprefix .. "preset-button-down",
     preset_button_up            = lrm.defines.guiprefix .. "preset-button-up",
     preset_clear_row            = lrm.defines.guiprefix .. "preset-clear-row",
-
+    preset_add_row              = lrm.defines.guiprefix .. "preset-add-row",
+    
     body_right                  = lrm.defines.guiprefix .. "body_right",
     
     request_window              = lrm.defines.guiprefix .. "request-window",
@@ -55,21 +56,21 @@ lrm.defines.gui = {
     empty                       = lrm.defines.guiprefix .. "empty",
     autotrash_button            = lrm.defines.guiprefix .. "autotrash-button",
     load_button                 = lrm.defines.guiprefix .. "load-button",
-
+    
     export_frame                = lrm.defines.guiprefix .. "export-frame",
     import_frame                = lrm.defines.guiprefix .. "import-frame",
-
+    
     code_textbox                = lrm.defines.guiprefix .. "code-textbox",
     import_textfield            = lrm.defines.guiprefix .. "import-textfield",
-
+    
     OK_button                   = lrm.defines.guiprefix .. "OK-button",
     copy_button                 = lrm.defines.guiprefix .. "copy-button",
-
+    
     import_preview_frame        = lrm.defines.guiprefix .. "import-preview-frame",
     import_preview_toolbar      = lrm.defines.guiprefix .. "import-preview-toolbar",
     save_import_as_textfield    = lrm.defines.guiprefix .. "save-import-as-textfield",
     save_import_as_button       = lrm.defines.guiprefix .. "save-import-as-button",
-
+    
     autotrash_frame             = lrm.defines.guiprefix .. "autotrash-frame",
     autotrash_flow              = lrm.defines.guiprefix .. "autotrash-flow",
 }

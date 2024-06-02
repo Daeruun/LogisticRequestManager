@@ -450,7 +450,6 @@ function lrm.gui.build_slots(player, preset_slots, parent_to_extend)
                 size = 16,
                 sprite = "utility/trash"
             }
-            clear_line.enabled = false
         end
         
     end
@@ -503,7 +502,6 @@ function lrm.gui.set_gui_elements_enabled(player)
     local undefined_max_as_infinit_tooltip = lrm.gui.create_modifiertooltip(player, "undefined_max_as_infinit")
     local round_up_tooltip    = lrm.gui.create_modifiertooltip(player, "round_up")
     local subtract_tooltip    = {"", "\n\n", {"tooltip.function-subtract", {"", "[color=yellow]", {"common.R-CLICK"}, "[/color]"} },  (max_configurable and lrm.gui.create_modifiertooltip(player, "append", "subtract_max" ) or "") }
-    
 
     -- configure buttons
     if (inventory_open) then
@@ -605,7 +603,6 @@ function lrm.gui.bring_to_front()
                 else
                     count = nil
                 end
-                
                 global["bring_to_front"][player.index] = count
             else
                 global["bring_to_front"][player.index] = nil
@@ -616,7 +613,7 @@ end
 
 function lrm.gui.set_target(player, target_slot)
     if not (player and target_slot) then return end
-
+    
     local inventory_open = lrm.blueprint_requests.get_inventory_entity(player)
     
     target_slot.sprite = inventory_open and ("entity." .. inventory_open.name)
@@ -734,7 +731,7 @@ function lrm.gui.display_preset(player, preset_data, request_window)
     local slots = preset_data and table_size(preset_data)
     if slots == nil then return end
     -- there is nothing to display...
-
+    
     if not request_window then
         local frame      = lrm.gui.get_gui_frame(player, lrm.defines.gui.frame)
         local body       = frame and frame[lrm.defines.gui.body]
@@ -743,7 +740,7 @@ function lrm.gui.display_preset(player, preset_data, request_window)
         request_window = body_right and body_right[lrm.defines.gui.request_window]
         if not request_window then return end
     end
-
+    
     local notice_flow = request_window[lrm.defines.gui.request_notice] or nil
     local notice_frame = notice_flow and notice_flow[lrm.defines.gui.request_notice] or nil
     if (preset_data.notice) then
@@ -761,7 +758,7 @@ function lrm.gui.display_preset(player, preset_data, request_window)
             notice_flow.visible = false
         end
     end
-
+    
     lrm.gui.build_slots(player, slots, request_window)
     
     local request_table = request_window[lrm.defines.gui.request_table]
@@ -785,10 +782,10 @@ function lrm.gui.display_preset_junk (index)
     position      = global["data_to_view"][index].position or 1
     request_table = global["data_to_view"][index].parent_table or nil
     increment     = ( global["data_to_view"][index].increment or 1 ) - 1
-
+    
     if not request_table then return end
     if increment > 1 then increment = increment - 1 end
-
+    
     local preset_size = #preset_data
     local slots = position + increment
     if increment < 0 or slots > preset_size then 
@@ -800,9 +797,10 @@ function lrm.gui.display_preset_junk (index)
     if row_empty == nil then
         row_empty = true
     end
-
---    local unlock_rows = slots > 40
-
+    
+    local unlock_clear = slots > 10
+    local unlock_add = slots < 1000
+    
     for i = position, slots do
         local slot = i + row
         local item = preset_data and preset_data[i] or nil
@@ -825,10 +823,9 @@ function lrm.gui.display_preset_junk (index)
             else
                 valid_prototype = false
             end
-
+            
             if (valid_prototype) then
                 -- min should always be there, but we make sure...
-                
                 if ( request_table.children[slot].children[1] ) then
                     if item.min then
                         request_table.children[slot].children[1].caption = util.format_number(item.min, true)
@@ -863,15 +860,23 @@ function lrm.gui.display_preset_junk (index)
             -- as the table was just created, there is nothing to clear
         end
         
-        -- if ( unlock_rows
-        if ( ( ( i % 10 ) == 0 )
-         and ( i < slots ) ) then
+        if ( ( i % 10 ) == 0 ) then
             row = row + 1
-            request_table.children[slot + 1].enabled = row_empty
+            if ( row_empty ) then
+                request_table.children[slot + 1].name = lrm.defines.gui.preset_clear_row .. row
+                request_table.children[slot + 1].sprite = "utility/trash"
+                request_table.children[slot + 1].tooltip = {"tooltip.clear-empty-row"}
+                request_table.children[slot + 1].enabled = unlock_clear
+            else
+                request_table.children[slot + 1].name = lrm.defines.gui.preset_add_row .. row
+                request_table.children[slot + 1].sprite = "utility/add"
+                request_table.children[slot + 1].tooltip = {"tooltip.add-empty-row"}
+                request_table.children[slot + 1].enabled = unlock_add
+            end
             row_empty = true
         end
     end
-
+    
     if slots < preset_size then
         global["data_to_view"][index].position = slots + 1
         global["data_to_view"][index].row_empty = row_empty
@@ -881,7 +886,6 @@ function lrm.gui.display_preset_junk (index)
 end
 
 function lrm.gui.delete_preset(player, preset)
-
     if not player or not preset then
         return
     end
