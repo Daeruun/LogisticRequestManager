@@ -501,6 +501,7 @@ function lrm.gui.set_gui_elements_enabled(player)
     local append_tooltip      = lrm.gui.create_modifiertooltip(player, "append")
     local undefined_max_as_infinit_tooltip = lrm.gui.create_modifiertooltip(player, "undefined_max_as_infinit")
     local round_up_tooltip    = lrm.gui.create_modifiertooltip(player, "round_up")
+    local rename_tooltip    = {"", "\n", {"tooltip.rename-preset", {"", "[color=yellow]", {"common.SHIFT"}, "[/color]"} } }
     local subtract_tooltip    = {"", "\n\n", {"tooltip.function-subtract", {"", "[color=yellow]", {"common.R-CLICK"}, "[/color]"} },  (max_configurable and lrm.gui.create_modifiertooltip(player, "append", "subtract_max" ) or "") }
 
     -- configure buttons
@@ -525,9 +526,9 @@ function lrm.gui.set_gui_elements_enabled(player)
         if (preset_selected) then
             if (selected_preset>10) then 
                 if (max_configurable) then
-                    lrm.gui.set_gui_element (save_button,      true,  {"", {"tooltip.save-preset",       preset_name, entity_icon}, round_up_tooltip })
+                    lrm.gui.set_gui_element (save_button,      true,  {"", {"tooltip.save-preset",       preset_name, entity_icon}, round_up_tooltip, rename_tooltip })
                 else
-                    lrm.gui.set_gui_element (save_button,      true,  {"", {"tooltip.save-preset",       preset_name, entity_icon}, undefined_max_as_infinit_tooltip, round_up_tooltip })
+                    lrm.gui.set_gui_element (save_button,      true,  {"", {"tooltip.save-preset",       preset_name, entity_icon}, undefined_max_as_infinit_tooltip, round_up_tooltip, rename_tooltip })
                 end
             else
                 lrm.gui.set_gui_element (save_button,      false, {"messages.protected-preset", {"messages.save"} })

@@ -1,8 +1,9 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.34
-Date: 02.06.2024
+Date: 03.06.2024
   Features:
     - added button to add empty rows to personal presets
+    - saving an update of an existing preset can now be used to rename it, if SHIFT is pressed while clicking the button
   Changes:
     - added tooltip for the button to remove an empty row from presets
   Bugfixes:

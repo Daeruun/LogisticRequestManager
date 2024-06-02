@@ -99,8 +99,19 @@ script.on_event(defines.events.on_gui_click, function(event)
         if preset_selected == 0 then
             lrm.message(player, {"messages.select-preset", {"messages.save"}})
         else
-            local preset_saved = lrm.request_manager.save_preset(player, preset_selected, nil, modifiers)
+            local preset_name = nil
+            local parent_frame = event.element.parent and event.element.parent.parent
+            if event.shift and parent_frame then
+                preset_name = lrm.gui.get_save_as_name(player, parent_frame)
+                if not preset_name or preset_name == "" then
+                    lrm.message(player, {"messages.name-needed"})
+                end
+            end
+            local preset_saved = lrm.request_manager.save_preset(player, preset_selected, preset_name, modifiers)
             if preset_saved then
+                if ( preset_name ) then
+                    lrm.gui.clear_save_as_name(player, parent_frame)
+                end
                 global["presets-selected"][player.index]=0
                 lrm.gui.build_preset_list(player)
                 lrm.select_preset(player, preset_saved)

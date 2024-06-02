@@ -285,32 +285,31 @@ function lrm.request_manager.save_preset(player, preset_number, preset_name, mod
     if not (entity and entity.valid) then
         return nil
     end
-
+    
     local current_dataset = lrm.request_manager.get_current_data(player, entity, modifiers)
     local request_data    = current_dataset.data
-
     local player_presets = global["preset-names"][player.index]
     local total = lrm.defines.protected_presets
+    local no_preset_name = ( preset_name == nil ) or ( preset_name == "" )
     for number, name in pairs(player_presets) do
         if number > total then total = number end
-        if preset_number == number then
+        if ( no_preset_name and ( preset_number == number ) ) then
             preset_name = name
         end
     end
-
+    
     if preset_number == 0 then
         preset_number = total + 1
     end
-
+    
     local configured_slots = 0
-
-    for index, item in pairs(request_data) do
+    for _, item in pairs(request_data) do
         if item and item.name then
             configured_slots = configured_slots + 1
             if modifiers.round_up then
                 local min_count = item.min or 0
                 local stack_size= game.item_prototypes[item.name] and game.item_prototypes[item.name].stack_size or 1
-
+                
                 item.min = math.ceil (min_count / stack_size) * stack_size
                 if (item.max and item.max < item.min) then
                     item.max = nil
@@ -556,7 +555,7 @@ end
 
 function lrm.request_manager.trim_preset( player, preset, index_low, index_high )
     if not player or not preset or not index_low or not index_high then return end
-
+    
     local preset_data = global["preset-data"][player.index][preset]
     local slots = table_size(preset_data)
     local updated_preset = {}
@@ -570,7 +569,7 @@ function lrm.request_manager.trim_preset( player, preset, index_low, index_high 
     local empty = {}
     local current_dataset = lrm.request_manager.fill_slots_up ( (i - 1), updated_preset, empty )
     updated_preset = current_dataset.data
-
+    
     global["preset-data"][player.index][preset] = updated_preset
 end
 
