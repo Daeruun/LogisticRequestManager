@@ -33,10 +33,9 @@ lrm.defines.gui = {
     preset_list                 = lrm.defines.guiprefix .. "preset-list",
     preset_button               = lrm.defines.guiprefix .. "preset-button",
     preset_button_selected      = lrm.defines.guiprefix .. "preset-button-selected",
-    preset_button_flow          = lrm.defines.guiprefix .. "preset-button-flow",
-    preset_button_position_flow = lrm.defines.guiprefix .. "preset-button-position-flow",
     preset_button_down          = lrm.defines.guiprefix .. "preset-button-down",
     preset_button_up            = lrm.defines.guiprefix .. "preset-button-up",
+    preset_clear_row            = lrm.defines.guiprefix .. "preset-clear-row",
 
     body_right                  = lrm.defines.guiprefix .. "body_right",
     

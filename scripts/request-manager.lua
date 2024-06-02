@@ -492,23 +492,58 @@ function lrm.request_manager.check_slot_count ( player, data_to_push, max_availa
     return data_to_push
 end
 
-function fill_slots_up ( slots, current_slot_list, free_slot_list )
-    local last_row_index = slots % 10
-    local startslot = slots + 1
-    slots = slots + 10 - last_row_index
-    if slots < 40 then
-        slots = 40
-    else
-        if slots < 1000 then
-            slots = slots + 10
+function lrm.request_manager.fill_slots_up ( slots, current_slot_list, free_slot_list )
+    -- local last_row_index = slots % 10
+    -- local startslot = slots + 1
+    -- slots = slots + 10 - last_row_index
+    
+    -- if slots < 1000 then
+    --     local need_update = false
+    --     for i=slots-9,slots do
+    --         if not ( current_slot_list[i] == { nil } ) then
+    --             need_update = true
+    --         end
+    --     end
+    --     if need_update then
+    --         slots = slots + 10
+    --         if slots < 40 then
+    --             slots = 40
+    --         end
+    --     end
+    -- else
+    --     slots = 1000
+    -- end
+    -- for i = startslot, slots do
+    --     current_slot_list[i] = { nil }
+    --     free_slot_list[i]    = true
+    -- end
+    return {
+            slots = slots,
+            data = current_slot_list,
+            free_slots = free_slot_list
+        }
+end
+
+function lrm.request_manager.trim_preset( player, preset, index_low, index_high )
+    if not player or not preset or not index_low or not index_high then return end
+
+    local preset_data = global["preset-data"][player.index][preset]
+    local slots = table_size(preset_data)
+    local updated_preset = {}
+    local i=1
+    for index = 1, slots do
+        if index < index_low or index > index_high then
+            updated_preset[i] = preset_data[index]
+            i = i + 1
         end
     end
-    for i = startslot, slots do
-        current_slot_list[i] = { nil }
-        free_slot_list[i]    = true
-    end
-    return slots
+    local empty = {}
+    local current_dataset = lrm.request_manager.fill_slots_up ( (i - 1), updated_preset, empty )
+    updated_preset = current_dataset.data
+
+    global["preset-data"][player.index][preset] = updated_preset
 end
+
 function lrm.request_manager.pull_requests_from_requester( player, entity, max_value)
     local get_slot = entity.get_request_slot
     local slots    = entity.request_slot_count
@@ -533,7 +568,10 @@ function lrm.request_manager.pull_requests_from_requester( player, entity, max_v
             free_slots[i]    = true
         end
     end
-    slots = fill_slots_up ( slots, current_slots, free_slots )
+    local current_dataset = lrm.request_manager.fill_slots_up ( slots, current_slots, free_slots )
+    slots = current_dataset.slots
+    current_slots = current_dataset.data
+    free_slots = current_dataset.free_slots
 
     return {data                    = current_slots, 
             slot_map                = slot_map, 
@@ -571,7 +609,10 @@ function lrm.request_manager.pull_requests_from_autotrasher( player, entity )
             free_slots[i]    = true
         end
     end
-    slots = fill_slots_up ( slots, current_slots, free_slots )
+    local current_dataset = lrm.request_manager.fill_slots_up ( slots, current_slots, free_slots )
+    slots = current_dataset.slots
+    current_slots = current_dataset.data
+    free_slots = current_dataset.free_slots
 
     return {data                    = current_slots, 
             slot_map                = slot_map, 

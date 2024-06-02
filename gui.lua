@@ -20,12 +20,12 @@ if not lrm.gui then lrm.gui = {} end
 -- ----------------------------------------------------------------------------------------------------------------
 -- - [t-field] [S+][S][A][E][I][T][BP]-[                       ]-[                       ]- [t-field       ] [S+] -
 -- ------------------------------------[        textbox        ]-[        textbox        ]-------------------------
--- - presets  -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
--- -    .     -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
--- -    .     -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
--- -    .     -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
--- -          -[ # # # # # # # # # # ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
--- -          -Entity [E]             -                     [OK]-                     [OK]-                       -
+-- - presets  -[ # # # # # # # # # # x ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -    .     -[ # # # # # # # # # # x ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -    .     -[ # # # # # # # # # # x ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -    .     -[ # # # # # # # # # # x ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -          -[ # # # # # # # # # # x ]-[                       ]-[                       ]-[ # # # # # # # # # # ]-
+-- -          - [U][D]  Entity [E]      -                     [OK]-                     [OK]-                       -
 -- ----------------------------------------------------------------------------------------------------------------
 
 function lrm.gui.destroy(player)
@@ -57,7 +57,6 @@ function lrm.gui.build_toggle_button(player)
         }
     end
 end
-
 
 function lrm.gui.build_gui(player)
     local frame_flow = player.gui.screen
@@ -407,7 +406,7 @@ function lrm.gui.build_slots(player, preset_slots, parent_to_extend)
         type = "table",
         name = lrm.defines.gui.request_table,
         style = lrm.defines.gui.request_table,
-        column_count = 10
+        column_count = 11
     }
 
     request_table.clear()
@@ -440,6 +439,19 @@ function lrm.gui.build_slots(player, preset_slots, parent_to_extend)
             style = lrm.defines.gui.request_count,
             ignored_by_interaction = true
         }
+        
+        if i % 10 == 0 then
+            local clear_line = request_table.add {
+                type = "sprite-button",
+                --type = "choose-elem-button",
+                name = lrm.defines.gui.preset_clear_row .. i/10,
+                --elem_type = "signal",
+                style = "shortcut_bar_button",
+                size = 16,
+                sprite = "utility/trash"
+            }
+            clear_line.enabled = false
+        end
         
     end
 end
@@ -770,7 +782,7 @@ function lrm.gui.display_preset_junk (index)
     
     local preset_data, position, request_table, increment 
     preset_data   = global["data_to_view"][index].data or {}
-    position      = global["data_to_view"][index].position or 0
+    position      = global["data_to_view"][index].position or 1
     request_table = global["data_to_view"][index].parent_table or nil
     increment     = ( global["data_to_view"][index].increment or 1 ) - 1
 
@@ -783,22 +795,32 @@ function lrm.gui.display_preset_junk (index)
         slots = preset_size
     end
     
+    local row =  math.floor ( ( position - 1 ) / 10 )
+    local row_empty = global["data_to_view"][index].row_empty
+    if row_empty == nil then
+        row_empty = true
+    end
+
+--    local unlock_rows = slots > 40
+
     for i = position, slots do
+        local slot = i + row
         local item = preset_data and preset_data[i] or nil
         if item and item.name then
+            row_empty = false
             -- TODO see if there's a way to detect prototype name changes
             local valid_prototype = true
             if (item.type == "item") and game.item_prototypes[item.name] then
-                request_table.children[i].sprite = "item." .. item.name
-                request_table.children[i].tooltip = item.name
+                request_table.children[slot].sprite = "item." .. item.name
+                request_table.children[slot].tooltip = item.name
                 --request_table.children[i].elem_value = {name=item.name, type="item"}
             elseif (item.type == "fluid") and game.fluid_prototypes[item.name] then
-                request_table.children[i].sprite = "fluid." .. item.name
-                request_table.children[i].tooltip = item.name
+                request_table.children[slot].sprite = "fluid." .. item.name
+                request_table.children[slot].tooltip = item.name
                 --request_table.children[i].elem_value = {name=item.name, type="fluid"}
             elseif (item.type == "virtual" or item.type == "virtual-signal") and game.virtual_signal_prototypes[item.name] then
-                request_table.children[i].sprite = "virtual-signal." .. item.name
-                request_table.children[i].tooltip = item.name
+                request_table.children[slot].sprite = "virtual-signal." .. item.name
+                request_table.children[slot].tooltip = item.name
                 --request_table.children[i].elem_value = {name=item.name, type="virtual"}
             else
                 valid_prototype = false
@@ -806,39 +828,53 @@ function lrm.gui.display_preset_junk (index)
 
             if (valid_prototype) then
                 -- min should always be there, but we make sure...
-                if item.min then
-                    request_table.children[i].children[1].caption = util.format_number(item.min, true)
-                else
-                    request_table.children[i].children[1].caption = ""
-                end
-                if not (global.feature_level == "1.0") and ( ( item.max == "" ) or (item.min==item.max) ) then
-                    request_table.children[i].children[1].style.bottom_padding = 0
-                    request_table.children[i].children[2] = nil
-                elseif ( not item.max or item.max == 0xFFFFFFFF ) then
-                    request_table.children[i].children[1].style.bottom_padding = 10
-                    request_table.children[i].children[2].style = lrm.defines.gui.request_infinit
-                    request_table.children[i].children[2].caption = "∞" -- replace by icon?
-                else
-                    request_table.children[i].children[1].style.bottom_padding = 10
-                    request_table.children[i].children[2].style = lrm.defines.gui.request_count
-                    request_table.children[i].children[2].caption = util.format_number(item.max, true)
+                
+                if ( request_table.children[slot].children[1] ) then
+                    if item.min then
+                        request_table.children[slot].children[1].caption = util.format_number(item.min, true)
+                    else
+                        request_table.children[slot].children[1].caption = ""
+                    end
+                    if ( request_table.children[slot].children[2] ) then
+                        if not (global.feature_level == "1.0") and ( ( item.max == "" ) or (item.min==item.max) ) then
+                            request_table.children[slot].children[1].style.bottom_padding = 0
+                            request_table.children[slot].children[2] = nil
+                        elseif ( not item.max or item.max == 0xFFFFFFFF ) then
+                            request_table.children[slot].children[1].style.bottom_padding = 10
+                            request_table.children[slot].children[2].style = lrm.defines.gui.request_infinit
+                            request_table.children[slot].children[2].caption = "∞" -- replace by icon?
+                        else
+                            request_table.children[slot].children[1].style.bottom_padding = 10
+                            request_table.children[slot].children[2].style = lrm.defines.gui.request_count
+                            request_table.children[slot].children[2].caption = util.format_number(item.max, true)
+                        end
+                    end
                 end
             else
-                request_table.children[i].sprite = "item.LRM-dummy-item"
+                request_table.children[slot].sprite = "item.LRM-dummy-item"
                 -- request_table.children[i].elem_value = {name="LRM-dummy-item", type="item"}
                 if (item.type == "item") or (item.type == "fluid") or (item.type == "virtual") then
-                    request_table.children[i].tooltip = {"tooltip.missing-object", {"common.The-" .. item.type or ""}, item.name}
+                    request_table.children[slot].tooltip = {"tooltip.missing-object", { ( "common.The-" .. item.type ) or ""}, item.name}
                 else
-                    request_table.children[i].tooltip = {"tooltip.invalid-type", item.type or "", item.name}
+                    request_table.children[slot].tooltip = {"tooltip.invalid-type", item.type or "", item.name}
                 end
             end
         else
             -- as the table was just created, there is nothing to clear
         end
+        
+        -- if ( unlock_rows
+        if ( ( ( i % 10 ) == 0 )
+         and ( i < slots ) ) then
+            row = row + 1
+            request_table.children[slot + 1].enabled = row_empty
+            row_empty = true
+        end
     end
 
     if slots < preset_size then
-        global["data_to_view"][index].position=slots+1
+        global["data_to_view"][index].position = slots + 1
+        global["data_to_view"][index].row_empty = row_empty
     else
         global["data_to_view"][index] = nil
     end
@@ -989,7 +1025,7 @@ function lrm.gui.build_import_preview_frame (player)
         name = lrm.defines.gui.save_as_textfield,
         style = lrm.defines.gui.save_as_textfield
     }
-    
+
     local save_as_button = gui_toolbar.add {
         type = "sprite-button",
         name = lrm.defines.gui.save_as_button,
@@ -1025,7 +1061,7 @@ function lrm.gui.show_imported_preset(player, preset_data)
     if not preset_name_field then
         return
     end
-    
+
     local last_slot = table_size(preset_data)
     if (preset_data[last_slot].LRM_preset_name) then
         preset_name_field.text = preset_data[last_slot].LRM_preset_name.translated or preset_data[last_slot].LRM_preset_name

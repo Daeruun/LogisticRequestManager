@@ -1,8 +1,9 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.33
-Date: ??.05.2024
+Date: 02.06.2024
   Features:
     - added buttons to sort personal presets
+    - added button to trim empty rows from personal presets
   Changes:
     - the preset list tries to show 3 presets above the selected one if available  
   Bugfixes:

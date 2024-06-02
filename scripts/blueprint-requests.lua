@@ -42,8 +42,6 @@ function lrm.blueprint_requests.get_inventory_entity(player, ent_text, action_tx
     end
 end
 
-
-
 function lrm.blueprint_requests.get_event_entities(event)
     local player = game.players[event.player_index]
     local entity = nil

@@ -5,7 +5,7 @@ default_gui = data.raw["gui-style"].default
 default_gui[lrm.defines.gui.frame] = {
     type = "frame_style",
     parent = "inner_frame_in_outer_frame",
-    maximal_width = 800,
+    maximal_width = 840,
     maximal_height = 700
 }
 
@@ -70,9 +70,9 @@ default_gui[lrm.defines.gui.preset_button_selected] = {
 default_gui[lrm.defines.gui.request_window] = {
     type = "scroll_pane_style",
     parent = "scroll_pane",
-    width = 420,
+    width = 460,
     heigth = 208,
-    maximal_width  = 420,
+    maximal_width  = 460,
     minimal_height = 208,
     maximal_height = 208,
     margin = 0,

@@ -10,14 +10,14 @@ require 'scripts/commands'
 
 function lrm.select_preset(player, preset)
     lrm.gui.select_preset(player, preset)
-
+    
     local data = table.deepcopy(global["preset-data"][player.index][preset])
     local preset_name = global["preset-names"][player.index][preset]
-
-    if type(preset_name) == "table" 
-     and table.concat(preset_name) == table.concat{ "gui.auto_trash", } then 
+    
+    if ( ( type(preset_name) == "table" )
+        and ( table.concat(preset_name) == table.concat{ "gui.auto_trash", } ) ) then 
         local temp_data = {}
-        for index, item in pairs (data) do
+        for _, item in pairs (data) do
             if not((item.min or 0) == 0) or not ((item.max or 0) == 0)  then
                 table.insert (temp_data, item)
             end
@@ -25,10 +25,10 @@ function lrm.select_preset(player, preset)
         temp_data.notice={"messages.auto_trash"}
         data = temp_data
     end
-    if type(preset_name) == "table" 
-     and table.concat(preset_name) == table.concat{ "gui.keep_all", } then 
+    if ( ( type(preset_name) == "table" )
+        and ( table.concat(preset_name) == table.concat{ "gui.keep_all", } ) ) then 
         local temp_data = {}
-        for index, item in pairs (data) do
+        for _, item in pairs (data) do
             if not((item.min or 0) == 0) or not ((item.max or 0xFFFFFFFF) == 0xFFFFFFFF)  then
                 table.insert (temp_data, item)
             end
@@ -36,7 +36,7 @@ function lrm.select_preset(player, preset)
         temp_data.notice={"messages.keep_all"}
         data = temp_data
     end
-
+    
     lrm.gui.display_preset(player, data)
     global["presets-selected"][player.index] = preset
     lrm.gui.set_gui_elements_enabled(player)
@@ -44,11 +44,11 @@ end
 
 script.on_event(defines.events.on_gui_click, function(event)
     if not event.element.get_mod() == "LogisticRequestManager" then return end
+    
     local player = game.players[event.player_index]
-    if not (player and player.valid) then return end
-    local frame_flow = player.gui.screen
     local gui_clicked = event.element.name
-
+    
+    if not (player and player.valid) then return end
     
     if gui_clicked == lrm.defines.gui.toggle_button then
         if (event.control and event.alt and event.shift) then 
@@ -58,15 +58,15 @@ script.on_event(defines.events.on_gui_click, function(event)
             return
         end
         lrm.close_or_toggle(event, true)
-
+    
     elseif gui_clicked == lrm.defines.gui.close_button then
         lrm.close_or_toggle(event, false)
     end
-
+    
     if not lrm.check_logistics_available(player) then return end
-
+    
     local modifiers = lrm.check_modifiers(event)
-
+    
     if gui_clicked == lrm.defines.gui.save_as_button then
         local parent_frame = event.element.parent and event.element.parent.parent
         if not parent_frame then return end
@@ -75,7 +75,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             lrm.message(player, {"messages.name-needed"})
         else
             local new_preset = nil
-
+            
             if parent_frame.name == lrm.defines.gui.frame then
                 new_preset = lrm.request_manager.save_preset(player, 0, preset_name, modifiers)
             elseif parent_frame.name == lrm.defines.gui.import_preview_frame then
@@ -137,7 +137,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             lrm.gui.hide_frame(player, lrm.defines.gui.export_frame)
             lrm.gui.show_frame(player, lrm.defines.gui.import_frame)
         end
-        
+    
     elseif gui_clicked == lrm.defines.gui.export_button then
         local frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.export_frame)
         if frame and frame.visible then
@@ -155,8 +155,7 @@ script.on_event(defines.events.on_gui_click, function(event)
                 end
             end
         end
-
-        
+    
     elseif gui_clicked == lrm.defines.gui.autotrash_button then
         local frame = lrm.gui.get_gui_frame(player, lrm.defines.gui.autotrash_frame)
         if frame and frame.visible then
@@ -165,11 +164,9 @@ script.on_event(defines.events.on_gui_click, function(event)
             lrm.gui.hide_frame(player, lrm.defines.gui.network_frame)
             lrm.gui.show_frame(player, lrm.defines.gui.autotrash_frame)
         end
-        
-
+    
     elseif gui_clicked == lrm.defines.gui.OK_button then
         local parent_frame = event.element.parent and event.element.parent.parent
-
         if parent_frame and parent_frame.name == lrm.defines.gui.export_frame then
             lrm.gui.hide_frame(player, lrm.defines.gui.export_frame)
         elseif parent_frame and parent_frame.name == lrm.defines.gui.import_frame then
@@ -179,7 +176,7 @@ script.on_event(defines.events.on_gui_click, function(event)
                 lrm.gui.hide_frame(player, lrm.defines.gui.import_frame)
             end
         end
-
+    
     elseif gui_clicked == lrm.defines.gui.preset_button_down then
         local index = global["presets-selected"][player.index] or nil
         if index then
@@ -187,6 +184,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             lrm.gui.build_preset_list(player)
             lrm.select_preset(player, index + 1 )
         end
+    
     elseif gui_clicked == lrm.defines.gui.preset_button_up then
         local index = global["presets-selected"][player.index] or nil
         if index then
@@ -194,6 +192,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             lrm.gui.build_preset_list(player)
             lrm.select_preset(player, index - 1 )
         end
+    
     else
         local gui_parent = event.element.parent
         if gui_parent then
@@ -201,6 +200,16 @@ script.on_event(defines.events.on_gui_click, function(event)
                 local preset_clicked = string.match(gui_clicked, string.gsub(lrm.defines.gui.preset_button, "-", "%%-") .. "(%d+)")
                 if preset_clicked then
                     lrm.select_preset(player, tonumber(preset_clicked))
+                end
+            elseif gui_parent.name == lrm.defines.gui.request_table then
+                local preset_selected = global["presets-selected"][player.index] or nil
+                local row = string.match(gui_clicked, string.gsub(lrm.defines.gui.preset_clear_row, "-", "%%-") .. "(%d+)")
+                if preset_selected and row then
+                    local index_high = tonumber(row) * 10
+                    local index_low  = index_high - 9
+                    local preset_index = tonumber(preset_selected) or 0
+                    lrm.request_manager.trim_preset ( player, preset_index, index_low, index_high )
+                    lrm.select_preset(player, preset_index)
                 end
             end
         end
@@ -212,7 +221,7 @@ script.on_event({defines.events.on_research_finished, defines.events.on_research
     
     for _, player in pairs(event.research.force.players) do
         lrm.globals.init_player(player)
-
+        
         local selected_preset = global["presets-selected"][player.index]
         lrm.gui.force_rebuild(player)
         global["presets-selected"][player.index] = 0
@@ -226,7 +235,7 @@ script.on_event( {defines.events.on_technology_effects_reset, defines.events.on_
     
     for _, player in pairs(event.force.players) do
         lrm.globals.init_player(player)
-
+        
         local selected_preset = global["presets-selected"][player.index]
         lrm.gui.force_rebuild(player)
         global["presets-selected"][player.index] = 0
@@ -239,7 +248,7 @@ script.on_event(defines.events.on_forces_merged, function(event)
     
     for _, player in pairs(event.destination.players) do
         lrm.globals.init_player(player)
-
+        
         local selected_preset = global["presets-selected"][player.index]
         lrm.gui.force_rebuild(player)
         global["presets-selected"][player.index] = 0
@@ -267,7 +276,7 @@ script.on_init(function()
     lrm.globals.init()
     lrm.commands.init()
     lrm.get_feature_level ()
-
+    
     for _, player in pairs(game.players) do
         lrm.globals.init_player(player)
         lrm.recreate_empty_preset (player)
@@ -286,7 +295,7 @@ end)
 script.on_event(defines.events.on_player_joined_game, function(event)
     local player = game.players[event.player_index]
     if not (player and player.valid) then return end
-
+    
     lrm.globals.init_player(player)
     lrm.gui.set_gui_elements_enabled(player)
 end)
@@ -375,11 +384,12 @@ script.on_configuration_changed(function(event)
 
     for _, player in pairs(game.players) do
         lrm.globals.init_player(player)
+        
+        lrm.gui.force_rebuild(player)
         lrm.update_presets (player)
-
+        
         if ( lrm.check_logistics_available (player) ) then
             local selected_preset = global["presets-selected"][player.index]
-            lrm.gui.force_rebuild(player)
             global["presets-selected"][player.index] = 0
             lrm.select_preset(player, selected_preset)
         end
@@ -621,23 +631,11 @@ function lrm.update_presets ( player )
 end
 
 function lrm.check_preset ( player, preset_number )
-    local preset_data = global["preset-data"][player.index][preset_number]
-    local preset_name = global["preset-names"][player.index][preset_number]
+    local preset_data = global["preset-data"][player.index][preset_number] or {}
+    local preset_name = global["preset-names"][player.index][preset_number] or "---"
     local slots = table_size(preset_data)
     local free_slots = {}
-    if ( slots % 10 > 0) then
-        slots = fill_slots_up ( slots, preset_data, free_slots )
-    else
-        local need_update = false
-        for i=slots-10,slots do
-            if not preset_data[i] == { nil } then
-                all_unused = true
-            end
-        end
-        if need_update then
-            slots = fill_slots_up ( slots, preset_data, free_slots )
-        end
-    end
+    local last_used_slot = 1
     for i = 1, slots do
         local item = preset_data[i]
         if item.name then
@@ -657,10 +655,13 @@ function lrm.check_preset ( player, preset_number )
                       or item.type=="fluid"
                       or item.type=="virtual" ) then
                     lrm.message (player, {"messages.error-unsupported-type", item.type, item.name, serpent.line(preset_name)} )
+                else
+                    last_used_slot = i
                 end
             end
         end
     end
+    lrm.request_manager.trim_preset (player, preset_number, last_used_slot + 1, slots)
 end
 
 function lrm.close_or_toggle (event, toggle)
