@@ -325,11 +325,12 @@ script.on_configuration_changed(function(event)
     lrm.globals.init()
     if (event.new_version) then
         local game_version= util.split(event.new_version or "", ".")
+        local base_version = {}
         for i, v in pairs (game_version) do
-            game_version[i]=tonumber(v)
+            base_version[i] = tonumber(v)
         end
 
-        if game_version[1]<1 or (game_version[1] == 1 and game_version[2] == 0) then
+        if (base_version[1] < 1) or ((base_version[1] == 1) and (base_version[2] == 0)) then
             global.feature_level = "1.0"
         else
             global.feature_level = "1.1"
@@ -339,70 +340,64 @@ script.on_configuration_changed(function(event)
     if ( event.mod_changes 
         and event.mod_changes.LogisticRequestManager 
         and event.mod_changes.LogisticRequestManager.old_version ) then
-
+        
         lrm.get_feature_level ()
-
+        
         local version_map_1_0_0={import_export={0,18,4}, modifiers_combinator={0,18,7}, reduce_freeze={0,18,15}}
         local version_map_1_1_0={import_export={1,1,7},  modifiers_combinator={1,1,10}, reduce_freeze={1,1,18}, keep_all={1,1,19}}
-
-
+        
         local old_version = util.split (event.mod_changes.LogisticRequestManager.old_version, ".") or nil
+        local base_version = {}
         for i, v in pairs (old_version) do
-            old_version[i]=tonumber(v)
+            base_version[i] = tonumber(v)
         end
-
+        
         local new_versions ={}
         local new_how_to = false
         
-        if (old_version[1]==0) or (old_version[1]==1 and old_version[2]==0) then 
+        if (base_version[1] < 1) or ((base_version[1] == 1) and (base_version[2] == 0)) then
             new_versions = version_map_1_0_0
         else 
             new_versions = version_map_1_1_0 
         end
-
-
+        
         for _, player in pairs(game.players) do
             lrm.globals.init_player(player)
-    
+            
             if old_version[3] < new_versions.import_export[3] then 
                 lrm.message( player, {"", {"messages.new_feature-export_import"}, " [color=yellow]", {"messages.new-gui"}, "[/color] " })
                 new_how_to = true
             end
-
+            
             if old_version[3] < new_versions.modifiers_combinator[3] then 
                 lrm.move_presets (player)
                 lrm.recreate_empty_preset (player)
                 if player.mod_settings["LogisticRequestManager-create_preset-autotrash"].value == true then
                     lrm.recreate_autotrash_preset (player)
-                end         
-
+                end
+                
                 lrm.message( player, {"", {"messages.new_feature-constant_combinator"}, " [color=yellow]", {"messages.new-setting"}, "[/color] " })
                 lrm.message( player, {"", {"messages.new_feature-modifiers"}, " [color=yellow]", {"messages.new-settings"}, "[/color] " })
-
+                
                 new_how_to = true
-
                 global["inventories-open"][player.index]=global["inventories-open"][player.index]~=nil
             end
-
             if old_version[3] < new_versions.reduce_freeze[3] then 
                 if (player.mod_settings["LogisticRequestManager-display_slots_by_tick_ratio"].value==0) then
                     player.mod_settings["LogisticRequestManager-display_slots_by_tick_ratio"] = {value=10}
                 end
             end
-
             if old_version[3] < new_versions.keep_all[3] then 
                 if player.mod_settings["LogisticRequestManager-create_preset-keepall"].value == true then
                     lrm.recreate_keep_all_preset (player)
                 end
             end
-
             if new_how_to then 
                 lrm.message( player, {"", " [color=orange]", {"messages.new-how_to"}, "[/color]\n" })
             end
-
         end
     end
-
+    
     for _, player in pairs(game.players) do
         lrm.globals.init_player(player)
         
@@ -425,8 +420,8 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
     if (event.setting == "LogisticRequestManager-default_to_user") then 
         lrm.gui.set_gui_elements_enabled(player) 
     end
-    if ( (event.setting == "LogisticRequestManager-allow_gui_without_research") or
-         (event.setting == "LogisticRequestManager-hide_toggle_gui_button") ) then
+    if ((event.setting == "LogisticRequestManager-allow_gui_without_research") or
+        (event.setting == "LogisticRequestManager-hide_toggle_gui_button")) then
             lrm.gui.force_rebuild(player)
     end
 end)
@@ -539,12 +534,13 @@ end
 
 function lrm.get_feature_level ()
     if (game.active_mods["LogisticRequestManager"]) then
-        local base_version= util.split(game.active_mods["LogisticRequestManager"] or "", ".")
-        for i, v in pairs (base_version) do
-            base_version[i]=tonumber(v)
+        local game_version = util.split(game.active_mods["LogisticRequestManager"] or "", ".")
+        local base_version = {}
+        for i, v in pairs (game_version) do
+            base_version[i] = tonumber(v)
         end
 
-        if base_version[1]<1 or (base_version[1] == 1 and base_version[2] == 0) then
+        if (base_version[1] < 1) or ((base_version[1] == 1) and (base_version[2] == 0)) then
             global.feature_level = "1.0"
         else
             global.feature_level = "1.1"
@@ -554,23 +550,22 @@ end
 
 function lrm.move_presets (player)
     if not (player) then return end
-
+    
     local new_index = lrm.defines.protected_presets
     local new_data = {}
     local new_names = {}
-
     
     local player_preset_names = global["preset-names"][player.index]
     local player_preset_data  = global["preset-data"][player.index]
-
+    
     for preset_number, preset_name in pairs(player_preset_names) do
         if preset_number then
             
-            if type(preset_name) == "table" and 
-             (   table.concat(preset_name) == table.concat{ "gui.empty", } 
-              or table.concat(preset_name) == table.concat{ "gui.auto_trash", } 
-              or table.concat(preset_name) == table.concat{ "gui.keep_all", } 
-            ) then 
+            if type(preset_name) == "table" and
+                (  table.concat(preset_name) == table.concat{ "gui.empty", }
+                or table.concat(preset_name) == table.concat{ "gui.auto_trash", }
+                or table.concat(preset_name) == table.concat{ "gui.keep_all", }
+            ) then
                 -- do nothing.
             else
                 local request_data = table.deepcopy(player_preset_data[preset_number])
@@ -872,8 +867,10 @@ function lrm.update_autotrash(event)
             if flags.autotrash_automatic and (next(global["trash"][index]) == nil) then
                 flags.autotrash = false
                 local autotrash_frame = lrm.gui.get_gui_frame(game.players[index], lrm.defines.gui.autotrash_frame)
-                local autotrash_flow = autotrash_frame[lrm.defines.gui.autotrash_flow]
-                autotrash_flow[lrm.defines.guiprefix .. "flag-autotrash"].state=false
+                local autotrash_flow = autotrash_frame and autotrash_frame[lrm.defines.gui.autotrash_flow]
+                if autotrash_flow then
+                    autotrash_flow[lrm.defines.guiprefix .. "flag-autotrash"].state=false
+                end
             else
                 clear_event = false
             end

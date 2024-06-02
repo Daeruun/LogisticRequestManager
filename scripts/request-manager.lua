@@ -752,11 +752,14 @@ function lrm.request_manager.import_preset(player)
     local decoded_string = game.decode_string(encoded_string)
     if decoded_string and (decoded_string ~= "") then
         local preset_data = game.json_to_table(decoded_string)
+---@diagnostic disable-next-line: param-type-mismatch
         if preset_data and (next(preset_data) ~= nil) then
+---@diagnostic disable-next-line: param-type-mismatch
             local last_slot = table_size (preset_data)
             local version_imported = preset_data[last_slot].LRM_preset_version or 0
             if ( version_imported <  lrm.defines.preset_string_version ) then
                 if ( version_imported < 2 ) then
+---@diagnostic disable-next-line: param-type-mismatch
                     for index, dataset in pairs(preset_data) do
                         if  ( version_imported == 1 ) then -- only items were exported here
                             dataset.type="item"
@@ -781,6 +784,7 @@ end
 
 function lrm.request_manager.save_imported_preset(player, preset_name)
     local preset_data = lrm.request_manager.import_preset(player)
+---@diagnostic disable-next-line: param-type-mismatch
     local last_slot = table_size (preset_data)
     
     if (preset_data[last_slot].LRM_preset_name) then
@@ -797,7 +801,8 @@ function lrm.request_manager.save_imported_preset(player, preset_name)
 
     local configured_slots = 0
 
-    for index, item in pairs(preset_data) do
+---@diagnostic disable-next-line: param-type-mismatch
+    for _, item in pairs(preset_data) do
         if item and item.name then
             configured_slots = configured_slots + 1
         end
@@ -858,7 +863,7 @@ function lrm.request_manager.autotrash_inventory(player_index)
     local request_slot_map  = current_dataset.slot_map
 
     local inventory         = character.get_main_inventory()
-    local inventory_items   = inventory.get_contents()
+    local inventory_items   = inventory and inventory.get_contents()
 
     local flags = global["flags"][player_index]
 
@@ -870,7 +875,7 @@ function lrm.request_manager.autotrash_inventory(player_index)
     -- local last_subgroup
 
     for name, prototype in pairs(filtered_prototypes) do
-        if inventory_items[name] and not request_slot_map[name] then
+        if inventory_items and inventory_items[name] and not request_slot_map[name] then
             if ( ( not (not flags.trash_gridded_items and ( prototype.equipment_grid or (prototype.place_result and prototype.place_result.grid_prototype) ) ) )
             and  ( not (not flags.trash_remotes and string.find(prototype.name, "remote", 0, true ) ) ) ) then
                 table.insert(trash_items,{name=prototype.name or "", min=0, max=0, type="item"})
@@ -923,11 +928,12 @@ function lrm.request_manager.update_autotrash(player_index)
     local update = not flags.autotrash
     if not (next(trash_items) == nil) then
         local inventory         = character.get_main_inventory()
-        local inventory_items   = inventory.get_contents()
+        local inventory_items   = inventory and inventory.get_contents()
         
         local trash_map = {}
+        
         for index, item in pairs(trash_items) do
-            if not (inventory_items[item.name]) then
+            if not (inventory_items and inventory_items[item.name]) then
                 update = true
                 break
             else
@@ -941,14 +947,13 @@ function lrm.request_manager.update_autotrash(player_index)
                 if trash_map[name] then
                     if ( ( not (not flags.trash_gridded_items and ( prototype.equipment_grid or (prototype.place_result and prototype.place_result.grid_prototype) ) ) )
                     and  ( not (not flags.trash_remotes and string.find(prototype.name, "remote", 0, true ) ) ) ) then
-                                 update = true
+                        update = true
                         break
                     end
                 end
             end
         end
     end
-    
     
     if update then
         lrm.request_manager.clear_autotrash(player_index)

@@ -569,11 +569,11 @@ end
 function lrm.gui.create_modifiertooltip(player, modifier_name, function_name)
     if not (player and modifier_name) then return "" end
     local function_enabled  = player.mod_settings["LogisticRequestManager-enable-" .. modifier_name].value or false
-    local function_modifier = player.mod_settings["LogisticRequestManager-modifier-" .. modifier_name].value or false
+    local function_modifier = player.mod_settings["LogisticRequestManager-modifier-" .. modifier_name].value
 
     if not (function_enabled and function_modifier) then return "" end
     
-    function_modifier={"", "[color=yellow]", {"common." .. function_modifier}, "[/color]"}
+    function_modifier = tostring ({"", "[color=yellow]", {"common." .. function_modifier}, "[/color]"})
     local tooltip_string=""
 
     if (function_enabled=="never") then
@@ -1008,44 +1008,50 @@ function lrm.gui.build_import_preview_frame (player)
         return
     end
 
-    local gui_frame = gui_master.add {
+    local gui_frame = gui_master and gui_master.add {
         type = "frame",
         name = lrm.defines.gui.import_preview_frame,
         style = lrm.defines.gui.import_preview_frame,
         direction = "vertical",
     }
-    gui_frame.visible = false
+    if gui_frame then
+        gui_frame.visible = false
+        
+        lrm.gui.build_title_bar(player, gui_frame, {"gui.import-preview-title"})
+        
+        local gui_toolbar = gui_frame.add {
+            type = "flow",
+            name = lrm.defines.gui.toolbar,
+            direction = "horizontal"
+        }
+        if gui_toolbar then
+            gui_toolbar.style.vertical_align = "center"
+            
+            local save_as_textfield = gui_toolbar.add {
+                type = "textfield",
+                name = lrm.defines.gui.save_as_textfield,
+                style = lrm.defines.gui.save_as_textfield
+            }
+            
+            local save_as_button = gui_toolbar.add {
+                type = "sprite-button",
+                name = lrm.defines.gui.save_as_button,
+                style = "shortcut_bar_button",
+                sprite = "LRM-save-as",
+                tooltip = {"tooltip.save_as", {"tooltip.imported-string"}}
+            }
+            save_as_button.style.padding = 2
+        end
 
-    lrm.gui.build_title_bar(player, gui_frame, {"gui.import-preview-title"})
-
-    local gui_toolbar = gui_frame.add {
-        type = "flow",
-        name = lrm.defines.gui.toolbar,
-        direction = "horizontal"
-    }
-    gui_toolbar.style.vertical_align = "center"
-
-    local save_as_textfield = gui_toolbar.add {
-        type = "textfield",
-        name = lrm.defines.gui.save_as_textfield,
-        style = lrm.defines.gui.save_as_textfield
-    }
-
-    local save_as_button = gui_toolbar.add {
-        type = "sprite-button",
-        name = lrm.defines.gui.save_as_button,
-        style = "shortcut_bar_button",
-        sprite = "LRM-save-as",
-        tooltip = {"tooltip.save_as", {"tooltip.imported-string"}}
-    }
-    save_as_button.style.padding = 2
-
-    local request_window = gui_frame.add {
-        type = "scroll-pane",
-        name = lrm.defines.gui.request_window,
-        style = lrm.defines.gui.request_window
-    }
-    request_window.vertical_scroll_policy = "auto-and-reserve-space"
+        local request_window = gui_frame.add {
+            type = "scroll-pane",
+            name = lrm.defines.gui.request_window,
+            style = lrm.defines.gui.request_window
+        }
+        if request_window then
+            request_window.vertical_scroll_policy = "auto-and-reserve-space"
+        end
+    end
 end
 
 function lrm.gui.show_imported_preset(player, preset_data)
