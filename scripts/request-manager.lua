@@ -493,9 +493,9 @@ function lrm.request_manager.check_slot_count ( player, data_to_push, max_availa
 end
 
 function lrm.request_manager.fill_slots_up ( slots, current_slot_list, free_slot_list )
-    -- local last_row_index = slots % 10
-    -- local startslot = slots + 1
-    -- slots = slots + 10 - last_row_index
+    local last_row_index = slots % 10
+    local startslot = slots + 1
+    slots = slots + 10 - last_row_index
     
     -- if slots < 1000 then
     --     local need_update = false
@@ -513,10 +513,10 @@ function lrm.request_manager.fill_slots_up ( slots, current_slot_list, free_slot
     -- else
     --     slots = 1000
     -- end
-    -- for i = startslot, slots do
-    --     current_slot_list[i] = { nil }
-    --     free_slot_list[i]    = true
-    -- end
+    for i = startslot, slots do
+        current_slot_list[i] = { nil }
+        free_slot_list[i]    = true
+    end
     return {
             slots = slots,
             data = current_slot_list,

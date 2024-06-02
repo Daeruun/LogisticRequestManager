@@ -5,7 +5,8 @@ Date: 02.06.2024
     - added buttons to sort personal presets
     - added button to trim empty rows from personal presets
   Changes:
-    - the preset list tries to show 3 presets above the selected one if available  
+    - the preset list tries to show 3 presets above the selected one if available
+    - presets now display full rows regardless of the last used slot
   Bugfixes:
     - suppress little helpful error message that an opened entity does not support requests when a research finished
     - fixed default mentioned in the tooltip for setting 'GUI: preset-slot updates per Tick'
