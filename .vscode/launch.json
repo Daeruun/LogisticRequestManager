@@ -4,19 +4,25 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        
         {
             "type": "factoriomod",
             "request": "launch",
             "name": "Factorio Mod Debug",
-            "adjustMods": "LogisticRequestManager -> true",
-            "factorioPath": "${workspaceFolder}/../../bin/x64/factorio.exe"
+            "manageMod": true,
+            "adjustMods": 
+            {
+                "LogisticRequestManager": true
+            }
         },
         {
             "type": "factoriomod",
             "request": "launch",
             "name": "Factorio Mod Debug (Settings & Data)",
-            "adjustMods": "LogisticRequestManager -> true",
-            "factorioPath": "${workspaceFolder}/../../bin/x64/factorio.exe",
+            "adjustMods": 
+            {
+                "LogisticRequestManager": true
+            },
             "hookSettings": true,
             "hookData": true
         },
@@ -24,8 +30,10 @@
             "type": "factoriomod",
             "request": "launch",
             "name": "Factorio Mod Debug (Profile)",
-            "adjustMods": "LogisticRequestManager -> true",
-            "factorioPath": "${workspaceFolder}/../../bin/x64/factorio.exe",
+            "adjustMods": 
+            {
+                "LogisticRequestManager": true
+            },
             "hookMode": "profile"
         }
     ]
