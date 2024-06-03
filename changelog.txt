@@ -8,7 +8,8 @@ Date: 03.06.2024
     - added tooltip for the button to remove an empty row from presets
     - minor fixes
   Bugfixes:
-    - minor fix in localization 
+    - minor fix in localization
+    - prevent crash on importing invalid strings
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.33
 Date: 02.06.2024

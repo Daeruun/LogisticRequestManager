@@ -1065,7 +1065,7 @@ function lrm.gui.show_imported_preset(player, preset_data)
         return
     end
 
-    if not preset_data then
+    if not preset_data or preset_data == {} then
         return
     end
 
@@ -1074,7 +1074,7 @@ function lrm.gui.show_imported_preset(player, preset_data)
     end
 
     local last_slot = table_size(preset_data)
-    if (preset_data[last_slot].LRM_preset_name) then
+    if (last_slot and preset_data[last_slot].LRM_preset_name) then
         preset_name_field.text = preset_data[last_slot].LRM_preset_name.translated or preset_data[last_slot].LRM_preset_name
         preset_data[last_slot] = nil
     end

@@ -182,7 +182,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             lrm.gui.hide_frame(player, lrm.defines.gui.export_frame)
         elseif parent_frame and parent_frame.name == lrm.defines.gui.import_frame then
             local preset_data = lrm.request_manager.import_preset(player)
-            if preset_data then
+            if preset_data and not (preset_data == {}) then
                 lrm.gui.show_imported_preset(player, preset_data)
                 lrm.gui.hide_frame(player, lrm.defines.gui.import_frame)
             end
