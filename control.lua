@@ -346,16 +346,16 @@ script.on_configuration_changed(function(event)
         local version_map_1_0_0={import_export={0,18,4}, modifiers_combinator={0,18,7}, reduce_freeze={0,18,15}}
         local version_map_1_1_0={import_export={1,1,7},  modifiers_combinator={1,1,10}, reduce_freeze={1,1,18}, keep_all={1,1,19}}
         
-        local old_version = util.split (event.mod_changes.LogisticRequestManager.old_version, ".") or nil
-        local base_version = {}
-        for i, v in pairs (old_version) do
-            base_version[i] = tonumber(v)
+        local old_mod_version = util.split (event.mod_changes.LogisticRequestManager.old_version, ".") or nil
+        local old_version = {}
+        for i, v in pairs (old_mod_version) do
+            old_version[i] = tonumber(v)
         end
         
         local new_versions ={}
         local new_how_to = false
         
-        if (base_version[1] < 1) or ((base_version[1] == 1) and (base_version[2] == 0)) then
+        if (old_version[1] < 1) or ((old_version[1] == 1) and (old_version[2] == 0)) then
             new_versions = version_map_1_0_0
         else 
             new_versions = version_map_1_1_0 
