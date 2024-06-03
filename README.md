@@ -155,8 +155,22 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 - Have the mods GUI open.
 - Select the preset to delete.
 - Delete the preset by clicking the red button with the trash-bin.
-**There is no undo function for this.**
+<br>**There is no undo function for this.**
 ![07_delete_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/07_delete_a_preset.gif?raw=true)
+
+## To move a preset
+- Have the mods GUI open.
+- Select the preset to move.
+- Right to the lower end of the preset list there are two buttons with an arrow that can be used to move the current preset up or down.
+- The pre-defined presets cannot be moved.
+![08_move_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/08_move_a_preset.gif?raw=true)
+
+## To add or remove an empty row from a preset
+- Have the mods GUI open.
+- Select the preset to modify.
+- On the right end of each line with used slots is a button with a trashbin that can be used to remove this line. 
+- If a line contains only empty slots, the button contains a plus and can be used to add a row of empty slots above this line.
+![09_add_or_remove_empty_line](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/09_add_or_remove_empty_line.gif?raw=true)
 
 ## Commands
 At the moment one command with some valid parameters exists.
