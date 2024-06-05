@@ -83,14 +83,14 @@ This modifier allows to change this limit to infinity.
 This modifier allows to round up requests to their stacksize. If the request happens to be configured at a multiple of its stacksize it is not changed.
 
 ### GUI: slot updates per tick
-![mod settings - per player - gui preset slot updates per tick](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_slot_updates_per_tick.png?raw=true)
+![mod settings - per player - gui preset slot updates per tick](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_slot_updates_per_tick.png?raw=true)  
 
 ### Warning when saving large presets
-![mod settings - per player - warn when saving a large preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_warn_on_large_presets.png?raw=true)
+![mod settings - per player - warn when saving a large preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_warn_on_large_presets.png?raw=true)  
 
 ## user-control / hot-keys:
 ### toggle the GUI:
-![controls - mods - Toggle Logitic Request Manager GUI](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/controls_settings.png?raw=true)
+![controls - mods - Toggle Logitic Request Manager GUI](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/controls_settings.png?raw=true)  
 This shortcut opens or closes the whole GUI.
 
 ### close the GUI:
