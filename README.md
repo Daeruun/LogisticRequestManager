@@ -75,10 +75,11 @@ This setting allows to add new requests to existing ones instead of overwriting 
 
 ### modifier to save requests from chests with unlimited max
 ![mod settings - per player - unlimited chest requests](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_modifier_unlimited_chest_requests.png?raw=true)  
-By default requests from entities with only one setting for requests will be limited to that value. This modifier allows to change this limit to infinity.
+By default requests from entities with only one setting for requests will be limited to that value.  
+This modifier allows to change this limit to infinity.
 
 ### modifier to round up requests to their stacksize
-![mod settings - per player - unlimited chest requests](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_modifier_round_up_requests_to_stacksize.png?raw=true)
+![mod settings - per player - unlimited chest requests](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/mod_settings_modifier_round_up_requests_to_stacksize.png?raw=true)  
 This modifier allows to round up requests to their stacksize. If the request happens to be configured at a multiple of its stacksize it is not changed.
 
 ### GUI: slot updates per tick
@@ -152,6 +153,7 @@ In each part of the How-To another entity is used as interaction target (charact
 Presets with more slots, that do not contain more than items/signals as supported are squished together to fit. Presets containing more than that will not be applied and an error-message will be printed.
 - **NOTE:** Items/signals that are not available (marked as red X in the gui) CANNOT be configured into the target.
 - If you now create a new preset, potentially missing items are NOT part of the new preset any more!
+
 ![04_apply_and_create_a_preset_to_or_from_chest](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/04_apply_and_create_a_preset_to_or_from_chest.gif?raw=true)
 
 ## To request the content of a blueprint (into spidertron):
@@ -162,6 +164,7 @@ Presets with more slots, that do not contain more than items/signals as supporte
 **In Factorio <= 1.0.0 chests have a fixed maximum of 30 items to request.**
 Blueprint(books) containing more than 40 items will not be applied and an error-message will be printed. Same rule applies if the sum of already present requests and items in the blueprint exceeds the maximum.
 - Save the new configuration if required.
+
 ![05_request_a_blueprint_into_spidertron](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/05_request_a_blueprint_into_spidertron.gif?raw=true)
 
 ## To modify or overwrite a preset:
@@ -172,6 +175,7 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 - Configure your request(s) in the open entity.
 - Save the preset by clicking the button with the disk-icon in the mods GUI.
 **There is no undo function for this.**
+
 ![06_modify_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/06_modify_a_preset.gif?raw=true)
 
 ## To delete a preset
@@ -179,6 +183,7 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 - Select the preset to delete.
 - Delete the preset by clicking the red button with the trash-bin.
 <br>**There is no undo function for this.**
+
 ![07_delete_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/07_delete_a_preset.gif?raw=true)
 
 ## To move a preset
@@ -186,6 +191,7 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 - Select the preset to move.
 - Right to the lower end of the preset list there are two buttons with an arrow that can be used to move the current preset up or down.
 - The pre-defined presets cannot be moved.
+
 ![08_move_a_preset](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/08_move_a_preset.gif?raw=true)
 
 ## To add or remove an empty row from a preset
@@ -193,6 +199,7 @@ Blueprint(books) containing more than 40 items will not be applied and an error-
 - Select the preset to modify.
 - On the right end of each line with used slots is a button with a trashbin that can be used to remove this line. 
 - If a line contains only empty slots, the button contains a plus and can be used to add a row of empty slots above this line.
+
 ![09_add_or_remove_empty_line](https://github.com/Daeruun/LogisticRequestManager/blob/master/man/09_add_or_remove_empty_line.gif?raw=true)
 
 ## Commands
