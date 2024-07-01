@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.34
-Date: 03.06.2024
+Date: 01.07.2024
   Features:
     - added button to add empty rows to personal presets
     - saving an update of an existing preset can now be used to rename it, if SHIFT is pressed while clicking the button
@@ -10,6 +10,7 @@ Date: 03.06.2024
   Bugfixes:
     - minor fix in localization
     - prevent crash on importing invalid strings
+    - fixed missing rail parts when working with a library-based blueprint
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.33
 Date: 02.06.2024

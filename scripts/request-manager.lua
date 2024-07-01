@@ -21,7 +21,15 @@ function lrm.request_manager.request_blueprint(player, modifiers)
                 local blueprint_data = player.get_blueprint_entities()
                 if not (blueprint_data == nil) then
                     for _, item in pairs(blueprint_data) do
-                        blueprint_bom[item.name] = (blueprint_bom[item.name] or 0) + 1
+                        if item.name == "curved-rail" or item.name == "straight-rail" then
+                            if item.name == "curved-rail" then
+                                blueprint_bom["rail"] = (blueprint_bom["rail"] or 0) + 4
+                            else
+                                blueprint_bom["rail"] = (blueprint_bom["rail"] or 0) + 1
+                            end
+                        else
+                            blueprint_bom[item.name] = (blueprint_bom[item.name] or 0) + 1
+                        end
                     end
                 else
                     return nil
